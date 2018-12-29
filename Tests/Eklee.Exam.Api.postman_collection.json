@@ -1,0 +1,362 @@
+{
+	"info": {
+		"_postman_id": "e5d22750-295a-42bd-8bca-d80aa8584865",
+		"name": "Eklee.Exam.Api",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "SimpleCRUD",
+			"item": [
+				{
+					"name": "CreateCandidate",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "c78a7620-0fa4-41a7-9cad-dac762062890",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Query returns with match\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    var id = pm.environment.get(\"createCandidateId\");",
+									"    pm.expect(jsonData.data.createCandidate.id).to.eql(id);",
+									"    pm.expect(jsonData.data.createCandidate.name).to.eql(\"Jack Box\");",
+									"    pm.expect(jsonData.data.createCandidate.active).to.eql(true);",
+									"    pm.expect(jsonData.data.createCandidate.type).to.eql(\"Full-time professional\");",
+									"    pm.expect(jsonData.data.createCandidate.created).to.eql(\"2016-12-27\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "f83f6262-b17e-458b-aa22-037213d44b0a",
+								"exec": [
+									"var uuid = require('uuid');",
+									"pm.environment.set(\"createCandidateId\", uuid.v4());"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"operationName\":null,\"variables\":{},\"query\":\"mutation {\\n  createCandidate(candidate: {id: \\\"{{createCandidateId}}\\\", active: true, created: \\\"2016-12-27\\\", name: \\\"Jack Box\\\", type: \\\"Full-time professional\\\"}) {\\n    id\\n    name\\n    type\\n    created\\n    active\\n  }\\n}\\n\"}"
+						},
+						"url": {
+							"raw": "{{endpoint}}/api/graph",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"api",
+								"graph"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CreateExamTemplate",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "35c8c12c-5cfe-42d0-8de3-66862da96f49",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "f3d6edef-fd7e-4167-b32d-9aafbbf3a69b",
+								"exec": [
+									"var uuid = require('uuid');",
+									"pm.environment.set(\"createExamTemplateId\", uuid.v4());"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"operationName\":null,\"variables\":{},\"query\":\"mutation {\\n  createExamTemplate(examtemplate: {id: \\\"{{createExamTemplateId}}\\\", name: \\\"bar v1\\\", category: \\\"test2\\\", created: \\\"2018-01-01\\\", effective: \\\"2018-12-01\\\", expires: \\\"2019-12-31\\\"}) {\\n    id\\n    name\\n    category\\n  }\\n}\\n\"}"
+						},
+						"url": {
+							"raw": "{{endpoint}}/api/graph",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"api",
+								"graph"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CreateExam",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "35c8c12c-5cfe-42d0-8de3-66862da96f49",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "50d20ab9-c5ba-41d9-9739-f7f81ba8e22d",
+								"exec": [
+									"var uuid = require('uuid');",
+									"pm.environment.set(\"createExamId\", uuid.v4());"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"operationName\":null,\"variables\":{},\"query\":\"mutation {\\n  createExam(exam: {id: \\\"{{createExamId}}\\\", name: \\\"bar\\\", category: \\\"test2\\\", taken: \\\"2017-11-01\\\", candidateId: \\\"{{createCandidateId}}\\\", examTemplateId: \\\"{{createExamTemplateId}}\\\"}) {\\n    id\\n    name\\n    category\\n    taken\\n    candidateId\\n    examTemplateId\\n  }\\n}\\n\"}"
+						},
+						"url": {
+							"raw": "{{endpoint}}/api/graph",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"api",
+								"graph"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "QueryExam (getExamById)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "35c8c12c-5cfe-42d0-8de3-66862da96f49",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"operationName\":null,\"variables\":{},\"query\":\"{\\n  getExamById(id: {equal: \\\"{{createExamId}}\\\"}) {\\n    id\\n    name\\n    category\\n    taken\\n    candidateId\\n    examTemplateId\\n  }\\n}\\n\"}"
+						},
+						"url": {
+							"raw": "{{endpoint}}/api/graph",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"api",
+								"graph"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "QueryExamOutput (getExamsByNameAndTaken)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "35c8c12c-5cfe-42d0-8de3-66862da96f49",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"operationName\":null,\"variables\":{},\"query\":\"{\\n  getExamsByNameAndTaken(name: {contains: \\\"bar\\\"}, taken: {notEqual: \\\"2018-01-01\\\"}) {\\n    id\\n    category\\n    name\\n    taken\\n    candidate {\\n      id\\n      name\\n      active\\n    }\\n    examTemplate {\\n      id\\n      name\\n      category\\n    }\\n  }\\n}\\n\"}"
+						},
+						"url": {
+							"raw": "{{endpoint}}/api/graph",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"api",
+								"graph"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "UpdateExam",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "35c8c12c-5cfe-42d0-8de3-66862da96f49",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"operationName\":null,\"variables\":{},\"query\":\"{\\n  getExamById(id: {equal: \\\"C941233F-A5B0-4E10-B783-E9B91C6D9B9D\\\"}) {\\n    id\\n    name\\n    category\\n    taken\\n    candidateId\\n    examTemplateId\\n  }\\n}\\n\"}"
+						},
+						"url": {
+							"raw": "{{endpoint}}/api/graph",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"api",
+								"graph"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "VerifyExamUpdate",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "35c8c12c-5cfe-42d0-8de3-66862da96f49",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"operationName\":null,\"variables\":{},\"query\":\"{\\n  getExamById(id: {equal: \\\"C941233F-A5B0-4E10-B783-E9B91C6D9B9D\\\"}) {\\n    id\\n    name\\n    category\\n    taken\\n    candidateId\\n    examTemplateId\\n  }\\n}\\n\"}"
+						},
+						"url": {
+							"raw": "{{endpoint}}/api/graph",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"api",
+								"graph"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Cleanup",
+			"item": []
+		}
+	]
+}
