@@ -356,7 +356,137 @@
 		},
 		{
 			"name": "Cleanup",
-			"item": []
+			"item": [
+				{
+					"name": "DeleteAllCandidates",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "c04fa6d4-f9cc-422b-8f76-541cff3bcb7d",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"operationName\":null,\"variables\":{},\"query\":\"mutation {\\n  deleteAllCandidate {\\n    message\\n  }\\n}\\n\"}"
+						},
+						"url": {
+							"raw": "{{endpoint}}/api/graph",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"api",
+								"graph"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DeleteAllExams",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "c04fa6d4-f9cc-422b-8f76-541cff3bcb7d",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"operationName\":null,\"variables\":{},\"query\":\"mutation {\\n  deleteAllExam {\\n    message\\n  }\\n}\\n\"}"
+						},
+						"url": {
+							"raw": "{{endpoint}}/api/graph",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"api",
+								"graph"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DeleteAllExamTemplates",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "c04fa6d4-f9cc-422b-8f76-541cff3bcb7d",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"operationName\":null,\"variables\":{},\"query\":\"mutation {\\n  deleteAllExamTemplate {\\n    message\\n  }\\n}\\n\"}"
+						},
+						"url": {
+							"raw": "{{endpoint}}/api/graph",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"api",
+								"graph"
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		}
 	]
 }

@@ -9,6 +9,7 @@ namespace Eklee.Exams.Api.Schema
 {
 	public class MyMutation : ObjectGraphType
 	{
+		private readonly IConfiguration _configuration;
 		private readonly string _documentDbKey;
 		private readonly string _documentDbUrl;
 		private readonly string _database;
@@ -16,6 +17,7 @@ namespace Eklee.Exams.Api.Schema
 
 		public MyMutation(InputBuilderFactory inputBuilderFactory, IConfiguration configuration)
 		{
+			_configuration = configuration;
 			Name = "mutations";
 
 			_documentDbKey = configuration["DocumentDb:Key"];
@@ -42,11 +44,17 @@ namespace Eklee.Exams.Api.Schema
 				.AddDatabase(rc => string.IsNullOrEmpty(_database) ? "exams" : _database)
 				.AddRequestUnit(string.IsNullOrEmpty(_requestUnits) ? 400 : Convert.ToInt32(_requestUnits));
 
-			
-
 			action?.Invoke(builder);
 
-			builder.BuildDocumentDb().Build();
+			var model = builder.BuildDocumentDb();
+
+			// DeleteAll is only applicable in local testing environment.
+			if (_configuration.IsLocalEnvironment())
+			{
+				model.DeleteAll(() => new Status { Message = "All entities are removed." });
+			}
+
+			model.Build();
 		}
 	}
 }
