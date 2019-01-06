@@ -25,4 +25,9 @@ namespace Eklee.Exams.Api.Schema.Models
 		[Description("Date in which exam was created.")]
 		public DateTime Created { get; set; }
 	}
+
+	public class ExamTemplateSearch : ExamTemplate
+	{
+
+	}
 }

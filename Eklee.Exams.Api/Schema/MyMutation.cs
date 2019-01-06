@@ -14,6 +14,8 @@ namespace Eklee.Exams.Api.Schema
 		private readonly string _documentDbUrl;
 		private readonly string _database;
 		private readonly string _requestUnits;
+		private readonly string _searchServiceName;
+		private readonly string _searchApiKey;
 
 		public MyMutation(InputBuilderFactory inputBuilderFactory, IConfiguration configuration)
 		{
@@ -28,11 +30,28 @@ namespace Eklee.Exams.Api.Schema
 			Add<Exam, ItemWithGuidId>(inputBuilderFactory, builder => builder.AddPartition(x => x.Category));
 			Add<Candidate, ItemWithGuidId>(inputBuilderFactory, builder => builder.AddPartition(x => x.Type));
 			Add<ExamTemplate, ItemWithGuidId>(inputBuilderFactory, builder => builder.AddPartition(x => x.Category));
+
+			_searchServiceName = configuration["Search:ServiceName"];
+			_searchApiKey = configuration["Search:ApiKey"];
+
+			AddSearch<CandidateSearch>(inputBuilderFactory, "Candidate search index has been removed.");
+			AddSearch<ExamTemplateSearch>(inputBuilderFactory, "Exam search template index has been removed.");
+		}
+
+		private void AddSearch<TEntity>(InputBuilderFactory inputBuilderFactory, string deleteMessage) where TEntity : class
+		{
+			inputBuilderFactory.Create<TEntity>(this)
+				.DeleteAll(() => new Status { Message = deleteMessage })
+				.ConfigureSearch<TEntity>()
+				.AddApiKey(_searchApiKey)
+				.AddServiceName(_searchServiceName)
+				.BuildSearch()
+				.Build();
 		}
 
 		private void Add<TEntity, TDeleteEntity>(
 			InputBuilderFactory inputBuilderFactory,
-			Action<DocumentDbConfiguration<TEntity>> action) where TEntity : IEntityWithGuidId, new() where TDeleteEntity : IEntityWithGuidId, new()
+			Action<DocumentDbConfiguration<TEntity>> action) where TEntity : class, IEntityWithGuidId, new() where TDeleteEntity : IEntityWithGuidId, new()
 		{
 			var builder = inputBuilderFactory.Create<TEntity>(this)
 				.Delete<TDeleteEntity, Status>(
