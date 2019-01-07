@@ -355,6 +355,226 @@
 			]
 		},
 		{
+			"name": "SeedDatabase",
+			"item": [
+				{
+					"name": "batchCreateCandidate",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "929a7a0e-b78f-4fdf-ae79-2094882d03c4",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"operationName\":null,\"variables\":{},\"query\":\"mutation {\\n  batchCreateCandidate(candidate: [{id: \\\"12E702ED-9CE0-4377-A622-1822E1E2C313\\\", name: \\\"Mandy Dance\\\", active: true, type: \\\"Student\\\", created: \\\"2018-12-12\\\"}, {id: \\\"A0BE1F44-ECDD-42A6-BC6F-71688331AB8F\\\", name: \\\"Phil Art\\\", active: true, type: \\\"Professional\\\", created: \\\"2019-12-12\\\"}, {id: \\\"04202445-F654-4540-A6A1-F06563A1DC36\\\", name: \\\"James Honda\\\", active: true, type: \\\"Professional\\\", created: \\\"2018-05-11\\\"}, {id: \\\"A1B742CB-A555-4719-9573-7148183961F5\\\", name: \\\"Henery James\\\", active: true, type: \\\"Professional\\\", created: \\\"2018-12-21\\\"}, {id: \\\"BBDC4842-78B6-445D-9935-81F92F5DAA1F\\\", name: \\\"David Port\\\", active: true, type: \\\"Student\\\", created: \\\"2018-01-10\\\"}]) {\\n    id\\n    name\\n    created\\n    active\\n    type\\n  }\\n}\\n\"}"
+						},
+						"url": {
+							"raw": "{{endpoint}}/api/graph",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"api",
+								"graph"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "batchCreateExam",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "929a7a0e-b78f-4fdf-ae79-2094882d03c4",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"operationName\":null,\"variables\":{},\"query\":\"mutation {\\n  batchCreateExam(exam: [{id: \\\"5DE5BB86-1B31-4E31-BF10-B3E1C2967EEC\\\", candidateId: \\\"12E702ED-9CE0-4377-A622-1822E1E2C313\\\", category: \\\"Technology\\\", name: \\\"C# 7.0\\\", taken: \\\"2019-01-01\\\", examTemplateId: \\\"9925E273-D9D2-4399-8A8F-64B4CE531788\\\"}, {id: \\\"4735C40E-0B8C-4DCD-9FAE-8B47DFF234FE\\\", candidateId: \\\"A0BE1F44-ECDD-42A6-BC6F-71688331AB8F\\\", category: \\\"Art\\\", name: \\\"History of Greek Art\\\", taken: \\\"2018-06-09\\\", examTemplateId: \\\"BB977447-00A2-45BE-9045-4A3804E3B011\\\"}, {id: \\\"3DD0643D-FA9C-4F21-B9F2-0C505224F63C\\\", candidateId: \\\"04202445-F654-4540-A6A1-F06563A1DC36\\\", category: \\\"Cars\\\", name: \\\"Fixing Honda CRV 2011\\\", taken: \\\"2019-01-02\\\", examTemplateId: \\\"F1933BA7-6873-4970-8214-83475951E7A6\\\"}, {id: \\\"E6A9150B-FD42-4807-A45D-7101E4C5DFB2\\\", candidateId: \\\"A1B742CB-A555-4719-9573-7148183961F5\\\", category: \\\"Cars\\\", name: \\\"Fixing Ford F150\\\", taken: \\\"2019-01-03\\\", examTemplateId: \\\"AEFE15C5-C67E-4D9F-A556-246B72970080\\\"}, {id: \\\"09777B0B-05BC-4B22-BB13-1EBF7467CD8E\\\", candidateId: \\\"BBDC4842-78B6-445D-9935-81F92F5DAA1F\\\", category: \\\"Cars\\\", name: \\\"Fixing Ford F150\\\", taken: \\\"2019-01-02\\\", examTemplateId: \\\"AEFE15C5-C67E-4D9F-A556-246B72970080\\\"}, {id: \\\"C2758803-1439-4649-A3F1-8CDE072C8820\\\", candidateId: \\\"BBDC4842-78B6-445D-9935-81F92F5DAA1F\\\", category: \\\"Art\\\", name: \\\"Art of Mobile Phone Design\\\", taken: \\\"2019-01-02\\\", examTemplateId: \\\"6B9724F7-33F5-46C9-956F-F972ACFBB95A\\\"}, {id: \\\"B5650E27-A172-4FE5-9D9E-EF6B21FE9E0D\\\", candidateId: \\\"BBDC4842-78B6-445D-9935-81F92F5DAA1F\\\", category: \\\"Cars\\\", name: \\\"Fixing Honda CRV 2011\\\", taken: \\\"2019-01-02\\\", examTemplateId: \\\"F1933BA7-6873-4970-8214-83475951E7A6\\\"}]) {\\n    id\\n    candidateId\\n    category\\n    name\\n    taken\\n    examTemplateId\\n  }\\n}\\n\"}"
+						},
+						"url": {
+							"raw": "{{endpoint}}/api/graph",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"api",
+								"graph"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "batchCreateExamTemplate",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "929a7a0e-b78f-4fdf-ae79-2094882d03c4",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"operationName\":null,\"variables\":{},\"query\":\"mutation {\\n  batchCreateExamTemplate(examtemplate: [{id: \\\"9925E273-D9D2-4399-8A8F-64B4CE531788\\\", category: \\\"Technology\\\", name: \\\"C# 7.0\\\", effective: \\\"2010-01-01\\\", expires: \\\"2020-12-31\\\", created: \\\"2016-12-01\\\"}, {id: \\\"BB977447-00A2-45BE-9045-4A3804E3B011\\\", category: \\\"Art\\\", name: \\\"History of Greek Art\\\", effective: \\\"2010-01-01\\\", expires: \\\"2020-12-31\\\", created: \\\"2016-12-01\\\"}, {id: \\\"F1933BA7-6873-4970-8214-83475951E7A6\\\", category: \\\"Cars\\\", name: \\\"Fixing Honda CRV 2011\\\", effective: \\\"2010-01-01\\\", expires: \\\"2020-12-31\\\", created: \\\"2016-12-01\\\"}, {id: \\\"AEFE15C5-C67E-4D9F-A556-246B72970080\\\", category: \\\"Cars\\\", name: \\\"Fixing Ford F150\\\", effective: \\\"2010-01-01\\\", expires: \\\"2018-12-31\\\", created: \\\"2016-12-01\\\"}, {id: \\\"6B9724F7-33F5-46C9-956F-F972ACFBB95A\\\", category: \\\"Art\\\", name: \\\"Art of Mobile Phone Design\\\", effective: \\\"2010-01-01\\\", expires: \\\"2019-12-31\\\", created: \\\"2016-12-01\\\"}]) {\\n    id\\n    category\\n    name\\n    effective\\n    expires\\n    created\\n  }\\n}\\n\"}"
+						},
+						"url": {
+							"raw": "{{endpoint}}/api/graph",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"api",
+								"graph"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "batchCreateCandidateSearch",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "929a7a0e-b78f-4fdf-ae79-2094882d03c4",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"operationName\":null,\"variables\":{},\"query\":\"mutation {\\n  batchCreateCandidateSearch(candidatesearch: [{id: \\\"12E702ED-9CE0-4377-A622-1822E1E2C313\\\", name: \\\"Mandy Dance\\\", active: true, type: \\\"Student\\\", created: \\\"2018-12-12\\\"}, {id: \\\"A0BE1F44-ECDD-42A6-BC6F-71688331AB8F\\\", name: \\\"Phil Art\\\", active: true, type: \\\"Professional\\\", created: \\\"2019-12-12\\\"}, {id: \\\"04202445-F654-4540-A6A1-F06563A1DC36\\\", name: \\\"James Honda\\\", active: true, type: \\\"Professional\\\", created: \\\"2018-05-11\\\"}, {id: \\\"A1B742CB-A555-4719-9573-7148183961F5\\\", name: \\\"Henery James\\\", active: true, type: \\\"Professional\\\", created: \\\"2018-12-21\\\"}, {id: \\\"BBDC4842-78B6-445D-9935-81F92F5DAA1F\\\", name: \\\"David Port\\\", active: true, type: \\\"Student\\\", created: \\\"2018-01-10\\\"}]) {\\n    id\\n    name\\n    created\\n    active\\n    type\\n  }\\n}\\n\"}"
+						},
+						"url": {
+							"raw": "{{endpoint}}/api/graph",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"api",
+								"graph"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "batchCreateExamTemplateSearch",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "929a7a0e-b78f-4fdf-ae79-2094882d03c4",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"operationName\":null,\"variables\":{},\"query\":\"mutation {\\n  batchCreateExamTemplateSearch(examtemplatesearch: [{id: \\\"9925E273-D9D2-4399-8A8F-64B4CE531788\\\", category: \\\"Technology\\\", name: \\\"C# 7.0\\\", effective: \\\"2010-01-01\\\", expires: \\\"2020-12-31\\\", created: \\\"2016-12-01\\\"}, {id: \\\"BB977447-00A2-45BE-9045-4A3804E3B011\\\", category: \\\"Art\\\", name: \\\"History of Greek Art\\\", effective: \\\"2010-01-01\\\", expires: \\\"2020-12-31\\\", created: \\\"2016-12-01\\\"}, {id: \\\"F1933BA7-6873-4970-8214-83475951E7A6\\\", category: \\\"Cars\\\", name: \\\"Fixing Honda CRV 2011\\\", effective: \\\"2010-01-01\\\", expires: \\\"2020-12-31\\\", created: \\\"2016-12-01\\\"}, {id: \\\"AEFE15C5-C67E-4D9F-A556-246B72970080\\\", category: \\\"Cars\\\", name: \\\"Fixing Ford F150\\\", effective: \\\"2010-01-01\\\", expires: \\\"2018-12-31\\\", created: \\\"2016-12-01\\\"}, {id: \\\"6B9724F7-33F5-46C9-956F-F972ACFBB95A\\\", category: \\\"Art\\\", name: \\\"Art of Mobile Phone Design\\\", effective: \\\"2010-01-01\\\", expires: \\\"2019-12-31\\\", created: \\\"2016-12-01\\\"}]) {\\n    id\\n    category\\n    name\\n    effective\\n    expires\\n    created\\n  }\\n}\\n\"}"
+						},
+						"url": {
+							"raw": "{{endpoint}}/api/graph",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"api",
+								"graph"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
 			"name": "Cleanup",
 			"item": [
 				{
@@ -444,6 +664,49 @@
 					"response": []
 				},
 				{
+					"name": "DeleteAllCandidateSearches",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "c04fa6d4-f9cc-422b-8f76-541cff3bcb7d",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"operationName\":null,\"variables\":{},\"query\":\"mutation {\\n  deleteAllCandidateSearch {\\n    message\\n  }\\n}\\n\"}"
+						},
+						"url": {
+							"raw": "{{endpoint}}/api/graph",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"api",
+								"graph"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "DeleteAllExamTemplates",
 					"event": [
 						{
@@ -472,6 +735,49 @@
 						"body": {
 							"mode": "raw",
 							"raw": "{\"operationName\":null,\"variables\":{},\"query\":\"mutation {\\n  deleteAllExamTemplate {\\n    message\\n  }\\n}\\n\"}"
+						},
+						"url": {
+							"raw": "{{endpoint}}/api/graph",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"api",
+								"graph"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DeleteAllExamTemplateSearches",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "c04fa6d4-f9cc-422b-8f76-541cff3bcb7d",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"operationName\":null,\"variables\":{},\"query\":\"mutation {\\n  deleteAllExamTemplateSearch {\\n    message\\n  }\\n}\\n\"}"
 						},
 						"url": {
 							"raw": "{{endpoint}}/api/graph",

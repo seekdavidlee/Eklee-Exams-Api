@@ -22,4 +22,9 @@ namespace Eklee.Exams.Api.Schema.Models
 		[Description("Type of candidate. Either student, full time employed, part time employed.")]
 		public string Type { get; set; }
 	}
+
+	public class CandidateSearch : Candidate
+	{
+
+	}
 }
