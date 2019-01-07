@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Eklee.Azure.Functions.GraphQl;
+using Eklee.Azure.Functions.GraphQl.Repository.Search;
 using Eklee.Exams.Api.Schema.Models;
 using GraphQL.Types;
 using Microsoft.Extensions.Logging;
@@ -70,6 +71,48 @@ namespace Eklee.Exams.Api.Schema
 				})
 				.BuildQuery()
 				.BuildWithListResult();
+
+			queryBuilderFactory.Create<ExamOutput>(this, "SearchExams")
+				.WithCache(TimeSpan.FromSeconds(30))
+				.WithParameterBuilder()
+				.BeginSearch(typeof(CandidateSearch), typeof(ExamTemplateSearch))
+					.BuildQueryResult(ctx =>
+					{
+						var searches = ctx.GetQueryResults<SearchResultModel>();
+						ctx.Items["examTemplateSearchesIdList"] = searches.GetTypeList<ExamTemplateSearch>().Select(x => (object)x.Id).ToList();
+						ctx.Items["candidateSearchesIdList"] = searches.GetTypeList<CandidateSearch>().Select(x => (object)x.Id).ToList();
+					})
+				.ThenWithQuery<Exam>()
+					.WithPropertyFromSource(x => x.CandidateId, ctx => (List<object>)ctx.Items["candidateSearchesIdList"])
+					.BuildQueryResult(ctx => ctx.Items["examsOfCandidates"] = ctx.GetQueryResults<Exam>())
+				.ThenWithQuery<Exam>()
+					.WithPropertyFromSource(x => x.ExamTemplateId, ctx => (List<object>)ctx.Items["examTemplateSearchesIdList"])
+					.BuildQueryResult(ctx =>
+					{
+						var exams = ctx.GetQueryResults<Exam>();
+						exams.AddRange((List<Exam>)ctx.Items["examsOfCandidates"]);
+						var results = exams.Distinct().Select(x => new ExamOutput
+						{
+							Id = x.Id,
+							CandidateId = x.CandidateId,
+							Category = x.Category,
+							Name = x.Name,
+							ExamTemplateId = x.ExamTemplateId,
+							Taken = x.Taken
+						}).ToList();
+
+						ctx.Items["candidateIdList"] = results.Select(x => (object)x.CandidateId).Distinct().ToList();
+						ctx.Items["examTemplateIdList"] = results.Select(x => (object)x.ExamTemplateId).Distinct().ToList();
+
+						ctx.SetResults(results);
+					})
+				.ThenWithQuery<Candidate>()
+					.WithPropertyFromSource(x => x.Id, ctx => (List<object>)ctx.Items["candidateIdList"])
+					.BuildQueryResult(ctx => ctx.GetResults<ExamOutput>().ForEach(x => x.Candidate = ctx.GetQueryResults<Candidate>().Single(c => c.Id == x.CandidateId)))
+				.ThenWithQuery<ExamTemplate>()
+					.WithPropertyFromSource(x => x.Id, ctx => (List<object>)ctx.Items["examTemplateIdList"])
+					.BuildQueryResult(ctx => ctx.GetResults<ExamOutput>().ForEach(x => x.ExamTemplate = ctx.GetQueryResults<ExamTemplate>().Single(e => e.Id == x.ExamTemplateId)))
+				.BuildQuery().BuildWithListResult();
 		}
 	}
 }
