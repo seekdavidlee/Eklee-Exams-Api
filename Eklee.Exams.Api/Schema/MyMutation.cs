@@ -1,6 +1,7 @@
 ﻿using System;
 using Eklee.Azure.Functions.GraphQl;
 using Eklee.Azure.Functions.GraphQl.Repository;
+using Eklee.Azure.Functions.GraphQl.Repository.DocumentDb;
 using Eklee.Exams.Api.Schema.Models;
 using GraphQL.Types;
 using Microsoft.Extensions.Configuration;
@@ -34,15 +35,15 @@ namespace Eklee.Exams.Api.Schema
 			_searchServiceName = configuration["Search:ServiceName"];
 			_searchApiKey = configuration["Search:ApiKey"];
 
-			AddSearch<CandidateSearch>(inputBuilderFactory, "Candidate search index has been removed.");
-			AddSearch<ExamTemplateSearch>(inputBuilderFactory, "Exam search template index has been removed.");
+			AddSearch<CandidateSearch, Candidate>(inputBuilderFactory, "Candidate search index has been removed.");
+			AddSearch<ExamTemplateSearch, ExamTemplate>(inputBuilderFactory, "Exam search template index has been removed.");
 		}
 
-		private void AddSearch<TEntity>(InputBuilderFactory inputBuilderFactory, string deleteMessage) where TEntity : class
+		private void AddSearch<TEntity, TModel>(InputBuilderFactory inputBuilderFactory, string deleteMessage) where TEntity : class
 		{
 			inputBuilderFactory.Create<TEntity>(this)
 				.DeleteAll(() => new Status { Message = deleteMessage })
-				.ConfigureSearch<TEntity>()
+				.ConfigureSearchWith<TEntity, TModel>()
 				.AddApiKey(_searchApiKey)
 				.AddServiceName(_searchServiceName)
 				.BuildSearch()
