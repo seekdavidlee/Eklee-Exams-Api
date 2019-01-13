@@ -44,8 +44,7 @@ namespace Eklee.Exams.Api.Schema
 					.BuildQueryResult(ctx => ctx.Items["exams"] = ctx.GetQueryResults<Exam>())
 				.ThenWithQuery<ExamTemplate>()
 					.WithPropertyFromSource(x => x.Id,
-						x => ((List<Exam>)x.Items["exams"]).Select(y => (object)y.ExamTemplateId).ToList())
-					.WithProperty(x => x.Category)
+						x => ((List<Exam>)x.Items["exams"]).Select(y => (object)y.ExamTemplateId).Distinct().ToList())
 					.BuildQueryResult(ctx =>
 					{
 						List<Exam> exams = (List<Exam>)ctx.Items["exams"];

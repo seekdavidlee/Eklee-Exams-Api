@@ -26,8 +26,16 @@ namespace Eklee.Exams.Api.Schema.Models
 		public DateTime Created { get; set; }
 	}
 
-	public class ExamTemplateSearch : ExamTemplate
+	public class ExamTemplateSearch
 	{
+		[Key]
+		[Description("Id of the exam template.")]
+		public Guid Id { get; set; }
 
+		[Description("Name of the exam")]
+		public string Name { get; set; }
+
+		[Description("Category of the exam")]
+		public string Category { get; set; }
 	}
 }
