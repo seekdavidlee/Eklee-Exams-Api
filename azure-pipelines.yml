@@ -9,4 +9,4 @@ steps:
 - task: DotNetCoreCLI@2
   inputs:
     command: 'build'
-    configuration: $(buildConfiguration)
+    configuration: '$(BuildConfiguration)'
