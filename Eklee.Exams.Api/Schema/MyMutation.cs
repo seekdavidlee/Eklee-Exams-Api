@@ -1,6 +1,5 @@
 ﻿using System;
 using Eklee.Azure.Functions.GraphQl;
-using Eklee.Azure.Functions.GraphQl.Repository;
 using Eklee.Azure.Functions.GraphQl.Repository.DocumentDb;
 using Eklee.Exams.Api.Schema.Models;
 using GraphQL.Types;

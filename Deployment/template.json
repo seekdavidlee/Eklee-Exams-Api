@@ -1,0 +1,348 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"stackName": {
+			"defaultValue": "",
+			"type": "String"
+		},
+		"config_web_name": {
+			"defaultValue": "web",
+			"type": "String"
+		}
+	},
+	"variables": {
+		"location": "[resourceGroup().location]",
+		"planName": "[concat(parameters('stackName'),resourceGroup().location,'plan')]"
+	},
+	"resources": [
+		{
+			"type": "Microsoft.DocumentDB/databaseAccounts",
+			"kind": "GlobalDocumentDB",
+			"name": "[parameters('stackName')]",
+			"apiVersion": "2015-04-08",
+			"location": "[variables('location')]",
+			"tags": {
+				"defaultExperience": "Core (SQL)"
+			},
+			"scale": null,
+			"properties": {
+				"ipRangeFilter": "",
+				"enableAutomaticFailover": false,
+				"enableMultipleWriteLocations": false,
+				"isVirtualNetworkFilterEnabled": false,
+				"virtualNetworkRules": [],
+				"databaseAccountOfferType": "Standard",
+				"consistencyPolicy": {
+					"defaultConsistencyLevel": "Session",
+					"maxIntervalInSeconds": 5,
+					"maxStalenessPrefix": 100
+				},
+				"locations": [
+					{
+						"locationName": "[variables('location')]",
+						"provisioningState": "Succeeded",
+						"failoverPriority": 0
+					}
+				],
+				"capabilities": []
+			},
+			"dependsOn": []
+		},
+		{
+			"type": "microsoft.insights/components",
+			"kind": "web",
+			"name": "[parameters('stackName')]",
+			"apiVersion": "2015-05-01",
+			"location": "[variables('location')]",
+			"tags": {},
+			"scale": null,
+			"properties": {
+				"Application_Type": "web",
+				"Flow_Type": null,
+				"Request_Source": "IbizaWebAppExtensionCreate",
+				"HockeyAppId": null,
+				"SamplingPercentage": null
+			},
+			"dependsOn": []
+		},
+		{
+			"type": "Microsoft.Search/searchServices",
+			"sku": {
+				"name": "basic"
+			},
+			"name": "[parameters('stackName')]",
+			"apiVersion": "2015-08-19",
+			"location": "[variables('location')]",
+			"scale": null,
+			"properties": {
+				"replicaCount": 1,
+				"partitionCount": 1,
+				"hostingMode": "Default"
+			},
+			"dependsOn": []
+		},
+		{
+			"type": "Microsoft.Storage/storageAccounts",
+			"sku": {
+				"name": "Standard_LRS",
+				"tier": "Standard"
+			},
+			"kind": "Storage",
+			"name": "[parameters('stackName')]",
+			"apiVersion": "2018-07-01",
+			"location": "[variables('location')]",
+			"tags": {},
+			"scale": null,
+			"properties": {
+				"networkAcls": {
+					"bypass": "AzureServices",
+					"virtualNetworkRules": [],
+					"ipRules": [],
+					"defaultAction": "Allow"
+				},
+				"supportsHttpsTrafficOnly": false,
+				"encryption": {
+					"services": {
+						"file": {
+							"enabled": true
+						},
+						"blob": {
+							"enabled": true
+						}
+					},
+					"keySource": "Microsoft.Storage"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"type": "Microsoft.Web/serverfarms",
+			"sku": {
+				"name": "Y1",
+				"tier": "Dynamic",
+				"size": "Y1",
+				"family": "Y",
+				"capacity": 0
+			},
+			"kind": "functionapp",
+			"name": "[variables('planName')]",
+			"apiVersion": "2016-09-01",
+			"location": "[variables('location')]",
+			"scale": null,
+			"properties": {
+				"name": "[variables('planName')]",
+				"workerTierName": null,
+				"adminSiteName": null,
+				"hostingEnvironmentProfile": null,
+				"perSiteScaling": false,
+				"reserved": false,
+				"targetWorkerCount": 0,
+				"targetWorkerSizeId": 0
+			},
+			"dependsOn": []
+		},
+		{
+			"type": "Microsoft.Web/sites",
+			"kind": "functionapp",
+			"name": "[parameters('stackName')]",
+			"apiVersion": "2016-08-01",
+			"location": "[variables('location')]",
+			"scale": null,
+			"properties": {
+				"enabled": true,
+				"hostNameSslStates": [
+					{
+						"name": "[concat(parameters('stackName'),'.azurewebsites.net')]",
+						"sslState": "Disabled",
+						"virtualIP": null,
+						"thumbprint": null,
+						"toUpdate": null,
+						"hostType": "Standard"
+					},
+					{
+						"name": "[concat(parameters('stackName'),'.scm.azurewebsites.net')]",
+						"sslState": "Disabled",
+						"virtualIP": null,
+						"thumbprint": null,
+						"toUpdate": null,
+						"hostType": "Repository"
+					}
+				],
+				"serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('planName'))]",
+				"reserved": false,
+				"siteConfig": null,
+				"scmSiteAlsoStopped": false,
+				"hostingEnvironmentProfile": null,
+				"clientAffinityEnabled": false,
+				"clientCertEnabled": false,
+				"hostNamesDisabled": false,
+				"containerSize": 1536,
+				"dailyMemoryTimeQuota": 0,
+				"cloningInfo": null,
+				"httpsOnly": false
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Web/serverfarms', variables('planName'))]"
+			]
+		},
+		{
+			"type": "Microsoft.Web/sites/config",
+			"name": "[concat(parameters('stackName'), '/', parameters('config_web_name'))]",
+			"apiVersion": "2016-08-01",
+			"location": "[variables('location')]",
+			"scale": null,
+			"properties": {
+				"numberOfWorkers": 1,
+				"defaultDocuments": [
+					"Default.htm",
+					"Default.html",
+					"Default.asp",
+					"index.htm",
+					"index.html",
+					"iisstart.htm",
+					"default.aspx",
+					"index.php"
+				],
+				"netFrameworkVersion": "v4.0",
+				"phpVersion": "5.6",
+				"pythonVersion": "",
+				"nodeVersion": "",
+				"linuxFxVersion": "",
+				"windowsFxVersion": null,
+				"requestTracingEnabled": false,
+				"remoteDebuggingEnabled": false,
+				"remoteDebuggingVersion": null,
+				"httpLoggingEnabled": false,
+				"logsDirectorySizeLimit": 35,
+				"detailedErrorLoggingEnabled": false,
+				"publishingUsername": "[concat('$',parameters('stackName'))]",
+				"publishingPassword": null,
+				"appSettings": null,
+				"azureStorageAccounts": {},
+				"metadata": null,
+				"connectionStrings": null,
+				"machineKey": null,
+				"handlerMappings": null,
+				"documentRoot": null,
+				"scmType": "None",
+				"use32BitWorkerProcess": true,
+				"webSocketsEnabled": false,
+				"alwaysOn": false,
+				"javaVersion": null,
+				"javaContainer": null,
+				"javaContainerVersion": null,
+				"appCommandLine": "",
+				"managedPipelineMode": "Integrated",
+				"virtualApplications": [
+					{
+						"virtualPath": "/",
+						"physicalPath": "site\\wwwroot",
+						"preloadEnabled": false,
+						"virtualDirectories": null
+					}
+				],
+				"winAuthAdminState": 0,
+				"winAuthTenantState": 0,
+				"customAppPoolIdentityAdminState": false,
+				"customAppPoolIdentityTenantState": false,
+				"runtimeADUser": null,
+				"runtimeADUserPassword": null,
+				"loadBalancing": "LeastRequests",
+				"routingRules": [],
+				"experiments": {
+					"rampUpRules": []
+				},
+				"limits": null,
+				"autoHealEnabled": false,
+				"autoHealRules": null,
+				"tracingOptions": null,
+				"vnetName": "",
+				"siteAuthEnabled": false,
+				"siteAuthSettings": {
+					"enabled": null,
+					"unauthenticatedClientAction": null,
+					"tokenStoreEnabled": null,
+					"allowedExternalRedirectUrls": null,
+					"defaultProvider": null,
+					"clientId": null,
+					"clientSecret": null,
+					"clientSecretCertificateThumbprint": null,
+					"issuer": null,
+					"allowedAudiences": null,
+					"additionalLoginParams": null,
+					"isAadAutoProvisioned": false,
+					"googleClientId": null,
+					"googleClientSecret": null,
+					"googleOAuthScopes": null,
+					"facebookAppId": null,
+					"facebookAppSecret": null,
+					"facebookOAuthScopes": null,
+					"twitterConsumerKey": null,
+					"twitterConsumerSecret": null,
+					"microsoftAccountClientId": null,
+					"microsoftAccountClientSecret": null,
+					"microsoftAccountOAuthScopes": null
+				},
+				"cors": {
+					"allowedOrigins": [
+						"https://functions.azure.com",
+						"https://functions-staging.azure.com",
+						"https://functions-next.azure.com"
+					],
+					"supportCredentials": false
+				},
+				"push": null,
+				"apiDefinition": null,
+				"autoSwapSlotName": null,
+				"localMySqlEnabled": false,
+				"managedServiceIdentityId": null,
+				"xManagedServiceIdentityId": null,
+				"ipSecurityRestrictions": null,
+				"http20Enabled": false,
+				"minTlsVersion": "1.2",
+				"ftpsState": "AllAllowed",
+				"reservedInstanceCount": 0
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Web/sites', parameters('stackName'))]"
+			]
+		},
+		{
+			"type": "Microsoft.Web/sites/hostNameBindings",
+			"name": "[concat(parameters('stackName'), '/', parameters('stackName'), '.azurewebsites.net')]",
+			"apiVersion": "2016-08-01",
+			"location": "[variables('location')]",
+			"scale": null,
+			"properties": {
+				"siteName": "[parameters('stackName')]",
+				"domainId": null,
+				"hostNameType": "Verified"
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Web/sites', parameters('stackName'))]"
+			]
+		},
+		{
+			"name": "[concat(parameters('stackName'),'/appsettings')]",
+			"apiVersion": "2016-08-01" ,
+			"type": "Microsoft.Web/sites/config",
+			"location": "[variables('location')]",
+			"properties": {
+				"APPINSIGHTS_INSTRUMENTATIONKEY": "[reference(resourceId('microsoft.insights/components',parameters('stackName')),'2015-05-01').InstrumentationKey]",
+				"AzureWebJobsStorage": "[concat('DefaultEndpointsProtocol=https;AccountName=',parameters('stackName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('stackName')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value)]",
+				"DocumentDb:Database": "exams",
+				"DocumentDb:Key": "[listKeys(resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('stackName')), providers('Microsoft.DocumentDB', 'databaseAccounts').apiVersions[0]).primaryMasterKey]",
+				"DocumentDb:RequestUnits": "400",
+				"DocumentDb:Url": "[reference(resourceId('Microsoft.DocumentDB/databaseAccounts',parameters('stackName')),'2015-04-08').documentEndpoint]",
+				"FUNCTIONS_EXTENSION_VERSION": "~2",
+				"FUNCTIONS_WORKER_RUNTIME": "dotnet",
+				"WEBSITE_NODE_DEFAULT_VERSION": "8.11.1",
+				"GraphQl:EnableMetrics": "true"
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Web/sites', parameters('stackName'))]"
+			]
+		}
+	]
+}

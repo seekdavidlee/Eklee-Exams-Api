@@ -8,5 +8,15 @@ steps:
 
 - task: DotNetCoreCLI@2
   inputs:
-    command: 'build'
+    command: 'publish'
     configuration: '$(BuildConfiguration)'
+    zipAfterPublish: true
+
+- task: AzureResourceGroupDeployment@2
+  inputs:
+    azureSubscription: '$(Deploy.ServiceConnectionName)'
+    resourceGroupName: '$(Deploy.ResourceGroupName)'
+    location: '$(Deploy.Location)'
+    templateLocation: 'Linked artifact'
+    csmFile: 'deployment\template.json'
+    overrideParameters: '-stackName $(Build.SourceBranchName)'
