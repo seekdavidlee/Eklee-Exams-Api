@@ -13,13 +13,14 @@
 	},
 	"variables": {
 		"location": "[resourceGroup().location]",
-		"planName": "[concat(parameters('stackName'),resourceGroup().location,'plan')]"
+		"planName": "[concat(variables('stackName'),resourceGroup().location,'plan')]",
+		"stackName": "[replace(variables('stackName'),'-','')]"
 	},
 	"resources": [
 		{
 			"type": "Microsoft.DocumentDB/databaseAccounts",
 			"kind": "GlobalDocumentDB",
-			"name": "[parameters('stackName')]",
+			"name": "[variables('stackName')]",
 			"apiVersion": "2015-04-08",
 			"location": "[variables('location')]",
 			"tags": {
@@ -52,7 +53,7 @@
 		{
 			"type": "microsoft.insights/components",
 			"kind": "web",
-			"name": "[parameters('stackName')]",
+			"name": "[variables('stackName')]",
 			"apiVersion": "2015-05-01",
 			"location": "[variables('location')]",
 			"tags": {},
@@ -71,7 +72,7 @@
 			"sku": {
 				"name": "basic"
 			},
-			"name": "[parameters('stackName')]",
+			"name": "[variables('stackName')]",
 			"apiVersion": "2015-08-19",
 			"location": "[variables('location')]",
 			"scale": null,
@@ -89,7 +90,7 @@
 				"tier": "Standard"
 			},
 			"kind": "Storage",
-			"name": "[parameters('stackName')]",
+			"name": "[variables('stackName')]",
 			"apiVersion": "2018-07-01",
 			"location": "[variables('location')]",
 			"tags": {},
@@ -145,7 +146,7 @@
 		{
 			"type": "Microsoft.Web/sites",
 			"kind": "functionapp",
-			"name": "[parameters('stackName')]",
+			"name": "[variables('stackName')]",
 			"apiVersion": "2016-08-01",
 			"location": "[variables('location')]",
 			"scale": null,
@@ -153,7 +154,7 @@
 				"enabled": true,
 				"hostNameSslStates": [
 					{
-						"name": "[concat(parameters('stackName'),'.azurewebsites.net')]",
+						"name": "[concat(variables('stackName'),'.azurewebsites.net')]",
 						"sslState": "Disabled",
 						"virtualIP": null,
 						"thumbprint": null,
@@ -161,7 +162,7 @@
 						"hostType": "Standard"
 					},
 					{
-						"name": "[concat(parameters('stackName'),'.scm.azurewebsites.net')]",
+						"name": "[concat(variables('stackName'),'.scm.azurewebsites.net')]",
 						"sslState": "Disabled",
 						"virtualIP": null,
 						"thumbprint": null,
@@ -188,7 +189,7 @@
 		},
 		{
 			"type": "Microsoft.Web/sites/config",
-			"name": "[concat(parameters('stackName'), '/', parameters('config_web_name'))]",
+			"name": "[concat(variables('stackName'), '/', parameters('config_web_name'))]",
 			"apiVersion": "2016-08-01",
 			"location": "[variables('location')]",
 			"scale": null,
@@ -216,7 +217,7 @@
 				"httpLoggingEnabled": false,
 				"logsDirectorySizeLimit": 35,
 				"detailedErrorLoggingEnabled": false,
-				"publishingUsername": "[concat('$',parameters('stackName'))]",
+				"publishingUsername": "[concat('$',variables('stackName'))]",
 				"publishingPassword": null,
 				"appSettings": null,
 				"azureStorageAccounts": {},
@@ -305,43 +306,43 @@
 				"reservedInstanceCount": 0
 			},
 			"dependsOn": [
-				"[resourceId('Microsoft.Web/sites', parameters('stackName'))]"
+				"[resourceId('Microsoft.Web/sites', variables('stackName'))]"
 			]
 		},
 		{
 			"type": "Microsoft.Web/sites/hostNameBindings",
-			"name": "[concat(parameters('stackName'), '/', parameters('stackName'), '.azurewebsites.net')]",
+			"name": "[concat(variables('stackName'), '/', variables('stackName'), '.azurewebsites.net')]",
 			"apiVersion": "2016-08-01",
 			"location": "[variables('location')]",
 			"scale": null,
 			"properties": {
-				"siteName": "[parameters('stackName')]",
+				"siteName": "[variables('stackName')]",
 				"domainId": null,
 				"hostNameType": "Verified"
 			},
 			"dependsOn": [
-				"[resourceId('Microsoft.Web/sites', parameters('stackName'))]"
+				"[resourceId('Microsoft.Web/sites', variables('stackName'))]"
 			]
 		},
 		{
-			"name": "[concat(parameters('stackName'),'/appsettings')]",
+			"name": "[concat(variables('stackName'),'/appsettings')]",
 			"apiVersion": "2016-08-01" ,
 			"type": "Microsoft.Web/sites/config",
 			"location": "[variables('location')]",
 			"properties": {
-				"APPINSIGHTS_INSTRUMENTATIONKEY": "[reference(resourceId('microsoft.insights/components',parameters('stackName')),'2015-05-01').InstrumentationKey]",
-				"AzureWebJobsStorage": "[concat('DefaultEndpointsProtocol=https;AccountName=',parameters('stackName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('stackName')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value)]",
+				"APPINSIGHTS_INSTRUMENTATIONKEY": "[reference(resourceId('microsoft.insights/components',variables('stackName')),'2015-05-01').InstrumentationKey]",
+				"AzureWebJobsStorage": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('stackName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('stackName')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value)]",
 				"DocumentDb:Database": "exams",
-				"DocumentDb:Key": "[listKeys(resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('stackName')), providers('Microsoft.DocumentDB', 'databaseAccounts').apiVersions[0]).primaryMasterKey]",
+				"DocumentDb:Key": "[listKeys(resourceId('Microsoft.DocumentDB/databaseAccounts', variables('stackName')), providers('Microsoft.DocumentDB', 'databaseAccounts').apiVersions[0]).primaryMasterKey]",
 				"DocumentDb:RequestUnits": "400",
-				"DocumentDb:Url": "[reference(resourceId('Microsoft.DocumentDB/databaseAccounts',parameters('stackName')),'2015-04-08').documentEndpoint]",
+				"DocumentDb:Url": "[reference(resourceId('Microsoft.DocumentDB/databaseAccounts',variables('stackName')),'2015-04-08').documentEndpoint]",
 				"FUNCTIONS_EXTENSION_VERSION": "~2",
 				"FUNCTIONS_WORKER_RUNTIME": "dotnet",
 				"WEBSITE_NODE_DEFAULT_VERSION": "8.11.1",
 				"GraphQl:EnableMetrics": "true"
 			},
 			"dependsOn": [
-				"[resourceId('Microsoft.Web/sites', parameters('stackName'))]"
+				"[resourceId('Microsoft.Web/sites', variables('stackName'))]"
 			]
 		}
 	]
