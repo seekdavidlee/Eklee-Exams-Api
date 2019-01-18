@@ -14,7 +14,7 @@
 	"variables": {
 		"location": "[resourceGroup().location]",
 		"planName": "[concat(variables('stackName'),resourceGroup().location,'plan')]",
-		"stackName": "[replace(variables('stackName'),'-','')]"
+		"stackName": "[replace(parameters('stackName'),'-','')]"
 	},
 	"resources": [
 		{

@@ -20,5 +20,4 @@ steps:
     location: '$(Location)'
     templateLocation: 'Linked artifact'
     csmFile: 'deployment\template.json'
-    csmParametersFile: 'deployment\parameters.json'
     overrideParameters: '-stackName $(Build.SourceBranchName)'
