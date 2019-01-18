@@ -12,14 +12,14 @@ steps:
     script: |
       dotnet publish --configuration $env:BuildConfiguration --output $env:Build_ArtifactStagingDirectory
       Compress-Archive -Path $env:Build_ArtifactStagingDirectory\* -DestinationPath $env:Build_ArtifactStagingDirectory\$env:Build_BuildNumber.zip
-      $stackName = $env:ResourceGroupName + $env:Build_SourceBranchName
+      $stackName = $env:AppPrefix + $env:Build_SourceBranchName
       $stackName = $stackName.ToLower().Replace("-", "")
       Write-Host "##vso[task.setvariable variable=stackName;]$stackName"
 
 - task: AzureResourceGroupDeployment@2
   inputs:
     azureSubscription: '$(ServiceConnectionName)'
-    resourceGroupName: '$(ResourceGroupName)'
+    resourceGroupName: '$(stackName)'
     location: '$(Location)'
     templateLocation: 'Linked artifact'
     csmFile: 'deployment\template.json'
