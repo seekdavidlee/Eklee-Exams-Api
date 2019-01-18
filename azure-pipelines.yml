@@ -6,9 +6,11 @@ variables:
 
 steps:
 
-- task: CmdLine@2
+- task: PowerShell@2
   inputs:
-    script: dotnet publish --configuration %BuildConfiguration%
+    script: |
+    dotnet publish --configuration $env:BuildConfiguration --output $env:Build_ArtifactStagingDirectory
+    Write-Host "ServiceConnectionName: $env:ServiceConnectionName"
 
 - task: DotNetCoreCLI@2
   inputs:
@@ -19,9 +21,9 @@ steps:
 
 - task: AzureResourceGroupDeployment@2
   inputs:
-    azureSubscription: 'ekleesc1'
-    resourceGroupName: '$(Deploy.ResourceGroupName)'
-    location: '$(Deploy.Location)'
+    azureSubscription: '$(ServiceConnectionName)'
+    resourceGroupName: '$(ResourceGroupName)'
+    location: '$(Location)'
     templateLocation: 'Linked artifact'
     csmFile: 'deployment\template.json'
     overrideParameters: '-stackName $(Build.SourceBranchName)'
