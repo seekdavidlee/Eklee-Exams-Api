@@ -13,7 +13,7 @@
 	},
 	"variables": {
 		"location": "[resourceGroup().location]",
-		"planName": "[concat(variables('stackName'),resourceGroup().location,'plan')]",
+		"planName": "[variables('stackName')]",
 		"stackName": "[replace(parameters('stackName'),'-','')]"
 	},
 	"resources": [

@@ -13,7 +13,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Eklee.Exams.Api", "Eklee.Ex
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Deployment", "Deployment", "{054B0960-73C4-43F5-AFFF-43116D99F55D}"
 	ProjectSection(SolutionItems) = preProject
-		Deployment\parameters.json = Deployment\parameters.json
 		Deployment\template.json = Deployment\template.json
 	EndProjectSection
 EndProject
