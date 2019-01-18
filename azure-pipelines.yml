@@ -11,6 +11,7 @@ steps:
     command: 'publish'
     configuration: '$(BuildConfiguration)'
     zipAfterPublish: true
+    projects: Eklee.Exams.Api\Eklee.Exams.Api.csproj
 
 - task: AzureResourceGroupDeployment@2
   inputs:
