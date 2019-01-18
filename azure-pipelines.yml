@@ -6,10 +6,14 @@ variables:
 
 steps:
 
+- task: CmdLine@2
+  inputs:
+    script: dotnet publish --configuration $(Deploy.BuildConfiguration)
+
 - task: DotNetCoreCLI@2
   inputs:
     command: 'publish'
-    configuration: '$(BuildConfiguration)'
+    configuration: '$(Deploy.BuildConfiguration)'
     zipAfterPublish: true
     projects: Eklee.Exams.Api\Eklee.Exams.Api.csproj
 
