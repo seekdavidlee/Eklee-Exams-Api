@@ -23,4 +23,4 @@ steps:
     location: '$(Location)'
     templateLocation: 'Linked artifact'
     csmFile: 'deployment\template.json'
-    overrideParameters: '-stackName $(stackName)'
+    overrideParameters: '-stackName $(stackName) -clientId $(ClientId)'
