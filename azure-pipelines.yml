@@ -8,12 +8,12 @@ steps:
 
 - task: CmdLine@2
   inputs:
-    script: dotnet publish --configuration %Deploy_BuildConfiguration%
+    script: dotnet publish --configuration %BuildConfiguration%
 
 - task: DotNetCoreCLI@2
   inputs:
     command: 'publish'
-    configuration: '$(Deploy.BuildConfiguration)'
+    configuration: '$(BuildConfiguration)'
     zipAfterPublish: true
     projects: Eklee.Exams.Api\Eklee.Exams.Api.csproj
 
