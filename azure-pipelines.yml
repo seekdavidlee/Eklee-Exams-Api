@@ -8,7 +8,7 @@ steps:
 
 - task: CmdLine@2
   inputs:
-    script: dotnet publish --configuration $(Deploy.BuildConfiguration)
+    script: dotnet publish --configuration %Deploy_BuildConfiguration%
 
 - task: DotNetCoreCLI@2
   inputs:
