@@ -4,9 +4,6 @@
     "parameters": {
 		"stackName": {
 			"value": null
-		},
-        "config_web_name": {
-            "value": null
-        }
+		}
     }
 }
