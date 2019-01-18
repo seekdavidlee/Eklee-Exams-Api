@@ -8,6 +8,7 @@ steps:
 
 - task: PowerShell@2
   inputs:
+    targetType: 'inline'
     script: |
     dotnet publish --configuration $env:BuildConfiguration --output $env:Build_ArtifactStagingDirectory
     Write-Host "ServiceConnectionName: $env:ServiceConnectionName"
