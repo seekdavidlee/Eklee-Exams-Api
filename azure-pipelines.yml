@@ -14,7 +14,7 @@ steps:
 
 - task: AzureResourceGroupDeployment@2
   inputs:
-    azureSubscription: '$(Deploy.ServiceConnectionName)'
+    azureSubscription: 'ekleesc1'
     resourceGroupName: '$(Deploy.ResourceGroupName)'
     location: '$(Deploy.Location)'
     templateLocation: 'Linked artifact'
