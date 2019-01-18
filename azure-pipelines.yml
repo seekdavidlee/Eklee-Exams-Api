@@ -11,14 +11,7 @@ steps:
     targetType: 'inline'
     script: |
       dotnet publish --configuration $env:BuildConfiguration --output $env:Build_ArtifactStagingDirectory
-      Write-Host "ServiceConnectionName: $env:ServiceConnectionName"
-
-- task: DotNetCoreCLI@2
-  inputs:
-    command: 'publish'
-    configuration: '$(BuildConfiguration)'
-    zipAfterPublish: true
-    projects: Eklee.Exams.Api\Eklee.Exams.Api.csproj
+      Compress-Archive -Path $env:Build_ArtifactStagingDirectory\*
 
 - task: AzureResourceGroupDeployment@2
   inputs:
