@@ -10,8 +10,8 @@ steps:
   inputs:
     targetType: 'inline'
     script: |
-    dotnet publish --configuration $env:BuildConfiguration --output $env:Build_ArtifactStagingDirectory
-    Write-Host "ServiceConnectionName: $env:ServiceConnectionName"
+      dotnet publish --configuration $env:BuildConfiguration --output $env:Build_ArtifactStagingDirectory
+      Write-Host "ServiceConnectionName: $env:ServiceConnectionName"
 
 - task: DotNetCoreCLI@2
   inputs:
