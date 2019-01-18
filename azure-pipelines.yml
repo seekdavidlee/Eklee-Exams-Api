@@ -11,7 +11,7 @@ steps:
     targetType: 'inline'
     script: |
       dotnet publish --configuration $env:BuildConfiguration --output $env:Build_ArtifactStagingDirectory
-      Compress-Archive -Path $env:Build_ArtifactStagingDirectory\*
+      Compress-Archive -Path $env:Build_ArtifactStagingDirectory\* -DestinationPath $env:Build_ArtifactStagingDirectory\$env:Build_BuildNumber.zip
 
 - task: AzureResourceGroupDeployment@2
   inputs:
