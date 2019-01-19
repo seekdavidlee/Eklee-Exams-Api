@@ -48,8 +48,11 @@ steps:
   displayName: 'Run integration tests'
   inputs:
     targetType: 'inline'
-    env: 'clientsecret: $(Postman_client_secret)'
+    argument: '-clientsecret $(Postman_client_secret)'
     script: |
+      Param(
+      [string]$clientsecret,
+      )
       $url = "https://" + $env:stackName + "-staging.azurewebsites.net"
       @{
         values=@(
@@ -59,7 +62,7 @@ steps:
         }, 
         @{
             key="client_secret";
-            value="$env:clientsecret";
+            value="$clientsecret";
         }, 
         @{
             key="client_id";
