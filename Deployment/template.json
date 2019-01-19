@@ -342,7 +342,7 @@
 				"DocumentDb:RequestUnits": "400",
 				"DocumentDb:Url": "[reference(resourceId('Microsoft.DocumentDB/databaseAccounts',variables('stackName')),'2015-04-08').documentEndpoint]",
 				"Search:ServiceName": "[variables('stackName')]",
-				"Search:ApiKey": "[listAdminKeys(variables('stackName'), '2015-08-19').PrimaryKey]",
+				"Search:ApiKey": "[listAdminKeys(resourceId('Microsoft.Search/searchServices',variables('stackName')), '2015-08-19').PrimaryKey]",
 				"FUNCTIONS_EXTENSION_VERSION": "~2",
 				"FUNCTIONS_WORKER_RUNTIME": "dotnet",
 				"WEBSITE_NODE_DEFAULT_VERSION": "8.11.1",
