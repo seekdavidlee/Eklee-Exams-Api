@@ -11,7 +11,6 @@ steps:
     targetType: 'inline'
     script: |
       dotnet publish --configuration $env:BuildConfiguration --output $env:Build_ArtifactStagingDirectory
-      Compress-Archive -Path $env:Build_ArtifactStagingDirectory\* -DestinationPath $env:Build_ArtifactStagingDirectory\$env:Build_BuildNumber.zip
       $stackName = $env:AppPrefix + $env:Build_SourceBranchName
       $stackName = $stackName.ToLower().Replace("-", "")
       Write-Host "##vso[task.setvariable variable=stackName;]$stackName"
@@ -24,3 +23,11 @@ steps:
     templateLocation: 'Linked artifact'
     csmFile: 'deployment\template.json'
     overrideParameters: '-stackName $(stackName) -clientId $(ClientId)'
+
+- task: AzureRmWebAppDeployment@4
+  inputs:
+    connectionType: 'AzureRM'
+    azureSubscription: '$(ServiceConnectionName)'
+    resourceGroupName: '$(stackName)'
+    slotName: 'production'
+    appType: 'functionApp'
