@@ -19,23 +19,23 @@ steps:
       Write-Host "stackName: $stackName"
       Write-Host "##vso[task.setvariable variable=stackName;]$stackName"
       $postman = @{
-        values=@({
+        values=@(@{
             key="endpoint";
             value="https://$stackName.azurewebsites.net";
         }, 
-        {
+        @{
             key="client_secret";
             value="$env:Postman_client_secret";
         }, 
-        {
+        @{
             key="client_id";
             value="$env:Postman_client_id";
         }, 
-        {
+        @{
             key="resource_id";
             value="$env:Postman_resource_id";
         }, 
-        {
+        @{
             key="tenant_id";
             value="$env:Postman_tenant_id";
         })
