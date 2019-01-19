@@ -265,12 +265,13 @@
 				"vnetName": "",
 				"siteAuthEnabled": false,
 				"siteAuthSettings": {
-					"enabled": null,
-					"unauthenticatedClientAction": null,
-					"tokenStoreEnabled": null,
+					"enabled": true,
+					"runtimeVersion": "1.0.0",
+					"unauthenticatedClientAction": "RedirectToLoginPage",
+					"tokenStoreEnabled": true,
 					"allowedExternalRedirectUrls": null,
-					"defaultProvider": null,
-					"clientId": null,
+					"defaultProvider": "AzureActiveDirectory",
+					"clientId": "[parameters('clientId')]",
 					"clientSecret": null,
 					"clientSecretCertificateThumbprint": null,
 					"issuer": null,
@@ -346,7 +347,11 @@
 				"GraphQl:EnableMetrics": "true"
 			},
 			"dependsOn": [
-				"[resourceId('Microsoft.Web/sites', variables('stackName'))]"
+				"[resourceId('Microsoft.Web/sites', variables('stackName'))]",
+				"[resourceId('Microsoft.Storage/storageAccounts', variables('stackName'))]",
+				"[resourceId('Microsoft.Search/searchServices', variables('stackName'))]",
+				"[resourceId('microsoft.insights/components', variables('stackName'))]",
+				"[resourceId('Microsoft.DocumentDB/databaseAccounts', variables('stackName'))]"
 			]
 		},
 		{
@@ -383,7 +388,10 @@
 				"microsoftAccountOAuthScopes": [
 					""
 				]
-			}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Web/sites', variables('stackName'))]"
+			]
 		}
 	]
 }
