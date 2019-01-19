@@ -48,8 +48,8 @@ steps:
   displayName: 'Run integration tests'
   inputs:
     targetType: 'inline'
-    arguments: '-clientSecret $(Postman_client_secret)'
-    script: |
+    env: 'Postman_client_secret: $(Postman_client_secret)'
+    script: |  
       @{
         values=@(
         @{
@@ -58,7 +58,7 @@ steps:
         }, 
         @{
             key="client_secret";
-            value="$clientSecret";
+            value="$env:Postman_client_secret";
         }, 
         @{
             key="client_id";
