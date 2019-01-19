@@ -11,9 +11,12 @@ steps:
     targetType: 'inline'
     script: |
       dotnet publish --configuration $env:BuildConfiguration --output $env:Build_ArtifactStagingDirectory
+      $zipLocation = "$env:Build_ArtifactStagingDirectory\$env:Build_BuildNumber.zip"
+      Compress-Archive -Path $env:Build_ArtifactStagingDirectory\* -DestinationPath $zipLocation
       $stackName = $env:AppPrefix + $env:Build_SourceBranchName
       $stackName = $stackName.ToLower().Replace("-", "")
       Write-Host "##vso[task.setvariable variable=stackName;]$stackName"
+      Write-Host "##vso[task.setvariable variable=zipLocation;]$zipLocation"
 
 - task: AzureResourceGroupDeployment@2
   inputs:
@@ -28,6 +31,8 @@ steps:
   inputs:
     connectionType: 'AzureRM'
     azureSubscription: '$(ServiceConnectionName)'
+    webAppName: '$(stackName)'
     resourceGroupName: '$(stackName)'
     slotName: 'production'
     appType: 'functionApp'
+    packageForLinux: '$(zipLocation)'
