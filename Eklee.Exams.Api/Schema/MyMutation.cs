@@ -1,6 +1,5 @@
 ﻿using System;
 using Eklee.Azure.Functions.GraphQl;
-using Eklee.Azure.Functions.GraphQl.Repository;
 using Eklee.Azure.Functions.GraphQl.Repository.DocumentDb;
 using Eklee.Exams.Api.Schema.Models;
 using GraphQL.Types;
@@ -69,7 +68,7 @@ namespace Eklee.Exams.Api.Schema
 			var model = builder.BuildDocumentDb();
 
 			// DeleteAll is only applicable in local testing environment.
-			if (_configuration.IsLocalEnvironment())
+			if (_configuration.IsLocalEnvironment() || _configuration["EnableDeleteAll"] == "true")
 			{
 				model.DeleteAll(() => new Status { Message = "All entities are removed." });
 			}
