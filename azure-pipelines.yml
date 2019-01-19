@@ -57,7 +57,7 @@ steps:
         }, 
         @{
             key="client_secret";
-            value="$env:Postman_client_secret";
+            value="$(Postman_client_secret)";
         }, 
         @{
             key="client_id";
