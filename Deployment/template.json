@@ -263,7 +263,7 @@
 				"autoHealRules": null,
 				"tracingOptions": null,
 				"vnetName": "",
-				"siteAuthEnabled": false,
+				"siteAuthEnabled": true,
 				"siteAuthSettings": {
 					"enabled": true,
 					"runtimeVersion": "1.0.0",
