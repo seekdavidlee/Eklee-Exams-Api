@@ -6,72 +6,82 @@ variables:
 - group: Postman
 
 steps:
-
 - task: PowerShell@2
-  displayName: 'Build app and configure stack variables'
-  inputs:
-    targetType: 'inline'
-    script: |
-      $path="env:$env:Build_SourceBranchName" + "_AppPrefix"
-      $stackName = (get-item $path -ErrorAction SilentlyContinue).Value
-      if (!$stackName) { $stackName = $env:AppPrefix + $env:Build_SourceBranchName }
-      $stackName = $stackName.ToLower().Replace("-", "")
-      Write-Host "stackName: $stackName"
-      Write-Host "##vso[task.setvariable variable=stackName;]$stackName"
-      dotnet publish --configuration $env:BuildConfiguration --output $env:Build_ArtifactStagingDirectory
-      $zipLocation = "$env:Build_ArtifactStagingDirectory\$env:Build_BuildNumber.zip"
-      Compress-Archive -Path $env:Build_ArtifactStagingDirectory\* -DestinationPath $zipLocation
-      Write-Host "##vso[task.setvariable variable=zipLocation;]$zipLocation"
-
-- task: AzureResourceGroupDeployment@2
-  displayName: 'Deploy stack resources'
-  inputs:
-    azureSubscription: '$(ServiceConnectionName)'
-    resourceGroupName: '$(stackName)'
-    location: '$(Location)'
-    templateLocation: 'Linked artifact'
-    csmFile: 'deployment\template.json'
-    overrideParameters: '-stackName $(stackName) -clientId $(ClientId)'
-
-- task: AzureRmWebAppDeployment@4
-  displayName: 'Deploy app to stack slot'
-  inputs:
-    connectionType: 'AzureRM'
-    azureSubscription: '$(ServiceConnectionName)'
-    webAppName: '$(stackName)'
-    resourceGroupName: '$(stackName)'
-    slotName: 'staging'
-    appType: 'functionApp'
-    packageForLinux: '$(zipLocation)'
-
-- task: PowerShell@2
-  displayName: 'Run integration tests'
+  displayName: 'Tests'
   inputs:
     targetType: 'inline'
     env: 'Postman_client_secret: $(Postman_client_secret)'
     script: |  
-      @{
-        values=@(
-        @{
-            key="endpoint";
-            value="https://$stackName-staging.azurewebsites.net";
-        }, 
-        @{
-            key="client_secret";
-            value="$env:Postman_client_secret";
-        }, 
-        @{
-            key="client_id";
-            value="$env:Postman_client_id";
-        }, 
-        @{
-            key="resource_id";
-            value="$env:Postman_resource_id";
-        }, 
-        @{
-            key="tenant_id";
-            value="$env:Postman_tenant_id";
-        })
-      } | ConvertTo-Json -depth 100 | Out-File -encoding ASCII postman_environment.json
-      npm install --save-dev newman
-      node_modules\.bin\newman run tests\Eklee.Exam.Api.postman_collection.json -e postman_environment.json
+      "secret: $env:Postman_client_secret"
+      "client_id: $env:Postman_client_id"
+      "resource_id: $env:Postman_resource_id"
+      "tenant_id: $env:Postman_tenant_id"
+
+# - task: PowerShell@2
+#   displayName: 'Build app and configure stack variables'
+#   inputs:
+#     targetType: 'inline'
+#     script: |
+#       $path="env:$env:Build_SourceBranchName" + "_AppPrefix"
+#       $stackName = (get-item $path -ErrorAction SilentlyContinue).Value
+#       if (!$stackName) { $stackName = $env:AppPrefix + $env:Build_SourceBranchName }
+#       $stackName = $stackName.ToLower().Replace("-", "")
+#       Write-Host "stackName: $stackName"
+#       Write-Host "##vso[task.setvariable variable=stackName;]$stackName"
+#       dotnet publish --configuration $env:BuildConfiguration --output $env:Build_ArtifactStagingDirectory
+#       $zipLocation = "$env:Build_ArtifactStagingDirectory\$env:Build_BuildNumber.zip"
+#       Compress-Archive -Path $env:Build_ArtifactStagingDirectory\* -DestinationPath $zipLocation
+#       Write-Host "##vso[task.setvariable variable=zipLocation;]$zipLocation"
+
+# - task: AzureResourceGroupDeployment@2
+#   displayName: 'Deploy stack resources'
+#   inputs:
+#     azureSubscription: '$(ServiceConnectionName)'
+#     resourceGroupName: '$(stackName)'
+#     location: '$(Location)'
+#     templateLocation: 'Linked artifact'
+#     csmFile: 'deployment\template.json'
+#     overrideParameters: '-stackName $(stackName) -clientId $(ClientId)'
+
+# - task: AzureRmWebAppDeployment@4
+#   displayName: 'Deploy app to stack slot'
+#   inputs:
+#     connectionType: 'AzureRM'
+#     azureSubscription: '$(ServiceConnectionName)'
+#     webAppName: '$(stackName)'
+#     resourceGroupName: '$(stackName)'
+#     slotName: 'staging'
+#     appType: 'functionApp'
+#     packageForLinux: '$(zipLocation)'
+
+# - task: PowerShell@2
+#   displayName: 'Run integration tests'
+#   inputs:
+#     targetType: 'inline'
+#     env: 'Postman_client_secret: $(Postman_client_secret)'
+#     script: |  
+#       @{
+#         values=@(
+#         @{
+#             key="endpoint";
+#             value="https://$stackName-staging.azurewebsites.net";
+#         }, 
+#         @{
+#             key="client_secret";
+#             value="$env:Postman_client_secret";
+#         }, 
+#         @{
+#             key="client_id";
+#             value="$env:Postman_client_id";
+#         }, 
+#         @{
+#             key="resource_id";
+#             value="$env:Postman_resource_id";
+#         }, 
+#         @{
+#             key="tenant_id";
+#             value="$env:Postman_tenant_id";
+#         })
+#       } | ConvertTo-Json -depth 100 | Out-File -encoding ASCII postman_environment.json
+#       npm install --save-dev newman
+#       node_modules\.bin\newman run tests\Eklee.Exam.Api.postman_collection.json -e postman_environment.json
