@@ -50,7 +50,7 @@ steps:
     targetType: 'inline'
     arguments: '-clientSecret $(Postman_client_secret)'
     script: |
-    param($clientSecret)
+      param($clientSecret)
       @{
         values=@(
         @{
