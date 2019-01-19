@@ -39,9 +39,9 @@ steps:
             key="tenant_id";
             value="$env:Postman_tenant_id";
         })
-      }
+      } | ConvertTo-Json -depth 100
       Write-Host $postman
-      $postman | ConvertTo-Json -depth 100 | Out-File postman_environment.json
+      $postman | Out-File postman_environment.json
       dotnet publish --configuration $env:BuildConfiguration --output $env:Build_ArtifactStagingDirectory
       $zipLocation = "$env:Build_ArtifactStagingDirectory\$env:Build_BuildNumber.zip"
       Compress-Archive -Path $env:Build_ArtifactStagingDirectory\* -DestinationPath $zipLocation
