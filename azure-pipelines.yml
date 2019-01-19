@@ -8,48 +8,16 @@ variables:
 steps:
 
 - task: PowerShell@2
+  displayName: 'Build app and configure stack variables'
   inputs:
-    displayName: 'Build app and configure stack variables'
     targetType: 'inline'
     script: |
-      dotnet publish --configuration $env:BuildConfiguration --output $env:Build_ArtifactStagingDirectory
-      $zipLocation = "$env:Build_ArtifactStagingDirectory\$env:Build_BuildNumber.zip"
-      Compress-Archive -Path $env:Build_ArtifactStagingDirectory\* -DestinationPath $zipLocation
       $path="env:$env:Build_SourceBranchName" + "_AppPrefix"
       $stackName = (get-item $path -ErrorAction SilentlyContinue).Value
       if (!$stackName) { $stackName = $env:AppPrefix + $env:Build_SourceBranchName }
       $stackName = $stackName.ToLower().Replace("-", "")
       Write-Host "stackName: $stackName"
       Write-Host "##vso[task.setvariable variable=stackName;]$stackName"
-      Write-Host "##vso[task.setvariable variable=zipLocation;]$zipLocation"
-
-- task: AzureResourceGroupDeployment@2
-  inputs:
-    displayName: 'Deploy stack resources'
-    azureSubscription: '$(ServiceConnectionName)'
-    resourceGroupName: '$(stackName)'
-    location: '$(Location)'
-    templateLocation: 'Linked artifact'
-    csmFile: 'deployment\template.json'
-    overrideParameters: '-stackName $(stackName) -clientId $(ClientId)'
-
-- task: AzureRmWebAppDeployment@4
-  inputs:
-    displayName: 'Deploy app to stack slot'
-    connectionType: 'AzureRM'
-    azureSubscription: '$(ServiceConnectionName)'
-    webAppName: '$(stackName)'
-    resourceGroupName: '$(stackName)'
-    slotName: 'staging'
-    appType: 'functionApp'
-    packageForLinux: '$(zipLocation)'
-
-- task: PowerShell@2
-  inputs:
-    displayName: 'Run integration tests'
-    targetType: 'inline'
-    script: |
-      npm install newman
       $postman = @{
         values=@({
             key="endpoint";
@@ -74,4 +42,36 @@ steps:
       }
       Write-Host $postman
       $postman | ConvertTo-Json -depth 100 | Out-File postman_environment.json
+      dotnet publish --configuration $env:BuildConfiguration --output $env:Build_ArtifactStagingDirectory
+      $zipLocation = "$env:Build_ArtifactStagingDirectory\$env:Build_BuildNumber.zip"
+      Compress-Archive -Path $env:Build_ArtifactStagingDirectory\* -DestinationPath $zipLocation
+      Write-Host "##vso[task.setvariable variable=zipLocation;]$zipLocation"
+
+- task: AzureResourceGroupDeployment@2
+  displayName: 'Deploy stack resources'
+  inputs:
+    azureSubscription: '$(ServiceConnectionName)'
+    resourceGroupName: '$(stackName)'
+    location: '$(Location)'
+    templateLocation: 'Linked artifact'
+    csmFile: 'deployment\template.json'
+    overrideParameters: '-stackName $(stackName) -clientId $(ClientId)'
+
+- task: AzureRmWebAppDeployment@4
+  displayName: 'Deploy app to stack slot'
+  inputs:
+    connectionType: 'AzureRM'
+    azureSubscription: '$(ServiceConnectionName)'
+    webAppName: '$(stackName)'
+    resourceGroupName: '$(stackName)'
+    slotName: 'staging'
+    appType: 'functionApp'
+    packageForLinux: '$(zipLocation)'
+
+- task: PowerShell@2
+  displayName: 'Run integration tests'
+  inputs:
+    targetType: 'inline'
+    script: |
+      npm install newman
       node_modules\.bin\newman run tests\Eklee.Exam.Api.postman_collection.json -e postman_environment.json
