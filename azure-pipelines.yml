@@ -53,7 +53,7 @@ steps:
         values=@(
         @{
             key="endpoint";
-            value="https://$stackName.azurewebsites.net";
+            value="https://$stackName-staging.azurewebsites.net";
         }, 
         @{
             key="client_secret";
