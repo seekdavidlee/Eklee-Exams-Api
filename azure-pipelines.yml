@@ -18,30 +18,6 @@ steps:
       $stackName = $stackName.ToLower().Replace("-", "")
       Write-Host "stackName: $stackName"
       Write-Host "##vso[task.setvariable variable=stackName;]$stackName"
-      $postman = @{
-        values=@(@{
-            key="endpoint";
-            value="https://$stackName.azurewebsites.net";
-        }, 
-        @{
-            key="client_secret";
-            value="$env:Postman_client_secret";
-        }, 
-        @{
-            key="client_id";
-            value="$env:Postman_client_id";
-        }, 
-        @{
-            key="resource_id";
-            value="$env:Postman_resource_id";
-        }, 
-        @{
-            key="tenant_id";
-            value="$env:Postman_tenant_id";
-        })
-      } | ConvertTo-Json -depth 100
-      Write-Host $postman
-      $postman | Out-File postman_environment.json
       dotnet publish --configuration $env:BuildConfiguration --output $env:Build_ArtifactStagingDirectory
       $zipLocation = "$env:Build_ArtifactStagingDirectory\$env:Build_BuildNumber.zip"
       Compress-Archive -Path $env:Build_ArtifactStagingDirectory\* -DestinationPath $zipLocation
@@ -73,5 +49,28 @@ steps:
   inputs:
     targetType: 'inline'
     script: |
-      npm install newman
+      @{
+        values=@(
+        @{
+            key="endpoint";
+            value="https://$stackName.azurewebsites.net";
+        }, 
+        @{
+            key="client_secret";
+            value="$env:Postman_client_secret";
+        }, 
+        @{
+            key="client_id";
+            value="$env:Postman_client_id";
+        }, 
+        @{
+            key="resource_id";
+            value="$env:Postman_resource_id";
+        }, 
+        @{
+            key="tenant_id";
+            value="$env:Postman_tenant_id";
+        })
+      } | ConvertTo-Json -depth 100 | Out-File -encoding utf8 postman_environment.json
+      npm install --save-dev newman
       node_modules\.bin\newman run tests\Eklee.Exam.Api.postman_collection.json -e postman_environment.json
