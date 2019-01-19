@@ -10,31 +10,35 @@ steps:
   inputs:
     targetType: 'inline'
     script: |
-      dotnet publish --configuration $env:BuildConfiguration --output $env:Build_ArtifactStagingDirectory
-      $zipLocation = "$env:Build_ArtifactStagingDirectory\$env:Build_BuildNumber.zip"
-      Compress-Archive -Path $env:Build_ArtifactStagingDirectory\* -DestinationPath $zipLocation
-      $stackName = ${env:($env:Build_SourceBranchName + "_AppPrefix")}
-      if (!$stackName) { $stackName = $env:AppPrefix + $env:Build_SourceBranchName }
-      Write-Host "stackName: $stackName"
+      #dotnet publish --configuration $env:BuildConfiguration --output $env:Build_ArtifactStagingDirectory
+      #$zipLocation = "$env:Build_ArtifactStagingDirectory\$env:Build_BuildNumber.zip"
+      #Compress-Archive -Path $env:Build_ArtifactStagingDirectory\* -DestinationPath $zipLocation
+      $stackName = ${env:$env:Build_SourceBranchName + "_AppPrefix"}
+      if (!$stackName)
+      {
+          Write-Host 
+          $stackName = $env:AppPrefix + $env:Build_SourceBranchName 
+      }
       $stackName = $stackName.ToLower().Replace("-", "")
+      Write-Host "stackName: $stackName"
       Write-Host "##vso[task.setvariable variable=stackName;]$stackName"
       Write-Host "##vso[task.setvariable variable=zipLocation;]$zipLocation"
 
-- task: AzureResourceGroupDeployment@2
-  inputs:
-    azureSubscription: '$(ServiceConnectionName)'
-    resourceGroupName: '$(stackName)'
-    location: '$(Location)'
-    templateLocation: 'Linked artifact'
-    csmFile: 'deployment\template.json'
-    overrideParameters: '-stackName $(stackName) -clientId $(ClientId)'
+# - task: AzureResourceGroupDeployment@2
+#   inputs:
+#     azureSubscription: '$(ServiceConnectionName)'
+#     resourceGroupName: '$(stackName)'
+#     location: '$(Location)'
+#     templateLocation: 'Linked artifact'
+#     csmFile: 'deployment\template.json'
+#     overrideParameters: '-stackName $(stackName) -clientId $(ClientId)'
 
-- task: AzureRmWebAppDeployment@4
-  inputs:
-    connectionType: 'AzureRM'
-    azureSubscription: '$(ServiceConnectionName)'
-    webAppName: '$(stackName)'
-    resourceGroupName: '$(stackName)'
-    slotName: 'production'
-    appType: 'functionApp'
-    packageForLinux: '$(zipLocation)'
+# - task: AzureRmWebAppDeployment@4
+#   inputs:
+#     connectionType: 'AzureRM'
+#     azureSubscription: '$(ServiceConnectionName)'
+#     webAppName: '$(stackName)'
+#     resourceGroupName: '$(stackName)'
+#     slotName: 'production'
+#     appType: 'functionApp'
+#     packageForLinux: '$(zipLocation)'
