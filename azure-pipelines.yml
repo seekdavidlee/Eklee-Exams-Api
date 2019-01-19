@@ -50,7 +50,7 @@ steps:
     targetType: 'inline'
     env: 'clientsecret: $(Postman_client_secret)'
     script: |
-      $url = "https://$stackName" + "-staging.azurewebsites.net"
+      $url = "https://" + $env:stackName + "-staging.azurewebsites.net"
       @{
         values=@(
         @{
