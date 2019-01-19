@@ -64,8 +64,8 @@ steps:
             value="$env:Postman_client_id";
         }, 
         {
-            "key"="resource_id";
-            "value"="$env:Postman_resource_id";
+            key="resource_id";
+            value="$env:Postman_resource_id";
         }, 
         {
             key="tenant_id";
