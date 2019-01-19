@@ -13,10 +13,11 @@ steps:
       dotnet publish --configuration $env:BuildConfiguration --output $env:Build_ArtifactStagingDirectory
       $zipLocation = "$env:Build_ArtifactStagingDirectory\$env:Build_BuildNumber.zip"
       Compress-Archive -Path $env:Build_ArtifactStagingDirectory\* -DestinationPath $zipLocation
-      $stackName = ${env:("$env:Build_SourceBranchName" + "_" + "$env:AppPrefix")}
+      $path="env:$env:Build_SourceBranchName" + "_AppPrefix"
+      $stackName = (get-item $path -ErrorAction SilentlyContinue).Value
       if (!$stackName) { $stackName = $env:AppPrefix + $env:Build_SourceBranchName }
-      Write-Host "stackName: $stackName"
       $stackName = $stackName.ToLower().Replace("-", "")
+      Write-Host "stackName: $stackName"
       Write-Host "##vso[task.setvariable variable=stackName;]$stackName"
       Write-Host "##vso[task.setvariable variable=zipLocation;]$zipLocation"
 
