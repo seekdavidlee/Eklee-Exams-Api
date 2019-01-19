@@ -13,7 +13,8 @@ steps:
       #dotnet publish --configuration $env:BuildConfiguration --output $env:Build_ArtifactStagingDirectory
       #$zipLocation = "$env:Build_ArtifactStagingDirectory\$env:Build_BuildNumber.zip"
       #Compress-Archive -Path $env:Build_ArtifactStagingDirectory\* -DestinationPath $zipLocation
-      $stackName = '$env:' + "$env:Build_SourceBranchName" + "_AppPrefix"
+      $path="env:$env:Build_SourceBranchName" + "_AppPrefix"
+      $stackName = (get-item $path -ErrorAction SilentlyContinue).Value
       Write-Host "name $stackName" 
       if (!$stackName)
       {
