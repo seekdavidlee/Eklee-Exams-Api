@@ -40,19 +40,31 @@ namespace Eklee.Exams.Api.Schema
 
 		private void AddSearch<TEntity, TModel>(InputBuilderFactory inputBuilderFactory, string deleteMessage) where TEntity : class
 		{
-			inputBuilderFactory.Create<TEntity>(this)
+			var builder = inputBuilderFactory.Create<TEntity>(this)
 				.DeleteAll(() => new Status { Message = deleteMessage })
 				.ConfigureSearchWith<TEntity, TModel>()
 				.AddApiKey(_searchApiKey)
-				.AddServiceName(_searchServiceName)
-				.BuildSearch()
-				.Build();
+				.AddServiceName(_searchServiceName);
+
+			var prefix = _configuration.IsLocalEnvironment() ? "lcl" :
+				(_configuration["EnableDeleteAll"] == "true" ? "stg" : "");
+
+			if (!string.IsNullOrEmpty(prefix))
+			{
+				builder.AddPrefix(prefix);
+			}
+
+			builder.BuildSearch().Build();
 		}
 
 		private void Add<TEntity, TDeleteEntity>(
 			InputBuilderFactory inputBuilderFactory,
 			Action<DocumentDbConfiguration<TEntity>> action) where TEntity : class, IEntityWithGuidId, new() where TDeleteEntity : IEntityWithGuidId, new()
 		{
+			var databaseName = string.IsNullOrEmpty(_database) ? "exams" : _database;
+			databaseName = _configuration.IsLocalEnvironment() ? $"lcl{databaseName}" :
+				(_configuration["EnableDeleteAll"] == "true" ? $"stg{databaseName}" : databaseName);
+
 			var builder = inputBuilderFactory.Create<TEntity>(this)
 				.Delete<TDeleteEntity, Status>(
 					input => new TEntity { Id = input.Id },
@@ -60,7 +72,7 @@ namespace Eklee.Exams.Api.Schema
 				.ConfigureDocumentDb<TEntity>()
 				.AddUrl(_documentDbUrl)
 				.AddKey(_documentDbKey)
-				.AddDatabase(rc => string.IsNullOrEmpty(_database) ? "exams" : _database)
+				.AddDatabase(rc => databaseName)
 				.AddRequestUnit(string.IsNullOrEmpty(_requestUnits) ? 400 : Convert.ToInt32(_requestUnits));
 
 			action?.Invoke(builder);
