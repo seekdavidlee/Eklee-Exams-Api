@@ -76,6 +76,13 @@ steps:
     Postman_client_secret: $(Postman.client_secret)
   displayName: 'Run integration tests'
 
+- task: PublishTestResults@2
+  displayName: 'Publish integration tests results'
+  inputs:
+    testResultsFormat: 'JUnit'
+    testResultsFiles: '**/*.xml' 
+    searchFolder: '$(Common.TestResultsDirectory)'
+
 - task: AzureAppServiceManage@0
   displayName: 'Swap Staging with Production'
   inputs:
