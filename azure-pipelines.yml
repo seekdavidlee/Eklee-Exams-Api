@@ -81,5 +81,6 @@ steps:
   inputs:
     azureSubscription: '$(ServiceConnectionName)'
     action: 'Swap Slots' 
+    webAppName: '$(stackName)'
     resourceGroupName: '$(stackName)'
     swapWithProduction: true
