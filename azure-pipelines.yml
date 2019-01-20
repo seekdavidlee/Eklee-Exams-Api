@@ -77,4 +77,4 @@ steps:
       npm install --save-dev newman
       node_modules\.bin\newman run tests\Eklee.Exam.Api.postman_collection.json -e postman_environment.json
     env: 
-      Postman_client_secret: $(Postman.client_secret)
+      { Postman_client_secret: $(Postman.client_secret) }
