@@ -76,5 +76,4 @@ steps:
       } | ConvertTo-Json -depth 100 | Out-File -encoding ASCII postman_environment.json
       npm install --save-dev newman
       node_modules\.bin\newman run tests\Eklee.Exam.Api.postman_collection.json -e postman_environment.json
-    env: 
-      { Postman_client_secret: $(Postman.client_secret) }
+    env:  $(Postman.client_secret)
