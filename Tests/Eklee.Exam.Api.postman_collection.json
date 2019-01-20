@@ -16,11 +16,23 @@
 							"script": {
 								"id": "7234251e-3adb-4b61-9d3e-339f0b68ecd8",
 								"exec": [
-									"pm.test(\"Contains access token\", function () {",
+									"(pm.environment.get(\"isRemote\") ? pm.test : pm.test.skip)(\"Contains access token\", function () {",
+									"",
 									"    var jsonData = pm.response.json();",
 									"    pm.expect(jsonData.access_token).not.equal(null);",
 									"    pm.environment.set(\"access_token\", jsonData.access_token);",
-									"});"
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "aff2cf28-5d4f-4357-8e60-e226e0e79565",
+								"exec": [
+									""
 								],
 								"type": "text/javascript"
 							}
@@ -901,6 +913,29 @@
 					"response": []
 				}
 			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "a460ca94-64e8-4811-84f5-89f3cc83bc4e",
+				"type": "text/javascript",
+				"exec": [
+					"var isRemote = pm.environment.get(\"endpoint\").indexOf(\"http://localhost\") < 0;",
+					"pm.environment.set(\"isRemote\", isRemote);"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "31e3d054-66f6-431d-bfdc-56256d40ec00",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
 		}
 	]
 }
