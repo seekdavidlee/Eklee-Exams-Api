@@ -39,6 +39,7 @@ steps:
     connectionType: 'AzureRM'
     azureSubscription: '$(ServiceConnectionName)'
     webAppName: '$(stackName)'
+    deployToSlotOrASE: true
     resourceGroupName: '$(stackName)'
     slotName: 'staging'
     appType: 'functionApp'
