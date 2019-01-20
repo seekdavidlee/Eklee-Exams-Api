@@ -75,3 +75,11 @@ steps:
   env:
     Postman_client_secret: $(Postman.client_secret)
   displayName: 'Run integration tests'
+
+- task: AzureAppServiceManage@0
+  displayName: 'Swap Staging with Production'
+  inputs:
+    azureSubscription: '$(ServiceConnectionName)'
+    action: 'Swap Slots' 
+    resourceGroupName: '$(stackName)'
+    swapWithProduction: true
