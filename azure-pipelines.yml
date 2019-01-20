@@ -49,7 +49,7 @@ steps:
   inputs:
     targetType: 'inline'
     script: |
-      Write-Host $env:clientsecret
+      Write-Host $env:Postman_client_secret
       $url = "https://" + $env:stackName + "-staging.azurewebsites.net"
       @{
         values=@(
@@ -59,7 +59,7 @@ steps:
         }, 
         @{
             key="client_secret";
-            value="$env:clientsecret";
+            value="$env:Postman_client_secret";
         }, 
         @{
             key="client_id";
@@ -77,4 +77,4 @@ steps:
       npm install --save-dev newman
       node_modules\.bin\newman run tests\Eklee.Exam.Api.postman_collection.json -e postman_environment.json
     env: 
-      clientsecret: $(Postman.client_secret)
+      Postman_client_secret: $(Postman.client_secret)
