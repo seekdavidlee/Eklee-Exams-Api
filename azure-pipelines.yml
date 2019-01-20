@@ -49,7 +49,7 @@ steps:
   inputs:
     targetType: 'inline'
     env: 
-        clientsecret: $(Postman.client_secret)
+      clientsecret: $(Postman.client_secret)
     script: |
       Write-Host $env:clientsecret
       $url = "https://" + $env:stackName + "-staging.azurewebsites.net"
