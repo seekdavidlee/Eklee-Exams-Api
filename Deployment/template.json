@@ -232,6 +232,7 @@
 				"httpsOnly": false
 			},
 			"dependsOn": [
+				"[resourceId('Microsoft.Web/sites', variables('stackName'))]",
 				"[resourceId('Microsoft.Web/serverfarms', variables('planName'))]"
 			]
 		},
