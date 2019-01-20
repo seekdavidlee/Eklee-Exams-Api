@@ -80,7 +80,8 @@ steps:
   displayName: 'Swap Staging with Production'
   inputs:
     azureSubscription: '$(ServiceConnectionName)'
-    action: 'Swap Slots' 
+    action: 'Swap Slots'
+    sourceSlot: 'staging' 
     webAppName: '$(stackName)'
     resourceGroupName: '$(stackName)'
     swapWithProduction: true
