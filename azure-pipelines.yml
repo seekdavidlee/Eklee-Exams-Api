@@ -51,9 +51,6 @@ steps:
     env: 
         clientsecret $(Postman.client_secret)
     script: |
-      Param(
-      [string]$clientsecret
-      )
       $url = "https://" + $env:stackName + "-staging.azurewebsites.net"
       @{
         values=@(
