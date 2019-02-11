@@ -11,7 +11,7 @@ namespace Eklee.Exams.Api
 		protected override void Load(ContainerBuilder builder)
 		{
 			builder.UseDistributedCache<MemoryDistributedCache>();
-
+			builder.UseJwtAuthorization<JwtConfigParameters>();
 			builder.RegisterGraphQl<MySchema>();
 			builder.RegisterType<MyQuery>();
 			builder.RegisterType<MyMutation>();

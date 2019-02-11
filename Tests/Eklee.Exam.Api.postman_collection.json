@@ -9,30 +9,21 @@
 			"name": "Login",
 			"item": [
 				{
-					"name": "GetToken",
+					"name": "Login",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
-								"id": "7234251e-3adb-4b61-9d3e-339f0b68ecd8",
+								"id": "ecafb857-fc97-4b64-80a1-6ffa2c75d986",
 								"exec": [
-									"(pm.environment.get(\"isRemote\") ? pm.test : pm.test.skip)(\"Contains access token\", function () {",
-									"",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData.access_token).not.equal(null);",
-									"    pm.environment.set(\"access_token\", jsonData.access_token);",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
 									"});",
-									""
-								],
-								"type": "text/javascript"
-							}
-						},
-						{
-							"listen": "prerequest",
-							"script": {
-								"id": "aff2cf28-5d4f-4357-8e60-e226e0e79565",
-								"exec": [
-									""
+									"",
+									"pm.test(\"Contans access token\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.environment.set(\"access_token\", jsonData.access_token);",
+									"});"
 								],
 								"type": "text/javascript"
 							}
@@ -45,29 +36,39 @@
 							"mode": "formdata",
 							"formdata": [
 								{
-									"key": "client_id",
-									"value": "{{client_id}}",
-									"type": "text"
-								},
-								{
 									"key": "client_secret",
-									"value": "{{client_secret}}",
+									"value": "{{clientSecret}}",
 									"type": "text"
 								},
 								{
-									"key": "resource",
-									"value": "{{resource_id}}",
+									"key": "client_id",
+									"value": "{{clientId}}",
 									"type": "text"
 								},
 								{
 									"key": "grant_type",
-									"value": "client_credentials",
+									"value": "password",
+									"type": "text"
+								},
+								{
+									"key": "username",
+									"value": "{{tenant1user1}}",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "{{tenant1user1password}}",
+									"type": "text"
+								},
+								{
+									"key": "resource",
+									"value": "{{resourceId}}",
 									"type": "text"
 								}
 							]
 						},
 						"url": {
-							"raw": "https://login.microsoftonline.com/{{tenant_id}}/oauth2/token",
+							"raw": "https://login.microsoftonline.com/{{tenant1Id}}/oauth2/token",
 							"protocol": "https",
 							"host": [
 								"login",
@@ -75,7 +76,7 @@
 								"com"
 							],
 							"path": [
-								"{{tenant_id}}",
+								"{{tenant1Id}}",
 								"oauth2",
 								"token"
 							]

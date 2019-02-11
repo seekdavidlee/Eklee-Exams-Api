@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using System.Security.Claims;
 using Eklee.Azure.Functions.GraphQl;
 using Eklee.Azure.Functions.GraphQl.Repository.DocumentDb;
 using Eklee.Exams.Api.Schema.Models;
@@ -10,29 +12,20 @@ namespace Eklee.Exams.Api.Schema
 	public class MyMutation : ObjectGraphType
 	{
 		private readonly IConfiguration _configuration;
-		private readonly string _documentDbKey;
-		private readonly string _documentDbUrl;
-		private readonly string _database;
-		private readonly string _requestUnits;
-		private readonly string _searchServiceName;
-		private readonly string _searchApiKey;
+
+		private bool DefaultAssertion(ClaimsPrincipal claimsPrincipal, AssertAction assertAction)
+		{
+			return claimsPrincipal.IsInRole("Eklee.User.Write");
+		}
 
 		public MyMutation(InputBuilderFactory inputBuilderFactory, IConfiguration configuration)
 		{
 			_configuration = configuration;
 			Name = "mutations";
 
-			_documentDbKey = configuration["DocumentDb:Key"];
-			_documentDbUrl = configuration["DocumentDb:Url"];
-			_database = configuration["DocumentDb:Database"];
-			_requestUnits = configuration["DocumentDb:RequestUnits"];
-
 			Add<Exam, ItemWithGuidId>(inputBuilderFactory, builder => builder.AddPartition(x => x.Category));
 			Add<Candidate, ItemWithGuidId>(inputBuilderFactory, builder => builder.AddPartition(x => x.Type));
 			Add<ExamTemplate, ItemWithGuidId>(inputBuilderFactory, builder => builder.AddPartition(x => x.Category));
-
-			_searchServiceName = configuration["Search:ServiceName"];
-			_searchApiKey = configuration["Search:ApiKey"];
 
 			AddSearch<CandidateSearch, Candidate>(inputBuilderFactory, "Candidate search index has been removed.");
 			AddSearch<ExamTemplateSearch, ExamTemplate>(inputBuilderFactory, "Exam search template index has been removed.");
@@ -40,52 +33,74 @@ namespace Eklee.Exams.Api.Schema
 
 		private void AddSearch<TEntity, TModel>(InputBuilderFactory inputBuilderFactory, string deleteMessage) where TEntity : class
 		{
-			var builder = inputBuilderFactory.Create<TEntity>(this)
-				.DeleteAll(() => new Status { Message = deleteMessage })
-				.ConfigureSearchWith<TEntity, TModel>()
-				.AddApiKey(_searchApiKey)
-				.AddServiceName(_searchServiceName);
-
-			var prefix = _configuration.IsLocalEnvironment() ? "lcl" :
-				(_configuration["EnableDeleteAll"] == "true" ? "stg" : "");
-
-			if (!string.IsNullOrEmpty(prefix))
+			var tenants = _configuration.GetSection("Tenants").GetChildren().ToList();
+			tenants.ForEach(tenant =>
 			{
-				builder.AddPrefix(prefix);
-			}
+				string tenantSearchApiKey = tenant["Search:ApiKey"];
+				string tenantServiceName = tenant["Search:ServiceName"];
 
-			builder.BuildSearch().Build();
+				var builder = inputBuilderFactory.Create<TEntity>(this)
+					.AssertWithClaimsPrincipal(DefaultAssertion)
+					.DeleteAll(() => new Status { Message = deleteMessage })
+					.ConfigureSearchWith<TEntity, TModel>()
+					.AddGraphRequestContextSelector(ctx => ctx.ContainsIssuer(tenant["Issuer"]))
+					.AddApiKey(tenantSearchApiKey)
+					.AddServiceName(tenantServiceName);
+
+				var prefix = _configuration.IsLocalEnvironment()
+					? "lcl"
+					: (_configuration["EnableDeleteAll"] == "true" ? "stg" : "");
+
+				if (!string.IsNullOrEmpty(prefix))
+				{
+					builder.AddPrefix(prefix);
+				}
+
+				builder.BuildSearch().Build();
+			});
 		}
 
 		private void Add<TEntity, TDeleteEntity>(
 			InputBuilderFactory inputBuilderFactory,
 			Action<DocumentDbConfiguration<TEntity>> action) where TEntity : class, IEntityWithGuidId, new() where TDeleteEntity : IEntityWithGuidId, new()
 		{
-			var databaseName = string.IsNullOrEmpty(_database) ? "exams" : _database;
-			databaseName = _configuration.IsLocalEnvironment() ? $"lcl{databaseName}" :
-				(_configuration["EnableDeleteAll"] == "true" ? $"stg{databaseName}" : databaseName);
-
-			var builder = inputBuilderFactory.Create<TEntity>(this)
-				.Delete<TDeleteEntity, Status>(
-					input => new TEntity { Id = input.Id },
-					item => new Status { Message = $"Successfully removed item with Id {item.Id}" })
-				.ConfigureDocumentDb<TEntity>()
-				.AddUrl(_documentDbUrl)
-				.AddKey(_documentDbKey)
-				.AddDatabase(rc => databaseName)
-				.AddRequestUnit(string.IsNullOrEmpty(_requestUnits) ? 400 : Convert.ToInt32(_requestUnits));
-
-			action?.Invoke(builder);
-
-			var model = builder.BuildDocumentDb();
-
-			// DeleteAll is only applicable in local testing environment.
-			if (_configuration.IsLocalEnvironment() || _configuration["EnableDeleteAll"] == "true")
+			var tenants = _configuration.GetSection("Tenants").GetChildren().ToList();
+			tenants.ForEach(tenant =>
 			{
-				model.DeleteAll(() => new Status { Message = "All entities are removed." });
-			}
+				var issuer = tenant["Issuer"];
 
-			model.Build();
+				string tenantDocumentDbKey = tenant["DocumentDb:Key"];
+				string tenantDocumentDbUrl = tenant["DocumentDb:Url"];
+				int tenantRequestUnits = Convert.ToInt32(tenant["DocumentDb:RequestUnits"]);
+
+				var databaseName = issuer.GetTenantIdFromIssuer();
+				databaseName = _configuration.IsLocalEnvironment() ? $"lcl{databaseName}" :
+					(_configuration["EnableDeleteAll"] == "true" ? $"stg{databaseName}" : databaseName);
+
+				var builder = inputBuilderFactory.Create<TEntity>(this)
+					.AssertWithClaimsPrincipal(DefaultAssertion)
+					.Delete<TDeleteEntity, Status>(
+						input => new TEntity { Id = input.Id },
+						item => new Status { Message = $"Successfully removed item with Id {item.Id}" })
+					.ConfigureDocumentDb<TEntity>()
+					.AddGraphRequestContextSelector(ctx => ctx.ContainsIssuer(issuer))
+					.AddUrl(tenantDocumentDbUrl)
+					.AddKey(tenantDocumentDbKey)
+					.AddDatabase(databaseName)
+					.AddRequestUnit(tenantRequestUnits);
+
+				action?.Invoke(builder);
+
+				var model = builder.BuildDocumentDb();
+
+				// DeleteAll is only applicable in local testing environment.
+				if (_configuration.IsLocalEnvironment() || _configuration["EnableDeleteAll"] == "true")
+				{
+					model.DeleteAll(() => new Status { Message = "All entities are removed." });
+				}
+
+				model.Build();
+			});
 		}
 	}
 }
