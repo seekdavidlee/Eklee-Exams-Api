@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using Eklee.Azure.Functions.GraphQl;
 using Eklee.Azure.Functions.GraphQl.Repository.Search;
 using Eklee.Exams.Api.Schema.Models;
@@ -11,6 +12,11 @@ namespace Eklee.Exams.Api.Schema
 {
 	public class MyQuery : ObjectGraphType<object>
 	{
+		private bool DefaultAssertion(ClaimsPrincipal claimsPrincipal)
+		{
+			return claimsPrincipal.IsInRole("Eklee.User.Read");
+		}
+
 		public MyQuery(QueryBuilderFactory queryBuilderFactory, ILogger logger)
 		{
 			logger.LogInformation("Building queries.");
@@ -18,24 +24,28 @@ namespace Eklee.Exams.Api.Schema
 			Name = "query";
 
 			queryBuilderFactory.Create<Exam>(this, "GetExamById")
+				.AssertWithClaimsPrincipal(DefaultAssertion)
 				.WithParameterBuilder()
 				.WithKeys()
 				.BuildQuery()
 				.BuildWithSingleResult();
 
 			queryBuilderFactory.Create<ExamTemplate>(this, "GetExamTemplateById")
+				.AssertWithClaimsPrincipal(DefaultAssertion)
 				.WithParameterBuilder()
 				.WithKeys()
 				.BuildQuery()
 				.BuildWithSingleResult();
 
 			queryBuilderFactory.Create<Candidate>(this, "GetCandidateById")
+				.AssertWithClaimsPrincipal(DefaultAssertion)
 				.WithParameterBuilder()
 				.WithKeys()
 				.BuildQuery()
 				.BuildWithSingleResult();
 
 			queryBuilderFactory.Create<ExamOutput>(this, "GetExamsByNameAndTaken")
+				.AssertWithClaimsPrincipal(DefaultAssertion)
 				.WithCache(TimeSpan.FromSeconds(30))
 				.WithParameterBuilder()
 				.BeginQuery<Exam>()
@@ -72,6 +82,7 @@ namespace Eklee.Exams.Api.Schema
 				.BuildWithListResult();
 
 			queryBuilderFactory.Create<ExamOutput>(this, "SearchExams")
+				.AssertWithClaimsPrincipal(DefaultAssertion)
 				.WithCache(TimeSpan.FromSeconds(30))
 				.WithParameterBuilder()
 				.BeginSearch(typeof(CandidateSearch), typeof(ExamTemplateSearch))
