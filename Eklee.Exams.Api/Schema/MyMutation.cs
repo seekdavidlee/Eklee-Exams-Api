@@ -29,7 +29,7 @@ namespace Eklee.Exams.Api.Schema
 
 			Name = "mutations";
 
-			var tenants = _configuration.GetSection("Tenants").GetChildren().ToList();
+			var tenants = _configuration.GetSection("Tenants").GetChildren().Where(x => !string.IsNullOrEmpty(x["Issuer"])).ToList();
 
 			if (tenants.Count == 0)
 			{
