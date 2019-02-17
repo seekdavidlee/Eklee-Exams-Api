@@ -25,6 +25,8 @@ namespace Eklee.Exams.Api.Schema
 		{
 			_configuration = configuration;
 			_logger = logger;
+			_logger.LogInformation("Building mutations.");
+
 			Name = "mutations";
 
 			var tenants = _configuration.GetSection("Tenants").GetChildren().ToList();
