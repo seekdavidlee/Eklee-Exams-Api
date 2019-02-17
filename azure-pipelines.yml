@@ -45,60 +45,12 @@ steps:
     appType: 'functionApp'
     packageForLinux: '$(zipLocation)'
 
-- powershell: |
-      $url = "https://" + $env:stackName + "-staging.azurewebsites.net"
-      @{
-        values=@(
-        @{
-            key="endpoint";
-            value="$url";
-        }, 
-        @{
-            key="client_secret";
-            value="$env:Postman_client_secret";
-        }, 
-        @{
-            key="client_id";
-            value="$env:Postman_client_id";
-        }, 
-        @{
-            key="resource_id";
-            value="$env:Postman_resource_id";
-        }, 
-        @{
-            key="tenant_id";
-            value="$env:Postman_tenant_id";
-        }, 
-        @{
-            key="tenant1Id";
-            value="$env:tenant1Id";
-        }, 
-        @{
-            key="clientId";
-            value="$env:clientId";
-        }, 
-        @{
-            key="clientSecret";
-            value="$env:clientSecret";
-        }, 
-        @{
-            key="tenant1user1";
-            value="$env:tenant1user1";
-        }, 
-        @{
-            key="tenant1user1password";
-            value="$env:tenant1user1password";
-        }, 
-        @{
-            key="resourceId";
-            value="$env:resourceId";
-        })
-      } | ConvertTo-Json -depth 100 | Out-File -encoding ASCII postman_environment.json
-      npm install
-      node_modules\.bin\newman run tests\Eklee.Exam.Api.postman_collection.json -e postman_environment.json --reporters junit --reporter-junit-export $env:Common_TestResultsDirectory\report.xml
-  env:
-    Postman_client_secret: $(Postman.client_secret)
-  displayName: 'Run integration tests'
+- task: PowerShell@2
+  displayName: 'Run Postman integration tests'
+  inputs:
+    targetType: 'filePath' # Optional. Options: filePath, inline
+    filePath: RunPostmanTests.ps1
+    arguments: '-Tenant1Id $(tenant1Id) -Tenant1user1 $(tenant1user1) -Tenant1user1password $(tenant1user1password) -ResourceId $(resourceId) -ClientId $(clientId) -ClientSecret $(clientSecret) -StackName $(stackName)'
 
 - task: PublishTestResults@2
   displayName: 'Publish integration tests results'
