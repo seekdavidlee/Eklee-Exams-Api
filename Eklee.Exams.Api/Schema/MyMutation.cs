@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using Eklee.Azure.Functions.GraphQl;
@@ -26,16 +27,6 @@ namespace Eklee.Exams.Api.Schema
 			_logger = logger;
 			Name = "mutations";
 
-			Add<Exam, ItemWithGuidId>(inputBuilderFactory, builder => builder.AddPartition(x => x.Category));
-			Add<Candidate, ItemWithGuidId>(inputBuilderFactory, builder => builder.AddPartition(x => x.Type));
-			Add<ExamTemplate, ItemWithGuidId>(inputBuilderFactory, builder => builder.AddPartition(x => x.Category));
-
-			AddSearch<CandidateSearch, Candidate>(inputBuilderFactory, "Candidate search index has been removed.");
-			AddSearch<ExamTemplateSearch, ExamTemplate>(inputBuilderFactory, "Exam search template index has been removed.");
-		}
-
-		private void AddSearch<TEntity, TModel>(InputBuilderFactory inputBuilderFactory, string deleteMessage) where TEntity : class
-		{
 			var tenants = _configuration.GetSection("Tenants").GetChildren().ToList();
 
 			if (tenants.Count == 0)
@@ -43,6 +34,17 @@ namespace Eklee.Exams.Api.Schema
 				_logger.LogError("Tenants not set!");
 			}
 
+			Add<Exam, ItemWithGuidId>(tenants, inputBuilderFactory, builder => builder.AddPartition(x => x.Category));
+			Add<Candidate, ItemWithGuidId>(tenants, inputBuilderFactory, builder => builder.AddPartition(x => x.Type));
+			Add<ExamTemplate, ItemWithGuidId>(tenants, inputBuilderFactory, builder => builder.AddPartition(x => x.Category));
+
+			AddSearch<CandidateSearch, Candidate>(tenants, inputBuilderFactory, "Candidate search index has been removed.");
+			AddSearch<ExamTemplateSearch, ExamTemplate>(tenants, inputBuilderFactory, "Exam search template index has been removed.");
+		}
+
+		private void AddSearch<TEntity, TModel>(List<IConfigurationSection> tenants,
+			InputBuilderFactory inputBuilderFactory, string deleteMessage) where TEntity : class
+		{
 			tenants.ForEach(tenant =>
 			{
 				string tenantSearchApiKey = tenant["Search:ApiKey"];
@@ -70,10 +72,10 @@ namespace Eklee.Exams.Api.Schema
 		}
 
 		private void Add<TEntity, TDeleteEntity>(
+			List<IConfigurationSection> tenants,
 			InputBuilderFactory inputBuilderFactory,
 			Action<DocumentDbConfiguration<TEntity>> action) where TEntity : class, IEntityWithGuidId, new() where TDeleteEntity : IEntityWithGuidId, new()
 		{
-			var tenants = _configuration.GetSection("Tenants").GetChildren().ToList();
 			tenants.ForEach(tenant =>
 			{
 				var issuer = tenant["Issuer"];
