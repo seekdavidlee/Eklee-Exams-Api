@@ -1,11 +1,10 @@
-param(
-	[Parameter(Mandatory=$True)][string]$Tenant1Id, 
-	[Parameter(Mandatory=$True)][string]$Tenant1user1,
-	[Parameter(Mandatory=$True)][string]$Tenant1user1password,
-	[Parameter(Mandatory=$True)][string]$ResourceId,
-	[Parameter(Mandatory=$True)][string]$ClientId,
-	[Parameter(Mandatory=$True)][string]$ClientSecret,
-	[Parameter(Mandatory=$True)][string]$StackName)
+$Tenant1Id = $env:tenant1Id
+$Tenant1user1 = $env:tenant1user1
+$Tenant1user1password = $env:tenant1user1password
+$ResourceId = $env:resourceId
+$ClientId = $env:clientId 
+$ClientSecret = $env:clientSecret
+$StackName = $env:stackName
 	
 	  $url = "https://" + $StackName + "-staging.azurewebsites.net"
       @{
