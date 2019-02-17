@@ -71,7 +71,7 @@ steps:
         }, 
         @{
             key="tenant1Id";
-            value="";
+            value="$env:tenant1Id";
         }, 
         @{
             key="clientId";
