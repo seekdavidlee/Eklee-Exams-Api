@@ -68,6 +68,30 @@ steps:
         @{
             key="tenant_id";
             value="$env:Postman_tenant_id";
+        }, 
+        @{
+            key="tenant1Id";
+            value="";
+        }, 
+        @{
+            key="clientId";
+            value="$env:clientId";
+        }, 
+        @{
+            key="clientSecret";
+            value="$env:clientSecret";
+        }, 
+        @{
+            key="tenant1user1";
+            value="$env:tenant1user1";
+        }, 
+        @{
+            key="tenant1user1password";
+            value="$env:tenant1user1password";
+        }, 
+        @{
+            key="resourceId";
+            value="$env:resourceId";
         })
       } | ConvertTo-Json -depth 100 | Out-File -encoding ASCII postman_environment.json
       npm install
