@@ -23,32 +23,32 @@ steps:
       Compress-Archive -Path $env:Build_ArtifactStagingDirectory\* -DestinationPath $zipLocation
       Write-Host "##vso[task.setvariable variable=zipLocation;]$zipLocation"
 
-- task: AzureResourceGroupDeployment@2
-  displayName: 'Deploy stack resources'
-  inputs:
-    azureSubscription: '$(ServiceConnectionName)'
-    resourceGroupName: '$(stackName)'
-    location: '$(Location)'
-    templateLocation: 'Linked artifact'
-    csmFile: 'deployment\template.json'
-    overrideParameters: '-stackName $(stackName) -clientId $(ClientId) -securityAudience $(Deploy.Security.Audience) -securityIssuers "$(Deploy.Security.Issuers)" -tenant1Issuer $(Deploy.Issuer)'
+# - task: AzureResourceGroupDeployment@2
+#   displayName: 'Deploy stack resources'
+#   inputs:
+#     azureSubscription: '$(ServiceConnectionName)'
+#     resourceGroupName: '$(stackName)'
+#     location: '$(Location)'
+#     templateLocation: 'Linked artifact'
+#     csmFile: 'deployment\template.json'
+#     overrideParameters: '-stackName $(stackName) -clientId $(ClientId) -securityAudience $(Deploy.Security.Audience) -securityIssuers "$(Deploy.Security.Issuers)" -tenant1Issuer $(Deploy.Issuer)'
 
-- task: AzureRmWebAppDeployment@4
-  displayName: 'Deploy app to stack slot'
-  inputs:
-    connectionType: 'AzureRM'
-    azureSubscription: '$(ServiceConnectionName)'
-    webAppName: '$(stackName)'
-    deployToSlotOrASE: true
-    resourceGroupName: '$(stackName)'
-    slotName: 'staging'
-    appType: 'functionApp'
-    packageForLinux: '$(zipLocation)'
+# - task: AzureRmWebAppDeployment@4
+#   displayName: 'Deploy app to stack slot'
+#   inputs:
+#     connectionType: 'AzureRM'
+#     azureSubscription: '$(ServiceConnectionName)'
+#     webAppName: '$(stackName)'
+#     deployToSlotOrASE: true
+#     resourceGroupName: '$(stackName)'
+#     slotName: 'staging'
+#     appType: 'functionApp'
+#     packageForLinux: '$(zipLocation)'
 
 - task: PowerShell@2
   displayName: 'Run Postman integration tests'
   inputs:
-    targetType: 'filePath' # Optional. Options: filePath, inline
+    targetType: 'filePath'
     filePath: RunPostmanTests.ps1
     arguments: '-Tenant1Id $(tenant1Id) -Tenant1user1 $(tenant1user1) -Tenant1user1password $(tenant1user1password) -ResourceId $(resourceId) -ClientId $(clientId) -ClientSecret $(clientSecret) -StackName $(stackName)'
 
@@ -59,12 +59,12 @@ steps:
     testResultsFiles: '**/*.xml' 
     searchFolder: '$(Common.TestResultsDirectory)'
 
-- task: AzureAppServiceManage@0
-  displayName: 'Swap Staging with Production'
-  inputs:
-    azureSubscription: '$(ServiceConnectionName)'
-    action: 'Swap Slots'
-    sourceSlot: 'staging' 
-    webAppName: '$(stackName)'
-    resourceGroupName: '$(stackName)'
-    swapWithProduction: true
+# - task: AzureAppServiceManage@0
+#   displayName: 'Swap Staging with Production'
+#   inputs:
+#     azureSubscription: '$(ServiceConnectionName)'
+#     action: 'Swap Slots'
+#     sourceSlot: 'staging' 
+#     webAppName: '$(stackName)'
+#     resourceGroupName: '$(stackName)'
+#     swapWithProduction: true
