@@ -31,8 +31,10 @@ namespace Eklee.Exams.Api.Schema
 
 			if (tenants.Count == 0)
 			{
-				_logger.LogError("Tenants not set!");
+				throw new ArgumentException("Tenant(s) not configured.");
 			}
+
+			_logger.LogInformation($"{tenants.Count} tenants are configured.");
 
 			Add<Exam, ItemWithGuidId>(tenants, inputBuilderFactory, builder => builder.AddPartition(x => x.Category));
 			Add<Candidate, ItemWithGuidId>(tenants, inputBuilderFactory, builder => builder.AddPartition(x => x.Type));
