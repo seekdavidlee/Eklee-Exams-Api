@@ -45,74 +45,74 @@ steps:
     appType: 'functionApp'
     packageForLinux: '$(zipLocation)'
 
-- powershell: |
-      $url = "https://" + $env:stackName + "-staging.azurewebsites.net"
-      @{
-        values=@(
-        @{
-            key="endpoint";
-            value="$url";
-        }, 
-        @{
-            key="client_secret";
-            value="$env:Postman_client_secret";
-        }, 
-        @{
-            key="client_id";
-            value="$env:Postman_client_id";
-        }, 
-        @{
-            key="resource_id";
-            value="$env:Postman_resource_id";
-        }, 
-        @{
-            key="tenant_id";
-            value="$env:Postman_tenant_id";
-        }, 
-        @{
-            key="tenant1Id";
-            value="";
-        }, 
-        @{
-            key="clientId";
-            value="$env:clientId";
-        }, 
-        @{
-            key="clientSecret";
-            value="$env:clientSecret";
-        }, 
-        @{
-            key="tenant1user1";
-            value="$env:tenant1user1";
-        }, 
-        @{
-            key="tenant1user1password";
-            value="$env:tenant1user1password";
-        }, 
-        @{
-            key="resourceId";
-            value="$env:resourceId";
-        })
-      } | ConvertTo-Json -depth 100 | Out-File -encoding ASCII postman_environment.json
-      npm install
-      node_modules\.bin\newman run tests\Eklee.Exam.Api.postman_collection.json -e postman_environment.json --reporters junit --reporter-junit-export $env:Common_TestResultsDirectory\report.xml
-  env:
-    Postman_client_secret: $(Postman.client_secret)
-  displayName: 'Run integration tests'
+# - powershell: |
+#       $url = "https://" + $env:stackName + "-staging.azurewebsites.net"
+#       @{
+#         values=@(
+#         @{
+#             key="endpoint";
+#             value="$url";
+#         }, 
+#         @{
+#             key="client_secret";
+#             value="$env:Postman_client_secret";
+#         }, 
+#         @{
+#             key="client_id";
+#             value="$env:Postman_client_id";
+#         }, 
+#         @{
+#             key="resource_id";
+#             value="$env:Postman_resource_id";
+#         }, 
+#         @{
+#             key="tenant_id";
+#             value="$env:Postman_tenant_id";
+#         }, 
+#         @{
+#             key="tenant1Id";
+#             value="";
+#         }, 
+#         @{
+#             key="clientId";
+#             value="$env:clientId";
+#         }, 
+#         @{
+#             key="clientSecret";
+#             value="$env:clientSecret";
+#         }, 
+#         @{
+#             key="tenant1user1";
+#             value="$env:tenant1user1";
+#         }, 
+#         @{
+#             key="tenant1user1password";
+#             value="$env:tenant1user1password";
+#         }, 
+#         @{
+#             key="resourceId";
+#             value="$env:resourceId";
+#         })
+#       } | ConvertTo-Json -depth 100 | Out-File -encoding ASCII postman_environment.json
+#       npm install
+#       node_modules\.bin\newman run tests\Eklee.Exam.Api.postman_collection.json -e postman_environment.json --reporters junit --reporter-junit-export $env:Common_TestResultsDirectory\report.xml
+#   env:
+#     Postman_client_secret: $(Postman.client_secret)
+#   displayName: 'Run integration tests'
 
-- task: PublishTestResults@2
-  displayName: 'Publish integration tests results'
-  inputs:
-    testResultsFormat: 'JUnit'
-    testResultsFiles: '**/*.xml' 
-    searchFolder: '$(Common.TestResultsDirectory)'
+# - task: PublishTestResults@2
+#   displayName: 'Publish integration tests results'
+#   inputs:
+#     testResultsFormat: 'JUnit'
+#     testResultsFiles: '**/*.xml' 
+#     searchFolder: '$(Common.TestResultsDirectory)'
 
-- task: AzureAppServiceManage@0
-  displayName: 'Swap Staging with Production'
-  inputs:
-    azureSubscription: '$(ServiceConnectionName)'
-    action: 'Swap Slots'
-    sourceSlot: 'staging' 
-    webAppName: '$(stackName)'
-    resourceGroupName: '$(stackName)'
-    swapWithProduction: true
+# - task: AzureAppServiceManage@0
+#   displayName: 'Swap Staging with Production'
+#   inputs:
+#     azureSubscription: '$(ServiceConnectionName)'
+#     action: 'Swap Slots'
+#     sourceSlot: 'staging' 
+#     webAppName: '$(stackName)'
+#     resourceGroupName: '$(stackName)'
+#     swapWithProduction: true

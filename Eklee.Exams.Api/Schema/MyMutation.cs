@@ -6,21 +6,24 @@ using Eklee.Azure.Functions.GraphQl.Repository.DocumentDb;
 using Eklee.Exams.Api.Schema.Models;
 using GraphQL.Types;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace Eklee.Exams.Api.Schema
 {
 	public class MyMutation : ObjectGraphType
 	{
 		private readonly IConfiguration _configuration;
+		private readonly ILogger _logger;
 
 		private bool DefaultAssertion(ClaimsPrincipal claimsPrincipal, AssertAction assertAction)
 		{
 			return claimsPrincipal.IsInRole("Eklee.User.Write");
 		}
 
-		public MyMutation(InputBuilderFactory inputBuilderFactory, IConfiguration configuration)
+		public MyMutation(InputBuilderFactory inputBuilderFactory, IConfiguration configuration, ILogger logger)
 		{
 			_configuration = configuration;
+			_logger = logger;
 			Name = "mutations";
 
 			Add<Exam, ItemWithGuidId>(inputBuilderFactory, builder => builder.AddPartition(x => x.Category));
@@ -34,6 +37,12 @@ namespace Eklee.Exams.Api.Schema
 		private void AddSearch<TEntity, TModel>(InputBuilderFactory inputBuilderFactory, string deleteMessage) where TEntity : class
 		{
 			var tenants = _configuration.GetSection("Tenants").GetChildren().ToList();
+
+			if (tenants.Count == 0)
+			{
+				_logger.LogError("Tenants not set!");
+			}
+
 			tenants.ForEach(tenant =>
 			{
 				string tenantSearchApiKey = tenant["Search:ApiKey"];
@@ -68,6 +77,8 @@ namespace Eklee.Exams.Api.Schema
 			tenants.ForEach(tenant =>
 			{
 				var issuer = tenant["Issuer"];
+
+				_logger.LogInformation($"Setting up tenant: {issuer}.");
 
 				string tenantDocumentDbKey = tenant["DocumentDb:Key"];
 				string tenantDocumentDbUrl = tenant["DocumentDb:Url"];
