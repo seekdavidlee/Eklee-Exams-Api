@@ -31,7 +31,7 @@ steps:
     location: '$(Location)'
     templateLocation: 'Linked artifact'
     csmFile: 'deployment\template.json'
-    overrideParameters: '-stackName $(stackName) -clientId $(ClientId)'
+    overrideParameters: '-stackName $(stackName) -clientId $(ClientId)' -securityAudience $(Deploy.Security.Audience) -securityIssuers $(Deploy.Security.Issuers)
 
 - task: AzureRmWebAppDeployment@4
   displayName: 'Deploy app to stack slot'

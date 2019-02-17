@@ -13,6 +13,14 @@
 		"config_web_name": {
 			"defaultValue": "web",
 			"type": "String"
+		},
+		"securityAudience": {
+			"defaultValue": "",
+			"type": "String"
+		},
+		"securityIssuers": {
+			"defaultValue": "",
+			"type": "String"
 		}
 	},
 	"variables": {
@@ -392,7 +400,9 @@
 				"FUNCTIONS_WORKER_RUNTIME": "dotnet",
 				"WEBSITE_NODE_DEFAULT_VERSION": "8.11.1",
 				"GraphQl:EnableMetrics": "true",
-				"EnableDeleteAll": "false"
+				"EnableDeleteAll": "false",
+				"Security:Audience": "[parameters('securityAudience')]",
+				"Security:Issuers": "[parameters('securityIssuers')]"
 			},
 			"dependsOn": [
 				"[resourceId('Microsoft.Web/sites', variables('stackName'))]",
@@ -420,7 +430,9 @@
 				"FUNCTIONS_WORKER_RUNTIME": "dotnet",
 				"WEBSITE_NODE_DEFAULT_VERSION": "8.11.1",
 				"GraphQl:EnableMetrics": "true",
-				"EnableDeleteAll": "true"
+				"EnableDeleteAll": "true",
+				"Security:Audience": "[parameters('securityAudience')]",
+				"Security:Issuers": "[parameters('securityIssuers')]"
 			},
 			"dependsOn": [
 				"[resourceId('Microsoft.Web/sites', variables('stackName'))]",
