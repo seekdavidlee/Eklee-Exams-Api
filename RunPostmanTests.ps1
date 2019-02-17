@@ -41,5 +41,5 @@ param(
       } | ConvertTo-Json -depth 100 | Out-File -encoding ASCII postman_environment.json
       npm install
       Write-Host "Running postman tests."
-	  $dir = $env:Common_TestResultsDirectory
-	  node_modules\.bin\newman run tests\Eklee.Exam.Api.postman_collection.json -e postman_environment.json --reporters junit --reporter-junit-export $dir\report.xml
+	  #$dir = $env:Common_TestResultsDirectory
+	  node_modules\.bin\newman run tests\Eklee.Exam.Api.postman_collection.json -e postman_environment.json --reporters junit --reporter-junit-export report.xml

@@ -50,7 +50,7 @@ steps:
   inputs:
     targetType: 'filePath'
     filePath: RunPostmanTests.ps1
-    arguments: '-Tenant1Id $(tenant1Id) -Tenant1user1 $(tenant1user1) -Tenant1user1password $(tenant1user1password) -ResourceId "$(resourceId)" -ClientId $(clientId) -ClientSecret $(clientSecret) -StackName $(stackName)'
+    arguments: '-Tenant1Id $(tenant1Id) -Tenant1user1 $(tenant1user1) -Tenant1user1password "$(tenant1user1password)" -ResourceId "$(resourceId)" -ClientId $(clientId) -ClientSecret "$(clientSecret)" -StackName $(stackName)'
 
 - task: PublishTestResults@2
   displayName: 'Publish integration tests results'
