@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using Eklee.Azure.Functions.GraphQl;
@@ -6,34 +7,48 @@ using Eklee.Azure.Functions.GraphQl.Repository.DocumentDb;
 using Eklee.Exams.Api.Schema.Models;
 using GraphQL.Types;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace Eklee.Exams.Api.Schema
 {
 	public class MyMutation : ObjectGraphType
 	{
 		private readonly IConfiguration _configuration;
+		private readonly ILogger _logger;
 
 		private bool DefaultAssertion(ClaimsPrincipal claimsPrincipal, AssertAction assertAction)
 		{
 			return claimsPrincipal.IsInRole("Eklee.User.Write");
 		}
 
-		public MyMutation(InputBuilderFactory inputBuilderFactory, IConfiguration configuration)
+		public MyMutation(InputBuilderFactory inputBuilderFactory, IConfiguration configuration, ILogger logger)
 		{
 			_configuration = configuration;
+			_logger = logger;
+			_logger.LogInformation("Building mutations.");
+
 			Name = "mutations";
 
-			Add<Exam, ItemWithGuidId>(inputBuilderFactory, builder => builder.AddPartition(x => x.Category));
-			Add<Candidate, ItemWithGuidId>(inputBuilderFactory, builder => builder.AddPartition(x => x.Type));
-			Add<ExamTemplate, ItemWithGuidId>(inputBuilderFactory, builder => builder.AddPartition(x => x.Category));
+			var tenants = _configuration.GetSection("Tenants").GetChildren().Where(x => !string.IsNullOrEmpty(x["Issuer"])).ToList();
 
-			AddSearch<CandidateSearch, Candidate>(inputBuilderFactory, "Candidate search index has been removed.");
-			AddSearch<ExamTemplateSearch, ExamTemplate>(inputBuilderFactory, "Exam search template index has been removed.");
+			if (tenants.Count == 0)
+			{
+				throw new ArgumentException("Tenant(s) not configured.");
+			}
+
+			_logger.LogInformation($"{tenants.Count} tenants are configured.");
+
+			Add<Exam, ItemWithGuidId>(tenants, inputBuilderFactory, builder => builder.AddPartition(x => x.Category));
+			Add<Candidate, ItemWithGuidId>(tenants, inputBuilderFactory, builder => builder.AddPartition(x => x.Type));
+			Add<ExamTemplate, ItemWithGuidId>(tenants, inputBuilderFactory, builder => builder.AddPartition(x => x.Category));
+
+			AddSearch<CandidateSearch, Candidate>(tenants, inputBuilderFactory, "Candidate search index has been removed.");
+			AddSearch<ExamTemplateSearch, ExamTemplate>(tenants, inputBuilderFactory, "Exam search template index has been removed.");
 		}
 
-		private void AddSearch<TEntity, TModel>(InputBuilderFactory inputBuilderFactory, string deleteMessage) where TEntity : class
+		private void AddSearch<TEntity, TModel>(List<IConfigurationSection> tenants,
+			InputBuilderFactory inputBuilderFactory, string deleteMessage) where TEntity : class
 		{
-			var tenants = _configuration.GetSection("Tenants").GetChildren().ToList();
 			tenants.ForEach(tenant =>
 			{
 				string tenantSearchApiKey = tenant["Search:ApiKey"];
@@ -61,13 +76,15 @@ namespace Eklee.Exams.Api.Schema
 		}
 
 		private void Add<TEntity, TDeleteEntity>(
+			List<IConfigurationSection> tenants,
 			InputBuilderFactory inputBuilderFactory,
 			Action<DocumentDbConfiguration<TEntity>> action) where TEntity : class, IEntityWithGuidId, new() where TDeleteEntity : IEntityWithGuidId, new()
 		{
-			var tenants = _configuration.GetSection("Tenants").GetChildren().ToList();
 			tenants.ForEach(tenant =>
 			{
 				var issuer = tenant["Issuer"];
+
+				_logger.LogInformation($"Setting up tenant: {issuer}.");
 
 				string tenantDocumentDbKey = tenant["DocumentDb:Key"];
 				string tenantDocumentDbUrl = tenant["DocumentDb:Url"];

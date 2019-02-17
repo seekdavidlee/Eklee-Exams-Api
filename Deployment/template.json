@@ -13,6 +13,18 @@
 		"config_web_name": {
 			"defaultValue": "web",
 			"type": "String"
+		},
+		"securityAudience": {
+			"defaultValue": "",
+			"type": "String"
+		},
+		"securityIssuers": {
+			"defaultValue": "",
+			"type": "String"
+		},
+		"tenant1Issuer": {
+			"defaultValue": "",
+			"type": "String"
 		}
 	},
 	"variables": {
@@ -308,15 +320,15 @@
 				"autoHealRules": null,
 				"tracingOptions": null,
 				"vnetName": "",
-				"siteAuthEnabled": true,
+				"siteAuthEnabled": false,
 				"siteAuthSettings": {
-					"enabled": true,
+					"enabled": null,
 					"runtimeVersion": "1.0.0",
-					"unauthenticatedClientAction": "RedirectToLoginPage",
+					"unauthenticatedClientAction": null,
 					"tokenStoreEnabled": true,
 					"allowedExternalRedirectUrls": null,
-					"defaultProvider": "AzureActiveDirectory",
-					"clientId": "[parameters('clientId')]",
+					"defaultProvider": null,
+					"clientId": null,
 					"clientSecret": null,
 					"clientSecretCertificateThumbprint": null,
 					"issuer": null,
@@ -382,17 +394,20 @@
 			"properties": {
 				"APPINSIGHTS_INSTRUMENTATIONKEY": "[reference(resourceId('microsoft.insights/components',variables('stackName')),'2015-05-01').InstrumentationKey]",
 				"AzureWebJobsStorage": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('stackName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('stackName')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value)]",
-				"DocumentDb:Database": "exams",
-				"DocumentDb:Key": "[listKeys(resourceId('Microsoft.DocumentDB/databaseAccounts', variables('stackName')), providers('Microsoft.DocumentDB', 'databaseAccounts').apiVersions[0]).primaryMasterKey]",
-				"DocumentDb:RequestUnits": "400",
-				"DocumentDb:Url": "[reference(resourceId('Microsoft.DocumentDB/databaseAccounts',variables('stackName')),'2015-04-08').documentEndpoint]",
-				"Search:ServiceName": "[variables('stackName')]",
-				"Search:ApiKey": "[listAdminKeys(resourceId('Microsoft.Search/searchServices',variables('stackName')), '2015-08-19').PrimaryKey]",
+				"Tenants:0:DocumentDb:Database": "exams",
+				"Tenants:0:DocumentDb:Key": "[listKeys(resourceId('Microsoft.DocumentDB/databaseAccounts', variables('stackName')), providers('Microsoft.DocumentDB', 'databaseAccounts').apiVersions[0]).primaryMasterKey]",
+				"Tenants:0:DocumentDb:RequestUnits": "400",
+				"Tenants:0:DocumentDb:Url": "[reference(resourceId('Microsoft.DocumentDB/databaseAccounts',variables('stackName')),'2015-04-08').documentEndpoint]",
+				"Tenants:0:Search:ServiceName": "[variables('stackName')]",
+				"Tenants:0:Search:ApiKey": "[listAdminKeys(resourceId('Microsoft.Search/searchServices',variables('stackName')), '2015-08-19').PrimaryKey]",
+				"Tenants:0:Issuer": "[parameters('tenant1Issuer')]",
 				"FUNCTIONS_EXTENSION_VERSION": "~2",
 				"FUNCTIONS_WORKER_RUNTIME": "dotnet",
 				"WEBSITE_NODE_DEFAULT_VERSION": "8.11.1",
 				"GraphQl:EnableMetrics": "true",
-				"EnableDeleteAll": "false"
+				"EnableDeleteAll": "false",
+				"Security:Audience": "[parameters('securityAudience')]",
+				"Security:Issuers": "[parameters('securityIssuers')]"
 			},
 			"dependsOn": [
 				"[resourceId('Microsoft.Web/sites', variables('stackName'))]",
@@ -410,17 +425,20 @@
 			"properties": {
 				"APPINSIGHTS_INSTRUMENTATIONKEY": "[reference(resourceId('microsoft.insights/components',variables('stackName')),'2015-05-01').InstrumentationKey]",
 				"AzureWebJobsStorage": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('stackName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('stackName')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value)]",
-				"DocumentDb:Database": "exams",
-				"DocumentDb:Key": "[listKeys(resourceId('Microsoft.DocumentDB/databaseAccounts', variables('stackName')), providers('Microsoft.DocumentDB', 'databaseAccounts').apiVersions[0]).primaryMasterKey]",
-				"DocumentDb:RequestUnits": "400",
-				"DocumentDb:Url": "[reference(resourceId('Microsoft.DocumentDB/databaseAccounts',variables('stackName')),'2015-04-08').documentEndpoint]",
-				"Search:ServiceName": "[variables('stackName')]",
-				"Search:ApiKey": "[listAdminKeys(resourceId('Microsoft.Search/searchServices',variables('stackName')), '2015-08-19').PrimaryKey]",
+				"Tenants:0:DocumentDb:Database": "exams",
+				"Tenants:0:DocumentDb:Key": "[listKeys(resourceId('Microsoft.DocumentDB/databaseAccounts', variables('stackName')), providers('Microsoft.DocumentDB', 'databaseAccounts').apiVersions[0]).primaryMasterKey]",
+				"Tenants:0:DocumentDb:RequestUnits": "400",
+				"Tenants:0:DocumentDb:Url": "[reference(resourceId('Microsoft.DocumentDB/databaseAccounts',variables('stackName')),'2015-04-08').documentEndpoint]",
+				"Tenants:0:Search:ServiceName": "[variables('stackName')]",
+				"Tenants:0:Search:ApiKey": "[listAdminKeys(resourceId('Microsoft.Search/searchServices',variables('stackName')), '2015-08-19').PrimaryKey]",
+				"Tenants:0:Issuer": "[parameters('tenant1Issuer')]",
 				"FUNCTIONS_EXTENSION_VERSION": "~2",
 				"FUNCTIONS_WORKER_RUNTIME": "dotnet",
 				"WEBSITE_NODE_DEFAULT_VERSION": "8.11.1",
 				"GraphQl:EnableMetrics": "true",
-				"EnableDeleteAll": "true"
+				"EnableDeleteAll": "true",
+				"Security:Audience": "[parameters('securityAudience')]",
+				"Security:Issuers": "[parameters('securityIssuers')]"
 			},
 			"dependsOn": [
 				"[resourceId('Microsoft.Web/sites', variables('stackName'))]",
@@ -429,85 +447,6 @@
 				"[resourceId('Microsoft.Search/searchServices', variables('stackName'))]",
 				"[resourceId('microsoft.insights/components', variables('stackName'))]",
 				"[resourceId('Microsoft.DocumentDB/databaseAccounts', variables('stackName'))]"
-			]
-		},
-		{
-			"name": "[concat(variables('stackName'),'/authsettings')]",
-			"apiVersion": "2016-08-01",
-			"type": "Microsoft.Web/sites/config",
-			"location": "[variables('location')]",
-			"properties": {
-				"enabled": true,
-				"runtimeVersion": "1.0.0",
-				"unauthenticatedClientAction": "RedirectToLoginPage",
-				"tokenStoreEnabled": true,
-				"allowedExternalRedirectUrls": null,
-				"defaultProvider": "AzureActiveDirectory",
-				"clientId": "[parameters('clientId')]",
-				"clientSecret": null,
-				"clientSecretCertificateThumbprint": null,
-				"issuer": null,
-				"allowedAudiences": null,
-				"additionalLoginParams": null,
-				"isAadAutoProvisioned": false,
-				"googleClientId": null,
-				"googleClientSecret": null,
-				"googleOAuthScopes": null,
-				"facebookAppId": null,
-				"facebookAppSecret": null,
-				"facebookOAuthScopes": [
-					""
-				],
-				"twitterConsumerKey": null,
-				"twitterConsumerSecret": null,
-				"microsoftAccountClientId": null,
-				"microsoftAccountClientSecret": null,
-				"microsoftAccountOAuthScopes": [
-					""
-				]
-			},
-			"dependsOn": [
-				"[resourceId('Microsoft.Web/sites', variables('stackName'))]"
-			]
-		},
-		{
-			"name": "[concat(variables('stackName'),'/Staging/authsettings')]",
-			"apiVersion": "2016-08-01",
-			"type": "Microsoft.Web/sites/slots/config",
-			"location": "[variables('location')]",
-			"properties": {
-				"enabled": true,
-				"runtimeVersion": "1.0.0",
-				"unauthenticatedClientAction": "RedirectToLoginPage",
-				"tokenStoreEnabled": true,
-				"allowedExternalRedirectUrls": null,
-				"defaultProvider": "AzureActiveDirectory",
-				"clientId": "[parameters('clientId')]",
-				"clientSecret": null,
-				"clientSecretCertificateThumbprint": null,
-				"issuer": null,
-				"allowedAudiences": null,
-				"additionalLoginParams": null,
-				"isAadAutoProvisioned": false,
-				"googleClientId": null,
-				"googleClientSecret": null,
-				"googleOAuthScopes": null,
-				"facebookAppId": null,
-				"facebookAppSecret": null,
-				"facebookOAuthScopes": [
-					""
-				],
-				"twitterConsumerKey": null,
-				"twitterConsumerSecret": null,
-				"microsoftAccountClientId": null,
-				"microsoftAccountClientSecret": null,
-				"microsoftAccountOAuthScopes": [
-					""
-				]
-			},
-			"dependsOn": [
-				"[resourceId('Microsoft.Web/sites', variables('stackName'))]",
-				"[resourceId('Microsoft.Web/sites/slots', variables('stackName'),'Staging')]"
 			]
 		}
 	]
