@@ -23,14 +23,14 @@ namespace Eklee.Exams.Api.Schema
 
 			Name = "query";
 
-			queryBuilderFactory.Create<Exam>(this, "GetExamById")
+			queryBuilderFactory.Create<TestResult>(this, "GetExamById")
 				.AssertWithClaimsPrincipal(DefaultAssertion)
 				.WithParameterBuilder()
 				.WithKeys()
 				.BuildQuery()
 				.BuildWithSingleResult();
 
-			queryBuilderFactory.Create<ExamTemplate>(this, "GetExamTemplateById")
+			queryBuilderFactory.Create<Exam>(this, "GetExamTemplateById")
 				.AssertWithClaimsPrincipal(DefaultAssertion)
 				.WithParameterBuilder()
 				.WithKeys()
@@ -48,17 +48,17 @@ namespace Eklee.Exams.Api.Schema
 				.AssertWithClaimsPrincipal(DefaultAssertion)
 				.WithCache(TimeSpan.FromSeconds(30))
 				.WithParameterBuilder()
-				.BeginQuery<Exam>()
+				.BeginQuery<TestResult>()
 					.WithProperty(x => x.Name)
 					.WithProperty(x => x.Taken)
-					.BuildQueryResult(ctx => ctx.Items["exams"] = ctx.GetQueryResults<Exam>())
-				.ThenWithQuery<ExamTemplate>()
+					.BuildQueryResult(ctx => ctx.Items["exams"] = ctx.GetQueryResults<TestResult>())
+				.ThenWithQuery<Exam>()
 					.WithPropertyFromSource(x => x.Id,
-						x => ((List<Exam>)x.Items["exams"]).Select(y => (object)y.ExamTemplateId).Distinct().ToList())
+						x => ((List<TestResult>)x.Items["exams"]).Select(y => (object)y.ExamTemplateId).Distinct().ToList())
 					.BuildQueryResult(ctx =>
 					{
-						List<Exam> exams = (List<Exam>)ctx.Items["exams"];
-						var exampleTemplates = ctx.GetQueryResults<ExamTemplate>();
+						List<TestResult> exams = (List<TestResult>)ctx.Items["exams"];
+						var exampleTemplates = ctx.GetQueryResults<Exam>();
 						ctx.SetResults(exams.Select(exam => new ExamOutput
 						{
 							Id = exam.Id,
@@ -85,22 +85,22 @@ namespace Eklee.Exams.Api.Schema
 				.AssertWithClaimsPrincipal(DefaultAssertion)
 				.WithCache(TimeSpan.FromSeconds(30))
 				.WithParameterBuilder()
-				.BeginSearch(typeof(CandidateSearch), typeof(ExamTemplateSearch))
+				.BeginSearch(typeof(CandidateSearch), typeof(ExamSearch))
 					.BuildQueryResult(ctx =>
 					{
 						var searches = ctx.GetQueryResults<SearchResultModel>();
-						ctx.Items["examTemplateSearchesIdList"] = searches.GetTypeList<ExamTemplateSearch>().Select(x => (object)x.Id).ToList();
+						ctx.Items["examTemplateSearchesIdList"] = searches.GetTypeList<ExamSearch>().Select(x => (object)x.Id).ToList();
 						ctx.Items["candidateSearchesIdList"] = searches.GetTypeList<CandidateSearch>().Select(x => (object)x.Id).ToList();
 					})
-				.ThenWithQuery<Exam>()
+				.ThenWithQuery<TestResult>()
 					.WithPropertyFromSource(x => x.CandidateId, ctx => (List<object>)ctx.Items["candidateSearchesIdList"])
-					.BuildQueryResult(ctx => ctx.Items["examsOfCandidates"] = ctx.GetQueryResults<Exam>())
-				.ThenWithQuery<Exam>()
+					.BuildQueryResult(ctx => ctx.Items["examsOfCandidates"] = ctx.GetQueryResults<TestResult>())
+				.ThenWithQuery<TestResult>()
 					.WithPropertyFromSource(x => x.ExamTemplateId, ctx => (List<object>)ctx.Items["examTemplateSearchesIdList"])
 					.BuildQueryResult(ctx =>
 					{
-						var exams = ctx.GetQueryResults<Exam>();
-						exams.AddRange((List<Exam>)ctx.Items["examsOfCandidates"]);
+						var exams = ctx.GetQueryResults<TestResult>();
+						exams.AddRange((List<TestResult>)ctx.Items["examsOfCandidates"]);
 						var results = exams.Distinct().Select(x => new ExamOutput
 						{
 							Id = x.Id,
@@ -119,9 +119,9 @@ namespace Eklee.Exams.Api.Schema
 				.ThenWithQuery<Candidate>()
 					.WithPropertyFromSource(x => x.Id, ctx => (List<object>)ctx.Items["candidateIdList"])
 					.BuildQueryResult(ctx => ctx.GetResults<ExamOutput>().ForEach(x => x.Candidate = ctx.GetQueryResults<Candidate>().Single(c => c.Id == x.CandidateId)))
-				.ThenWithQuery<ExamTemplate>()
+				.ThenWithQuery<Exam>()
 					.WithPropertyFromSource(x => x.Id, ctx => (List<object>)ctx.Items["examTemplateIdList"])
-					.BuildQueryResult(ctx => ctx.GetResults<ExamOutput>().ForEach(x => x.ExamTemplate = ctx.GetQueryResults<ExamTemplate>().Single(e => e.Id == x.ExamTemplateId)))
+					.BuildQueryResult(ctx => ctx.GetResults<ExamOutput>().ForEach(x => x.ExamTemplate = ctx.GetQueryResults<Exam>().Single(e => e.Id == x.ExamTemplateId)))
 				.BuildQuery().BuildWithListResult();
 		}
 	}

@@ -38,12 +38,12 @@ namespace Eklee.Exams.Api.Schema
 
 			_logger.LogInformation($"{tenants.Count} tenants are configured.");
 
-			Add<Exam, ItemWithGuidId>(tenants, inputBuilderFactory, builder => builder.AddPartition(x => x.Category));
+			Add<TestResult, ItemWithGuidId>(tenants, inputBuilderFactory, builder => builder.AddPartition(x => x.Category));
 			Add<Candidate, ItemWithGuidId>(tenants, inputBuilderFactory, builder => builder.AddPartition(x => x.Type));
-			Add<ExamTemplate, ItemWithGuidId>(tenants, inputBuilderFactory, builder => builder.AddPartition(x => x.Category));
+			Add<Exam, ItemWithGuidId>(tenants, inputBuilderFactory, builder => builder.AddPartition(x => x.Category));
 
 			AddSearch<CandidateSearch, Candidate>(tenants, inputBuilderFactory, "Candidate search index has been removed.");
-			AddSearch<ExamTemplateSearch, ExamTemplate>(tenants, inputBuilderFactory, "Exam search template index has been removed.");
+			AddSearch<ExamSearch, Exam>(tenants, inputBuilderFactory, "Exam search template index has been removed.");
 		}
 
 		private void AddSearch<TEntity, TModel>(List<IConfigurationSection> tenants,

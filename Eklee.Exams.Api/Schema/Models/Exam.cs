@@ -7,7 +7,7 @@ namespace Eklee.Exams.Api.Schema.Models
 	public class Exam : IEntityWithGuidId
 	{
 		[Key]
-		[Description("Id of the exam.")]
+		[Description("Id of the exam template.")]
 		public Guid Id { get; set; }
 
 		[Description("Name of the exam")]
@@ -16,13 +16,16 @@ namespace Eklee.Exams.Api.Schema.Models
 		[Description("Category of the exam")]
 		public string Category { get; set; }
 
-		[Description("Id of the candidate.")]
-		public Guid CandidateId { get; set; }
+		[Description("Date in which exam is released for use.")]
+		public DateTime Effective { get; set; }
 
-		[Description("Id of the exam template used.")]
-		public Guid ExamTemplateId { get; set; }
+		[Description("Date in which exam is retired for use.")]
+		public DateTime Expires { get; set; }
 
-		[Description("Date/time of when the exm was taken.")]
-		public DateTime Taken { get; set; }
+		[Description("Date in which exam was created.")]
+		public DateTime Created { get; set; }
+
+		[Description("Version format")]
+		public string Version { get; set; }
 	}
 }

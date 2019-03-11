@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Eklee.Exams.Api.Schema.Models
 {
+	[Description("Candidate")]
 	public class Candidate : IEntityWithGuidId
 	{
 		[Key]
@@ -21,15 +22,5 @@ namespace Eklee.Exams.Api.Schema.Models
 
 		[Description("Type of candidate. Either student, full time employed, part time employed.")]
 		public string Type { get; set; }
-	}
-
-	public class CandidateSearch : IEntityWithGuidId
-	{
-		[Key]
-		[Description("Id of the candidate")]
-		public Guid Id { get; set; }
-
-		[Description("The display name of the candidate.")]
-		public string Name { get; set; }
 	}
 }
