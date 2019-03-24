@@ -20,7 +20,7 @@ namespace Eklee.Exams.Api.Schema.Models
 		public Guid CandidateId { get; set; }
 
 		[Description("Id of the exam template used.")]
-		public Guid ExamTemplateId { get; set; }
+		public Guid ExamId { get; set; }
 
 		[Description("Date/time of when the exm was taken.")]
 		public DateTime Taken { get; set; }

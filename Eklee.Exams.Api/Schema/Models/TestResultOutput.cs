@@ -2,13 +2,13 @@
 
 namespace Eklee.Exams.Api.Schema.Models
 {
-	public class ExamOutput : TestResult
+	public class TestResultOutput : TestResult
 	{
 		[Description("Candidate who took the exam.")]
 		public Candidate Candidate { get; set; }
 
-		[Description("Exam template used.")]
-		public Exam ExamTemplate { get; set; }
+		[Description("Exam used.")]
+		public Exam Exam { get; set; }
 
 	}
 }

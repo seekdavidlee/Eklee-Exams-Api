@@ -18,6 +18,6 @@ namespace Eklee.Exams.Api.Schema.Models
 
 		public List<Candidate> Candidates { get; set; }
 
-		public List<Exam> ExamTemplates { get; set; }
+		public List<Exam> Exams { get; set; }
 	}
 }

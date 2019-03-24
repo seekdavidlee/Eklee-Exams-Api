@@ -1,6 +1,6 @@
 # Introduction
 
-The purpose of this project is to demonstrate the capabilities of [Eklee-Azure-Functions-GraphQl](https://github.com/seekdavidlee/Eklee-Azure-Functions-GraphQl). Having a good understanding of a particular use case is a good starting point for learning about our GraphQL implementation.
+The purpose of this project is to demonstrate the capabilities of [Eklee-Azure-Functions-GraphQl](https://github.com/seekdavidlee/Eklee-Azure-Functions-GraphQl). Having a good understanding of a particular use case is a good starting point for learning about the Eklee GraphQL implementation.
 
 * [https://dev.azure.com/eklee/Eklee.Exams.Api/](https://dev.azure.com/eklee/Eklee.Exams.Api/)
 

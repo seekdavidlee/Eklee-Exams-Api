@@ -157,7 +157,7 @@
 									"    pm.expect(jsonData.errors).to.eql(undefined);",
 									"});",
 									"",
-									"pm.test(\"Query returns with match\", function () {",
+									"pm.test(\"Candidate is created\", function () {",
 									"    var jsonData = pm.response.json();",
 									"    var id = pm.environment.get(\"createCandidateId\");",
 									"    pm.expect(jsonData.data.createCandidate.id).to.eql(id);",
@@ -186,85 +186,19 @@
 						"method": "POST",
 						"header": [
 							{
-								"key": "Content-Type",
-								"name": "Content-Type",
-								"value": "application/json",
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}",
 								"type": "text"
 							},
 							{
-								"key": "Authorization",
-								"value": "Bearer {{access_token}}",
+								"key": "Content-Type",
+								"value": "application/graphql",
 								"type": "text"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\"operationName\":null,\"variables\":{},\"query\":\"mutation {\\n  createCandidate(candidate: {id: \\\"{{createCandidateId}}\\\", active: true, created: \\\"2016-12-27\\\", name: \\\"Jack Box\\\", type: \\\"Full-time professional\\\"}) {\\n    id\\n    name\\n    type\\n    created\\n    active\\n  }\\n}\\n\"}"
-						},
-						"url": {
-							"raw": "{{endpoint}}/api/graph",
-							"host": [
-								"{{endpoint}}"
-							],
-							"path": [
-								"api",
-								"graph"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "CreateExamTemplate",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "35c8c12c-5cfe-42d0-8de3-66862da96f49",
-								"exec": [
-									"pm.test(\"Status code is 200\", function () {",
-									"    pm.response.to.have.status(200);",
-									"});",
-									"",
-									"pm.test(\"No errors are returned\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData.errors).to.eql(undefined);",
-									"});",
-									""
-								],
-								"type": "text/javascript"
-							}
-						},
-						{
-							"listen": "prerequest",
-							"script": {
-								"id": "f3d6edef-fd7e-4167-b32d-9aafbbf3a69b",
-								"exec": [
-									"var uuid = require('uuid');",
-									"pm.environment.set(\"createExamTemplateId\", uuid.v4());"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"name": "Content-Type",
-								"type": "text",
-								"value": "application/json"
-							},
-							{
-								"key": "Authorization",
-								"value": "Bearer {{access_token}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\"operationName\":null,\"variables\":{},\"query\":\"mutation {\\n  createExamTemplate(examtemplate: {id: \\\"{{createExamTemplateId}}\\\", name: \\\"bar v1\\\", category: \\\"test2\\\", created: \\\"2018-01-01\\\", effective: \\\"2018-12-01\\\", expires: \\\"2019-12-31\\\"}) {\\n    id\\n    name\\n    category\\n  }\\n}\\n\"}"
+							"raw": "mutation {\n  createCandidate(candidate: { \n    id:\"{{createCandidateId}}\"\n    created:\"2016-12-27\"\n    active: true\n    name:\"Jack Box\"\n    type:\"Full-time professional\"\n  }){\n    id\n    name\n    active\n    created\n    type\n  }\n}\n"
 						},
 						"url": {
 							"raw": "{{endpoint}}/api/graph",
@@ -295,6 +229,19 @@
 									"    var jsonData = pm.response.json();",
 									"    pm.expect(jsonData.errors).to.eql(undefined);",
 									"});",
+									"",
+									"pm.test(\"Exam is created\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    var id = pm.environment.get(\"createExamId\");",
+									"    var entity = jsonData.data.createExam;",
+									"    pm.expect(entity.id).to.eql(id);",
+									"    pm.expect(entity.name).to.eql(\"MS Azure SQL Database\");",
+									"    pm.expect(entity.version).to.eql(\"1.0\");",
+									"    pm.expect(entity.category).to.eql(\"Cloud\");",
+									"    pm.expect(entity.created).to.eql(\"2018-01-01\");",
+									"    pm.expect(entity.effective).to.eql(\"2018-12-01\");",
+									"    pm.expect(entity.expires).to.eql(\"2019-12-31\");",
+									"});",
 									""
 								],
 								"type": "text/javascript"
@@ -303,7 +250,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "50d20ab9-c5ba-41d9-9739-f7f81ba8e22d",
+								"id": "f3d6edef-fd7e-4167-b32d-9aafbbf3a69b",
 								"exec": [
 									"var uuid = require('uuid');",
 									"pm.environment.set(\"createExamId\", uuid.v4());"
@@ -316,20 +263,19 @@
 						"method": "POST",
 						"header": [
 							{
-								"key": "Content-Type",
-								"name": "Content-Type",
-								"type": "text",
-								"value": "application/json"
-							},
-							{
 								"key": "Authorization",
 								"value": "Bearer {{access_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/graphql",
 								"type": "text"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\"operationName\":null,\"variables\":{},\"query\":\"mutation {\\n  createExam(exam: {id: \\\"{{createExamId}}\\\", name: \\\"bar\\\", category: \\\"test2\\\", taken: \\\"2017-11-01\\\", candidateId: \\\"{{createCandidateId}}\\\", examTemplateId: \\\"{{createExamTemplateId}}\\\"}) {\\n    id\\n    name\\n    category\\n    taken\\n    candidateId\\n    examTemplateId\\n  }\\n}\\n\"}"
+							"raw": "mutation {\n  createExam(exam:{\n    id:\"{{createExamId}}\"\n    name:\"MS Azure SQL Database\"\n    version:\"1.0\"\n    category:\"Cloud\"\n    created:\"2018-01-01\"\n    effective:\"2018-12-01\"\n    expires:\"2019-12-31\"\n  }){\n    id\n    name\n    version\n    category\n    created\n    effective\n    expires\n  }\n}"
 						},
 						"url": {
 							"raw": "{{endpoint}}/api/graph",
@@ -345,7 +291,156 @@
 					"response": []
 				},
 				{
-					"name": "QueryExam (getExamById)",
+					"name": "CreateTestResult",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "35c8c12c-5cfe-42d0-8de3-66862da96f49",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"No errors are returned\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.errors).to.eql(undefined);",
+									"});",
+									"",
+									"pm.test(\"TestResult is created\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    ",
+									"    var id = pm.environment.get(\"createTestResultId\");",
+									"    var createCandidateId = pm.environment.get(\"createCandidateId\");",
+									"    var createExamId = pm.environment.get(\"createExamId\");",
+									"    ",
+									"    var entity = jsonData.data.createTestResult;",
+									"    pm.expect(entity.id).to.eql(id);",
+									"    pm.expect(entity.name).to.eql(\"November Testing\");",
+									"    pm.expect(entity.candidateId).to.eql(createCandidateId);",
+									"    pm.expect(entity.category).to.eql(\"Cloud\");",
+									"    pm.expect(entity.examId).to.eql(createExamId);",
+									"    pm.expect(entity.taken).to.eql(\"2019-01-01\");",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "50d20ab9-c5ba-41d9-9739-f7f81ba8e22d",
+								"exec": [
+									"var uuid = require('uuid');",
+									"pm.environment.set(\"createTestResultId\", uuid.v4());"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/graphql",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "mutation {\n  createTestResult(testresult:{\n    id:\"{{createTestResultId}}\"\n    name:\"November Testing\"\n    candidateId:\"{{createCandidateId}}\"\n    category:\"Cloud\"\n    examId:\"{{createExamId}}\"\n    taken:\"2019-01-01\"\n  }){\n    id\n    name \n    candidateId\n    category\n    examId\n    taken\n  }\n}"
+						},
+						"url": {
+							"raw": "{{endpoint}}/api/graph",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"api",
+								"graph"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "QueryTestResult",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "35c8c12c-5cfe-42d0-8de3-66862da96f49",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"No errors are returned\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.errors).to.eql(undefined);",
+									"});",
+									"",
+									"pm.test(\"TestResult is found\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    ",
+									"    var id = pm.environment.get(\"createTestResultId\");",
+									"    var createCandidateId = pm.environment.get(\"createCandidateId\");",
+									"    var createExamId = pm.environment.get(\"createExamId\");",
+									"    ",
+									"    var entity = jsonData.data.getTestResultById;",
+									"    pm.expect(entity.id).to.eql(id);",
+									"    pm.expect(entity.name).to.eql(\"November Testing\");",
+									"    pm.expect(entity.candidateId).to.eql(createCandidateId);",
+									"    pm.expect(entity.category).to.eql(\"Cloud\");",
+									"    pm.expect(entity.examId).to.eql(createExamId);",
+									"    pm.expect(entity.taken).to.eql(\"2019-01-01\");",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{access_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/graphql",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "query {\n  getTestResultById(id:{equal:\"{{createTestResultId}}\"}){\n    candidateId\n    category\n    examId\n    id\n    examId\n    name\n    taken\n  }\n}"
+						},
+						"url": {
+							"raw": "{{endpoint}}/api/graph",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"api",
+								"graph"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "QueryTestResultOutput (Name,Taken)",
 					"event": [
 						{
 							"listen": "test",
@@ -370,20 +465,19 @@
 						"method": "POST",
 						"header": [
 							{
-								"key": "Content-Type",
-								"name": "Content-Type",
+								"key": "Authorization",
 								"type": "text",
-								"value": "application/json"
+								"value": "Bearer {{access_token}}"
 							},
 							{
-								"key": "Authorization",
-								"value": "Bearer {{access_token}}",
+								"key": "Content-Type",
+								"value": "application/graphql",
 								"type": "text"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\"operationName\":null,\"variables\":{},\"query\":\"{\\n  getExamById(id: {equal: \\\"{{createExamId}}\\\"}) {\\n    id\\n    name\\n    category\\n    taken\\n    candidateId\\n    examTemplateId\\n  }\\n}\\n\"}"
+							"raw": "query {\r\n  getTestResultsByNameAndTaken(\r\n    name:{contains:\"November\"}\r\n    taken:{greaterThan:\"2018-01-01\"}\r\n  ){\r\n    candidateId\r\n    category\r\n    examId\r\n    id\r\n    examId\r\n    name\r\n    taken\r\n  }\r\n}"
 						},
 						"url": {
 							"raw": "{{endpoint}}/api/graph",
@@ -399,7 +493,7 @@
 					"response": []
 				},
 				{
-					"name": "QueryExamOutput (getExamsByNameAndTaken)",
+					"name": "UpdateTestResult",
 					"event": [
 						{
 							"listen": "test",
@@ -414,6 +508,22 @@
 									"    var jsonData = pm.response.json();",
 									"    pm.expect(jsonData.errors).to.eql(undefined);",
 									"});",
+									"",
+									"pm.test(\"TestResult is updated\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    ",
+									"    var id = pm.environment.get(\"createTestResultId\");",
+									"    var createCandidateId = pm.environment.get(\"createCandidateId\");",
+									"    var createExamId = pm.environment.get(\"createExamId\");",
+									"    ",
+									"    var entity = jsonData.data.updateTestResult;",
+									"    pm.expect(entity.id).to.eql(id);",
+									"    pm.expect(entity.name).to.eql(\"December Testing\");",
+									"    pm.expect(entity.candidateId).to.eql(createCandidateId);",
+									"    pm.expect(entity.category).to.eql(\"Cloud\");",
+									"    pm.expect(entity.examId).to.eql(createExamId);",
+									"    pm.expect(entity.taken).to.eql(\"2019-02-01\");",
+									"});",
 									""
 								],
 								"type": "text/javascript"
@@ -424,20 +534,19 @@
 						"method": "POST",
 						"header": [
 							{
-								"key": "Content-Type",
-								"name": "Content-Type",
+								"key": "Authorization",
 								"type": "text",
-								"value": "application/json"
+								"value": "Bearer {{access_token}}"
 							},
 							{
-								"key": "Authorization",
-								"value": "Bearer {{access_token}}",
+								"key": "Content-Type",
+								"value": "application/graphql",
 								"type": "text"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\"operationName\":null,\"variables\":{},\"query\":\"{\\n  getExamsByNameAndTaken(name: {contains: \\\"bar\\\"}, taken: {notEqual: \\\"2018-01-01\\\"}) {\\n    id\\n    category\\n    name\\n    taken\\n    candidate {\\n      id\\n      name\\n      active\\n    }\\n    examTemplate {\\n      id\\n      name\\n      category\\n    }\\n  }\\n}\\n\"}"
+							"raw": "mutation{\r\n  updateTestResult(testresult: {\r\n    id:\"{{createTestResultId}}\"\r\n    name:\"December Testing\"\r\n    candidateId:\"{{createCandidateId}}\"\r\n    category:\"Cloud\"\r\n    examId:\"{{createExamId}}\"\r\n    taken:\"2019-02-01\"\r\n  }){\r\n    id\r\n    name \r\n    candidateId\r\n    category\r\n    examId\r\n    taken\r\n  }\r\n}"
 						},
 						"url": {
 							"raw": "{{endpoint}}/api/graph",
@@ -453,7 +562,7 @@
 					"response": []
 				},
 				{
-					"name": "UpdateExam",
+					"name": "VerifyTestResultWasUpdated",
 					"event": [
 						{
 							"listen": "test",
@@ -468,59 +577,21 @@
 									"    var jsonData = pm.response.json();",
 									"    pm.expect(jsonData.errors).to.eql(undefined);",
 									"});",
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"name": "Content-Type",
-								"type": "text",
-								"value": "application/json"
-							},
-							{
-								"key": "Authorization",
-								"value": "Bearer {{access_token}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\"operationName\":null,\"variables\":{},\"query\":\"{\\n  getExamById(id: {equal: \\\"C941233F-A5B0-4E10-B783-E9B91C6D9B9D\\\"}) {\\n    id\\n    name\\n    category\\n    taken\\n    candidateId\\n    examTemplateId\\n  }\\n}\\n\"}"
-						},
-						"url": {
-							"raw": "{{endpoint}}/api/graph",
-							"host": [
-								"{{endpoint}}"
-							],
-							"path": [
-								"api",
-								"graph"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "VerifyExamUpdate",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "35c8c12c-5cfe-42d0-8de3-66862da96f49",
-								"exec": [
-									"pm.test(\"Status code is 200\", function () {",
-									"    pm.response.to.have.status(200);",
-									"});",
 									"",
-									"pm.test(\"No errors are returned\", function () {",
+									"pm.test(\"TestResult is updated\", function () {",
 									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData.errors).to.eql(undefined);",
+									"    ",
+									"    var id = pm.environment.get(\"createTestResultId\");",
+									"    var createCandidateId = pm.environment.get(\"createCandidateId\");",
+									"    var createExamId = pm.environment.get(\"createExamId\");",
+									"    ",
+									"    var entity = jsonData.data.getTestResultById;",
+									"    pm.expect(entity.id).to.eql(id);",
+									"    pm.expect(entity.name).to.eql(\"December Testing\");",
+									"    pm.expect(entity.candidateId).to.eql(createCandidateId);",
+									"    pm.expect(entity.category).to.eql(\"Cloud\");",
+									"    pm.expect(entity.examId).to.eql(createExamId);",
+									"    pm.expect(entity.taken).to.eql(\"2019-02-01\");",
 									"});",
 									""
 								],
@@ -532,20 +603,19 @@
 						"method": "POST",
 						"header": [
 							{
-								"key": "Content-Type",
-								"name": "Content-Type",
+								"key": "Authorization",
 								"type": "text",
-								"value": "application/json"
+								"value": "Bearer {{access_token}}"
 							},
 							{
-								"key": "Authorization",
-								"value": "Bearer {{access_token}}",
+								"key": "Content-Type",
+								"value": "application/graphql",
 								"type": "text"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\"operationName\":null,\"variables\":{},\"query\":\"{\\n  getExamById(id: {equal: \\\"C941233F-A5B0-4E10-B783-E9B91C6D9B9D\\\"}) {\\n    id\\n    name\\n    category\\n    taken\\n    candidateId\\n    examTemplateId\\n  }\\n}\\n\"}"
+							"raw": "query {\n  getTestResultById(id:{equal:\"{{createTestResultId}}\"}){\n    candidateId\n    category\n    examId\n    id\n    examId\n    name\n    taken\n  }\n}"
 						},
 						"url": {
 							"raw": "{{endpoint}}/api/graph",
@@ -614,6 +684,54 @@
 					"response": []
 				},
 				{
+					"name": "batchCreateTestResult",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "929a7a0e-b78f-4fdf-ae79-2094882d03c4",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"operationName\":null,\"variables\":{},\"query\":\"mutation {\\n  batchCreateTestResult(testresult: [{id: \\\"5DE5BB86-1B31-4E31-BF10-B3E1C2967EEC\\\", candidateId: \\\"12E702ED-9CE0-4377-A622-1822E1E2C313\\\", category: \\\"Technology\\\", name: \\\"C# 7.0\\\", taken: \\\"2019-01-01\\\", examTemplateId: \\\"9925E273-D9D2-4399-8A8F-64B4CE531788\\\"}, {id: \\\"4735C40E-0B8C-4DCD-9FAE-8B47DFF234FE\\\", candidateId: \\\"A0BE1F44-ECDD-42A6-BC6F-71688331AB8F\\\", category: \\\"Art\\\", name: \\\"History of Greek Art\\\", taken: \\\"2018-06-09\\\", examTemplateId: \\\"BB977447-00A2-45BE-9045-4A3804E3B011\\\"}, {id: \\\"3DD0643D-FA9C-4F21-B9F2-0C505224F63C\\\", candidateId: \\\"04202445-F654-4540-A6A1-F06563A1DC36\\\", category: \\\"Cars\\\", name: \\\"Fixing Honda CRV 2011\\\", taken: \\\"2019-01-02\\\", examTemplateId: \\\"F1933BA7-6873-4970-8214-83475951E7A6\\\"}, {id: \\\"E6A9150B-FD42-4807-A45D-7101E4C5DFB2\\\", candidateId: \\\"A1B742CB-A555-4719-9573-7148183961F5\\\", category: \\\"Cars\\\", name: \\\"Fixing Ford F150\\\", taken: \\\"2019-01-03\\\", examTemplateId: \\\"AEFE15C5-C67E-4D9F-A556-246B72970080\\\"}, {id: \\\"09777B0B-05BC-4B22-BB13-1EBF7467CD8E\\\", candidateId: \\\"BBDC4842-78B6-445D-9935-81F92F5DAA1F\\\", category: \\\"Cars\\\", name: \\\"Fixing Ford F150\\\", taken: \\\"2019-01-02\\\", examTemplateId: \\\"AEFE15C5-C67E-4D9F-A556-246B72970080\\\"}, {id: \\\"C2758803-1439-4649-A3F1-8CDE072C8820\\\", candidateId: \\\"BBDC4842-78B6-445D-9935-81F92F5DAA1F\\\", category: \\\"Art\\\", name: \\\"Art of Mobile Phone Design\\\", taken: \\\"2019-01-02\\\", examTemplateId: \\\"6B9724F7-33F5-46C9-956F-F972ACFBB95A\\\"}, {id: \\\"B5650E27-A172-4FE5-9D9E-EF6B21FE9E0D\\\", candidateId: \\\"BBDC4842-78B6-445D-9935-81F92F5DAA1F\\\", category: \\\"Cars\\\", name: \\\"Fixing Honda CRV 2011\\\", taken: \\\"2019-01-02\\\", examTemplateId: \\\"F1933BA7-6873-4970-8214-83475951E7A6\\\"}]) {\\n    id\\n    candidateId\\n    category\\n    name\\n    taken\\n    examTemplateId\\n  }\\n}\\n\"}"
+						},
+						"url": {
+							"raw": "{{endpoint}}/api/graph",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"api",
+								"graph"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "batchCreateExam",
 					"event": [
 						{
@@ -646,55 +764,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\"operationName\":null,\"variables\":{},\"query\":\"mutation {\\n  batchCreateExam(exam: [{id: \\\"5DE5BB86-1B31-4E31-BF10-B3E1C2967EEC\\\", candidateId: \\\"12E702ED-9CE0-4377-A622-1822E1E2C313\\\", category: \\\"Technology\\\", name: \\\"C# 7.0\\\", taken: \\\"2019-01-01\\\", examTemplateId: \\\"9925E273-D9D2-4399-8A8F-64B4CE531788\\\"}, {id: \\\"4735C40E-0B8C-4DCD-9FAE-8B47DFF234FE\\\", candidateId: \\\"A0BE1F44-ECDD-42A6-BC6F-71688331AB8F\\\", category: \\\"Art\\\", name: \\\"History of Greek Art\\\", taken: \\\"2018-06-09\\\", examTemplateId: \\\"BB977447-00A2-45BE-9045-4A3804E3B011\\\"}, {id: \\\"3DD0643D-FA9C-4F21-B9F2-0C505224F63C\\\", candidateId: \\\"04202445-F654-4540-A6A1-F06563A1DC36\\\", category: \\\"Cars\\\", name: \\\"Fixing Honda CRV 2011\\\", taken: \\\"2019-01-02\\\", examTemplateId: \\\"F1933BA7-6873-4970-8214-83475951E7A6\\\"}, {id: \\\"E6A9150B-FD42-4807-A45D-7101E4C5DFB2\\\", candidateId: \\\"A1B742CB-A555-4719-9573-7148183961F5\\\", category: \\\"Cars\\\", name: \\\"Fixing Ford F150\\\", taken: \\\"2019-01-03\\\", examTemplateId: \\\"AEFE15C5-C67E-4D9F-A556-246B72970080\\\"}, {id: \\\"09777B0B-05BC-4B22-BB13-1EBF7467CD8E\\\", candidateId: \\\"BBDC4842-78B6-445D-9935-81F92F5DAA1F\\\", category: \\\"Cars\\\", name: \\\"Fixing Ford F150\\\", taken: \\\"2019-01-02\\\", examTemplateId: \\\"AEFE15C5-C67E-4D9F-A556-246B72970080\\\"}, {id: \\\"C2758803-1439-4649-A3F1-8CDE072C8820\\\", candidateId: \\\"BBDC4842-78B6-445D-9935-81F92F5DAA1F\\\", category: \\\"Art\\\", name: \\\"Art of Mobile Phone Design\\\", taken: \\\"2019-01-02\\\", examTemplateId: \\\"6B9724F7-33F5-46C9-956F-F972ACFBB95A\\\"}, {id: \\\"B5650E27-A172-4FE5-9D9E-EF6B21FE9E0D\\\", candidateId: \\\"BBDC4842-78B6-445D-9935-81F92F5DAA1F\\\", category: \\\"Cars\\\", name: \\\"Fixing Honda CRV 2011\\\", taken: \\\"2019-01-02\\\", examTemplateId: \\\"F1933BA7-6873-4970-8214-83475951E7A6\\\"}]) {\\n    id\\n    candidateId\\n    category\\n    name\\n    taken\\n    examTemplateId\\n  }\\n}\\n\"}"
-						},
-						"url": {
-							"raw": "{{endpoint}}/api/graph",
-							"host": [
-								"{{endpoint}}"
-							],
-							"path": [
-								"api",
-								"graph"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "batchCreateExamTemplate",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "929a7a0e-b78f-4fdf-ae79-2094882d03c4",
-								"exec": [
-									"pm.test(\"Status code is 200\", function () {",
-									"    pm.response.to.have.status(200);",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"name": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							},
-							{
-								"key": "Authorization",
-								"value": "Bearer {{access_token}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\"operationName\":null,\"variables\":{},\"query\":\"mutation {\\n  batchCreateExamTemplate(examtemplate: [{id: \\\"9925E273-D9D2-4399-8A8F-64B4CE531788\\\", category: \\\"Technology\\\", name: \\\"C# 7.0\\\", effective: \\\"2010-01-01\\\", expires: \\\"2020-12-31\\\", created: \\\"2016-12-01\\\"}, {id: \\\"BB977447-00A2-45BE-9045-4A3804E3B011\\\", category: \\\"Art\\\", name: \\\"History of Greek Art\\\", effective: \\\"2010-01-01\\\", expires: \\\"2020-12-31\\\", created: \\\"2016-12-01\\\"}, {id: \\\"F1933BA7-6873-4970-8214-83475951E7A6\\\", category: \\\"Cars\\\", name: \\\"Fixing Honda CRV 2011\\\", effective: \\\"2010-01-01\\\", expires: \\\"2020-12-31\\\", created: \\\"2016-12-01\\\"}, {id: \\\"AEFE15C5-C67E-4D9F-A556-246B72970080\\\", category: \\\"Cars\\\", name: \\\"Fixing Ford F150\\\", effective: \\\"2010-01-01\\\", expires: \\\"2018-12-31\\\", created: \\\"2016-12-01\\\"}, {id: \\\"6B9724F7-33F5-46C9-956F-F972ACFBB95A\\\", category: \\\"Art\\\", name: \\\"Art of Mobile Phone Design\\\", effective: \\\"2010-01-01\\\", expires: \\\"2019-12-31\\\", created: \\\"2016-12-01\\\"}]) {\\n    id\\n    category\\n    name\\n    effective\\n    expires\\n    created\\n  }\\n}\\n\"}"
+							"raw": "{\"operationName\":null,\"variables\":{},\"query\":\"mutation {\\n  batchCreateExam(exam: [{id: \\\"9925E273-D9D2-4399-8A8F-64B4CE531788\\\", category: \\\"Technology\\\", name: \\\"C# 7.0\\\", effective: \\\"2010-01-01\\\", expires: \\\"2020-12-31\\\", created: \\\"2016-12-01\\\"}, {id: \\\"BB977447-00A2-45BE-9045-4A3804E3B011\\\", category: \\\"Art\\\", name: \\\"History of Greek Art\\\", effective: \\\"2010-01-01\\\", expires: \\\"2020-12-31\\\", created: \\\"2016-12-01\\\"}, {id: \\\"F1933BA7-6873-4970-8214-83475951E7A6\\\", category: \\\"Cars\\\", name: \\\"Fixing Honda CRV 2011\\\", effective: \\\"2010-01-01\\\", expires: \\\"2020-12-31\\\", created: \\\"2016-12-01\\\"}, {id: \\\"AEFE15C5-C67E-4D9F-A556-246B72970080\\\", category: \\\"Cars\\\", name: \\\"Fixing Ford F150\\\", effective: \\\"2010-01-01\\\", expires: \\\"2018-12-31\\\", created: \\\"2016-12-01\\\"}, {id: \\\"6B9724F7-33F5-46C9-956F-F972ACFBB95A\\\", category: \\\"Art\\\", name: \\\"Art of Mobile Phone Design\\\", effective: \\\"2010-01-01\\\", expires: \\\"2019-12-31\\\", created: \\\"2016-12-01\\\"}]) {\\n    id\\n    category\\n    name\\n    effective\\n    expires\\n    created\\n  }\\n}\\n\"}"
 						},
 						"url": {
 							"raw": "{{endpoint}}/api/graph",
@@ -859,7 +929,7 @@
 					"response": []
 				},
 				{
-					"name": "DeleteAllExamTemplates",
+					"name": "DeleteAllTestResults",
 					"event": [
 						{
 							"listen": "test",
@@ -885,61 +955,13 @@
 							},
 							{
 								"key": "Authorization",
-								"value": "Bearer {{access_token}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\"operationName\":null,\"variables\":{},\"query\":\"mutation {\\n  deleteAllExamTemplate {\\n    message\\n  }\\n}\\n\"}"
-						},
-						"url": {
-							"raw": "{{endpoint}}/api/graph",
-							"host": [
-								"{{endpoint}}"
-							],
-							"path": [
-								"api",
-								"graph"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "DeleteAllExamTemplateSearches",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "c04fa6d4-f9cc-422b-8f76-541cff3bcb7d",
-								"exec": [
-									"pm.test(\"Status code is 200\", function () {",
-									"    pm.response.to.have.status(200);",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"name": "Content-Type",
 								"type": "text",
-								"value": "application/json"
-							},
-							{
-								"key": "Authorization",
-								"value": "Bearer {{access_token}}",
-								"type": "text"
+								"value": "Bearer {{access_token}}"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\"operationName\":null,\"variables\":{},\"query\":\"mutation {\\n  deleteAllExamTemplateSearch {\\n    message\\n  }\\n}\\n\"}"
+							"raw": "{\"operationName\":null,\"variables\":{},\"query\":\"mutation {\\n  deleteAllTestResult {\\n    message\\n  }\\n}\\n\"}"
 						},
 						"url": {
 							"raw": "{{endpoint}}/api/graph",
