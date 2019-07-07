@@ -18,7 +18,7 @@ namespace Eklee.Exams.Api.Schema
 
 		private bool DefaultAssertion(ClaimsPrincipal claimsPrincipal, AssertAction assertAction)
 		{
-			return claimsPrincipal.IsInRole("Eklee.User.Write");
+			return claimsPrincipal.IsInRole("Eklee.User.Writer");
 		}
 
 		public MyMutation(InputBuilderFactory inputBuilderFactory, IConfiguration configuration, ILogger logger)
@@ -38,11 +38,9 @@ namespace Eklee.Exams.Api.Schema
 
 			_logger.LogInformation($"{tenants.Count} tenants are configured.");
 
-			Add<TestResult, ItemWithGuidId>(tenants, inputBuilderFactory, builder => builder.AddPartition(x => x.Category));
-			Add<Candidate, ItemWithGuidId>(tenants, inputBuilderFactory, builder => builder.AddPartition(x => x.Type));
+			Add<Employee, ItemWithGuidId>(tenants, inputBuilderFactory, builder => builder.AddPartition(x => x.Department));
 			Add<Exam, ItemWithGuidId>(tenants, inputBuilderFactory, builder => builder.AddPartition(x => x.Category));
 
-			AddSearch<CandidateSearch, Candidate>(tenants, inputBuilderFactory, "Candidate search index has been removed.");
 			AddSearch<ExamSearch, Exam>(tenants, inputBuilderFactory, "Exam search template index has been removed.");
 		}
 
@@ -90,7 +88,7 @@ namespace Eklee.Exams.Api.Schema
 				string tenantDocumentDbUrl = tenant["DocumentDb:Url"];
 				int tenantRequestUnits = Convert.ToInt32(tenant["DocumentDb:RequestUnits"]);
 
-				var databaseName = issuer.GetTenantIdFromIssuer();
+				string databaseName = issuer.GetTenantIdFromIssuer();
 				databaseName = _configuration.IsLocalEnvironment() ? $"lcl{databaseName}" :
 					(_configuration["EnableDeleteAll"] == "true" ? $"stg{databaseName}" : databaseName);
 

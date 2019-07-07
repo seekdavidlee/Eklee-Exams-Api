@@ -23,6 +23,14 @@ namespace Eklee.Exams.Api.Schema
 
 			Name = "query";
 
+			queryBuilderFactory.Create<Exam>(this, "GetExamById")
+				.AssertWithClaimsPrincipal(DefaultAssertion)
+				.WithParameterBuilder()
+				.WithKeys()
+				.BuildQuery()
+				.BuildWithSingleResult();
+
+			/*
 			queryBuilderFactory.Create<TestResult>(this, "GetTestResultById")
 				.AssertWithClaimsPrincipal(DefaultAssertion)
 				.WithParameterBuilder()
@@ -30,12 +38,7 @@ namespace Eklee.Exams.Api.Schema
 				.BuildQuery()
 				.BuildWithSingleResult();
 
-			queryBuilderFactory.Create<Exam>(this, "GetExamById")
-				.AssertWithClaimsPrincipal(DefaultAssertion)
-				.WithParameterBuilder()
-				.WithKeys()
-				.BuildQuery()
-				.BuildWithSingleResult();
+
 
 			queryBuilderFactory.Create<Candidate>(this, "GetCandidateById")
 				.AssertWithClaimsPrincipal(DefaultAssertion)
@@ -123,6 +126,7 @@ namespace Eklee.Exams.Api.Schema
 					.WithPropertyFromSource(x => x.Id, ctx => (List<object>)ctx.Items["examIdList"])
 					.BuildQueryResult(ctx => ctx.GetResults<TestResultOutput>().ForEach(x => x.Exam = ctx.GetQueryResults<Exam>().Single(e => e.Id == x.ExamId)))
 				.BuildQuery().BuildWithListResult();
+			*/
 		}
 	}
 }

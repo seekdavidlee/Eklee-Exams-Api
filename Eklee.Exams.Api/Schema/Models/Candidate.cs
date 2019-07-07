@@ -1,18 +1,15 @@
-﻿using System;
+﻿using Eklee.Azure.Functions.GraphQl.Connections;
+using System;
 using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
 
 namespace Eklee.Exams.Api.Schema.Models
 {
-	[Description("Candidate")]
+	[Description("Candidate Relationship")]
 	public class Candidate : IEntityWithGuidId
 	{
-		[Key]
-		[Description("Id of the candidate")]
+		[ConnectionEdgeDestinationKey]
+		[Description("Id of the Employee.")]
 		public Guid Id { get; set; }
-
-		[Description("The display name of the candidate.")]
-		public string Name { get; set; }
 
 		[Description("Determines whether the candidate is active.")]
 		public bool Active { get; set; }
@@ -22,5 +19,9 @@ namespace Eklee.Exams.Api.Schema.Models
 
 		[Description("Type of candidate. Either student, full time employed, part time employed.")]
 		public string Type { get; set; }
+
+		[ConnectionEdgeDestination]
+		[Description("User details.")]
+		public Employee User { get; set; }
 	}
 }

@@ -1,28 +1,26 @@
-﻿using System;
+﻿using Eklee.Azure.Functions.GraphQl.Connections;
+using System;
 using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
 
 namespace Eklee.Exams.Api.Schema.Models
 {
 	public class TestResult : IEntityWithGuidId
 	{
-		[Key]
-		[Description("Id of the exam.")]
+		[ConnectionEdgeDestinationKey]
+		[Description("Id of the employee.")]
 		public Guid Id { get; set; }
 
-		[Description("Name of the exam")]
-		public string Name { get; set; }
+		[ConnectionEdgeDestination]
+		[Description("Employee.")]
+		public Employee Employee { get; set; }
 
-		[Description("Category of the exam")]
-		public string Category { get; set; }
-
-		[Description("Id of the candidate.")]
-		public Guid CandidateId { get; set; }
-
-		[Description("Id of the exam template used.")]
-		public Guid ExamId { get; set; }
-
-		[Description("Date/time of when the exm was taken.")]
+		[Description("Date/time of when the exam was taken by employee.")]
 		public DateTime Taken { get; set; }
+
+		[Description("Total number of correct answers.")]
+		public int CorrectAnswers { get; set; }
+
+		[Description("Total number of questions.")]
+		public int TotalQuestions { get; set; }
 	}
 }
