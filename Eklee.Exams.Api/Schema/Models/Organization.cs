@@ -21,11 +21,5 @@ namespace Eklee.Exams.Api.Schema.Models
 
 		[Description("A reference to tenant Id managed by Azure Active Directory.")]
 		public string TenantId { get; set; }
-
-		[Connection]
-		public List<Candidate> Candidates { get; set; }
-
-		[Connection]
-		public List<Publication> Publications { get; set; }
 	}
 }

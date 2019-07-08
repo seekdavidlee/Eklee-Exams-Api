@@ -21,5 +21,14 @@ namespace Eklee.Exams.Api.Schema.Models
 
 		[Description("Employee email address.")]
 		public string Email { get; set; }
+
+		[Description("Determines whether the employee candidate is active.")]
+		public bool Active { get; set; }
+
+		[Description("Date/time of when the employee candidate account was created.")]
+		public DateTime Created { get; set; }
+
+		[Description("Type of employee candidate. Either student, full time employed, part time employed.")]
+		public string Type { get; set; }
 	}
 }

@@ -22,10 +22,7 @@ namespace Eklee.Exams.Api.Schema.Models
 		public DateTime Created { get; set; }
 
 		[Connection]
-		[Description("Tests taken")]
-		public List<TestResult> TestResults { get; set; }
-
-		[Description("Questions.")]
-		public List<Question> Questions { get; set; }
+		[Description("Publications")]
+		public List<ExamPublication> Publications { get; set; }
 	}
 }
