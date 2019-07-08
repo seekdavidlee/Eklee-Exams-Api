@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
 using Eklee.Azure.Functions.GraphQl;
 using Eklee.Azure.Functions.GraphQl.Repository.DocumentDb;
@@ -21,42 +19,42 @@ namespace Eklee.Exams.Api.Schema
 			return claimsPrincipal.IsInRole("Eklee.User.Writer");
 		}
 
-		public MyMutation(InputBuilderFactory inputBuilderFactory, IConfiguration configuration, ILogger logger)
+		public MyMutation(InputBuilderFactory inputBuilderFactory, IConfiguration configuration, IOrganizationsRepository organizationsRepository, ILogger logger)
 		{
 			_configuration = configuration;
 			_logger = logger;
-			_logger.LogInformation("Building mutations.");
+			_logger.LogInformation("Building app mutations.");
 
 			Name = "mutations";
 
-			var tenants = _configuration.GetSection("Tenants").GetChildren().Where(x => !string.IsNullOrEmpty(x["Issuer"])).ToList();
-
-			if (tenants.Count == 0)
+			var issuers = organizationsRepository.GetIssuers().GetAwaiter().GetResult();
+			if (issuers.Length == 0)
 			{
-				throw new ArgumentException("Tenant(s) not configured.");
+				throw new ArgumentException("Issuer(s) not configured.");
 			}
 
-			_logger.LogInformation($"{tenants.Count} tenants are configured.");
+			_logger.LogInformation($"{issuers.Length} issuers are configured.");
 
-			Add<Employee, ItemWithGuidId>(tenants, inputBuilderFactory, builder => builder.AddPartition(x => x.Department));
-			Add<Exam, ItemWithGuidId>(tenants, inputBuilderFactory, builder => builder.AddPartition(x => x.Category));
+			Add<Employee, ItemWithGuidId>(issuers, inputBuilderFactory, builder => builder.AddPartition(x => x.Department));
+			Add<Exam, ItemWithGuidId>(issuers, inputBuilderFactory, builder => builder.AddPartition(x => x.Category));
 
-			AddSearch<ExamSearch, Exam>(tenants, inputBuilderFactory, "Exam search template index has been removed.");
+			AddSearch<ExamSearch, Exam>(issuers, inputBuilderFactory, "Exam search template index has been removed.");
 		}
 
-		private void AddSearch<TEntity, TModel>(List<IConfigurationSection> tenants,
+
+		private void AddSearch<TEntity, TModel>(string[] issuers,
 			InputBuilderFactory inputBuilderFactory, string deleteMessage) where TEntity : class
 		{
-			tenants.ForEach(tenant =>
-			{
-				string tenantSearchApiKey = tenant["Search:ApiKey"];
-				string tenantServiceName = tenant["Search:ServiceName"];
+			string tenantSearchApiKey = _configuration["Search:ApiKey"];
+			string tenantServiceName = _configuration["Search:ServiceName"];
 
+			foreach (var issuer in issuers)
+			{
 				var builder = inputBuilderFactory.Create<TEntity>(this)
 					.AssertWithClaimsPrincipal(DefaultAssertion)
 					.DeleteAll(() => new Status { Message = deleteMessage })
 					.ConfigureSearchWith<TEntity, TModel>()
-					.AddGraphRequestContextSelector(ctx => ctx.ContainsIssuer(tenant["Issuer"]))
+					.AddGraphRequestContextSelector(ctx => ctx.ContainsIssuer(issuer))
 					.AddApiKey(tenantSearchApiKey)
 					.AddServiceName(tenantServiceName);
 
@@ -70,23 +68,21 @@ namespace Eklee.Exams.Api.Schema
 				}
 
 				builder.BuildSearch().Build();
-			});
+			}
 		}
 
 		private void Add<TEntity, TDeleteEntity>(
-			List<IConfigurationSection> tenants,
+			string[] issuers,
 			InputBuilderFactory inputBuilderFactory,
 			Action<DocumentDbConfiguration<TEntity>> action) where TEntity : class, IEntityWithGuidId, new() where TDeleteEntity : IEntityWithGuidId, new()
 		{
-			tenants.ForEach(tenant =>
+			string tenantDocumentDbKey = _configuration["DocumentDb:Key"];
+			string tenantDocumentDbUrl = _configuration["DocumentDb:Url"];
+			int tenantRequestUnits = Convert.ToInt32(_configuration["DocumentDb:RequestUnits"]);
+
+			foreach (var issuer in issuers)
 			{
-				var issuer = tenant["Issuer"];
-
 				_logger.LogInformation($"Setting up tenant: {issuer}.");
-
-				string tenantDocumentDbKey = tenant["DocumentDb:Key"];
-				string tenantDocumentDbUrl = tenant["DocumentDb:Url"];
-				int tenantRequestUnits = Convert.ToInt32(tenant["DocumentDb:RequestUnits"]);
 
 				string databaseName = issuer.GetTenantIdFromIssuer();
 				databaseName = _configuration.IsLocalEnvironment() ? $"lcl{databaseName}" :
@@ -115,7 +111,7 @@ namespace Eklee.Exams.Api.Schema
 				}
 
 				model.Build();
-			});
+			}
 		}
 	}
 }
