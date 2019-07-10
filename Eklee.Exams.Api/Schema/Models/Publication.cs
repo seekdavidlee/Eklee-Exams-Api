@@ -12,6 +12,9 @@ namespace Eklee.Exams.Api.Schema.Models
 		[Description("Id of the publication.")]
 		public Guid Id { get; set; }
 
+		[Description("Name")]
+		public string Name { get; set; }
+
 		[Connection]
 		[Description("Tests taken")]
 		public List<TestResult> TestResults { get; set; }

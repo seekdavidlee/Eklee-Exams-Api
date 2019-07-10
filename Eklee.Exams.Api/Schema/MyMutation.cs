@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Security.Claims;
 using Eklee.Azure.Functions.GraphQl;
+using Eklee.Azure.Functions.GraphQl.Connections;
 using Eklee.Azure.Functions.GraphQl.Repository.DocumentDb;
 using Eklee.Exams.Api.Schema.Models;
 using GraphQL.Types;
@@ -37,10 +38,33 @@ namespace Eklee.Exams.Api.Schema
 
 			Add<Employee, ItemWithGuidId>(issuers, inputBuilderFactory, builder => builder.AddPartition(x => x.Department));
 			Add<Exam, ItemWithGuidId>(issuers, inputBuilderFactory, builder => builder.AddPartition(x => x.Category));
-
+			Add<Publication, ItemWithGuidId>(issuers, inputBuilderFactory, builder => builder.AddPartition(x => x.Name));
 			AddSearch<ExamSearch, Exam>(issuers, inputBuilderFactory, "Exam search template index has been removed.");
-		}
 
+			string key = _configuration["DocumentDb:Key"];
+			string url = _configuration["DocumentDb:Url"];
+			int requestUnits = Convert.ToInt32(_configuration["DocumentDb:RequestUnits"]);
+
+			foreach (var issuer in issuers)
+			{
+				string db = issuer.GetTenantIdFromIssuer();
+
+				db = _configuration.IsLocalEnvironment() ? $"lcl{db}" :
+					(_configuration["EnableDeleteAll"] == "true" ? $"stg{db}" : db);
+
+				inputBuilderFactory.Create<ConnectionEdge>(this)
+					.ConfigureDocumentDb<ConnectionEdge>()
+					.AddGraphRequestContextSelector(ctx => ctx.ContainsIssuer(issuer))
+					.AddKey(key)
+					.AddUrl(url)
+					.AddRequestUnit(requestUnits)
+					.AddDatabase(db)
+					.AddPartition(x => x.SourceId)
+					.BuildDocumentDb()
+					.DeleteAll(() => new Status { Message = "All ConnectionEdges have been removed." })
+					.Build();
+			}
+		}
 
 		private void AddSearch<TEntity, TModel>(string[] issuers,
 			InputBuilderFactory inputBuilderFactory, string deleteMessage) where TEntity : class

@@ -6,6 +6,211 @@
 	},
 	"item": [
 		{
+			"name": "PrepareOrganizations",
+			"item": [
+				{
+					"name": "LoginAdmin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "ecafb857-fc97-4b64-80a1-6ffa2c75d986",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Contans access token\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.environment.set(\"admin_access_token\", jsonData.access_token);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "client_secret",
+									"value": "{{adminClientSecret}}",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "{{adminClientId}}",
+									"type": "text"
+								},
+								{
+									"key": "grant_type",
+									"value": "password",
+									"type": "text"
+								},
+								{
+									"key": "username",
+									"value": "{{adminUser1}}",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "{{adminUser1password}}",
+									"type": "text"
+								},
+								{
+									"key": "resource",
+									"value": "{{adminResourceId}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://login.microsoftonline.com/{{adminId}}/oauth2/token",
+							"protocol": "https",
+							"host": [
+								"login",
+								"microsoftonline",
+								"com"
+							],
+							"path": [
+								"{{adminId}}",
+								"oauth2",
+								"token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "BatchCreateOrganizations",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "929a7a0e-b78f-4fdf-ae79-2094882d03c4",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Has no errors\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.errors).to.eql(undefined);",
+									"});",
+									"",
+									"pm.test(\"Contains correct JSON payload\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data.batchCreateOrUpdateOrganization.length).to.eql(2);",
+									"",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{admin_access_token}}"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation{\r\n  batchCreateOrUpdateOrganization(organization:[{\r\n    id: \"A04F99BC-1C53-4234-8FBD-ED224D220E8B\"\r\n    name:\"Eklee Tenant 1\"\r\n    tenantId:\"41af87cc-57c9-4f69-a6a8-dc207f5e3564\"\r\n    type:\"Business\"\r\n  },{\r\n      id: \"650852C7-CB0E-433A-A30E-EE748F2A7090\"\r\n    \tname:\"Eklee Tenant 2\"\r\n    \ttenantId:\"64dccffb-518a-4a84-8e17-c2e57973b2b9\"\r\n    \ttype:\"Educational\"  \r\n  }]){\r\n    id\r\n    name\r\n    tenantId\r\n    type\r\n  }\r\n}",
+								"variables": ""
+							}
+						},
+						"url": {
+							"raw": "{{endpoint}}/api/appadmin",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"api",
+								"appadmin"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetAllOrganizations",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "929a7a0e-b78f-4fdf-ae79-2094882d03c4",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Has no errors\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.errors).to.eql(undefined);",
+									"});",
+									"",
+									"pm.test(\"Contains correct JSON payload\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data.getAllOrganizations.length).to.eql(2);",
+									"",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{admin_access_token}}"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "query {\r\n  getAllOrganizations{\r\n    id\r\n    tenantId\r\n  }\r\n}",
+								"variables": ""
+							}
+						},
+						"url": {
+							"raw": "{{endpoint}}/api/appadmin",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"api",
+								"appadmin"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
 			"name": "Login",
 			"item": [
 				{
@@ -134,49 +339,100 @@
 						}
 					},
 					"response": []
-				}
-			]
-		},
-		{
-			"name": "SimpleCRUD",
-			"item": [
+				},
 				{
-					"name": "CreateCandidate",
+					"name": "LoginAdminService",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
-								"id": "c78a7620-0fa4-41a7-9cad-dac762062890",
+								"id": "ecafb857-fc97-4b64-80a1-6ffa2c75d986",
 								"exec": [
 									"pm.test(\"Status code is 200\", function () {",
 									"    pm.response.to.have.status(200);",
 									"});",
 									"",
-									"pm.test(\"No errors are returned\", function () {",
+									"pm.test(\"Contans access token\", function () {",
 									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData.errors).to.eql(undefined);",
-									"});",
-									"",
-									"pm.test(\"Candidate is created\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    var id = pm.environment.get(\"createCandidateId\");",
-									"    pm.expect(jsonData.data.createCandidate.id).to.eql(id);",
-									"    pm.expect(jsonData.data.createCandidate.name).to.eql(\"Jack Box\");",
-									"    pm.expect(jsonData.data.createCandidate.active).to.eql(true);",
-									"    pm.expect(jsonData.data.createCandidate.type).to.eql(\"Full-time professional\");",
-									"    pm.expect(jsonData.data.createCandidate.created).to.eql(\"2016-12-27\");",
+									"    pm.environment.set(\"adminsvc_access_token\", jsonData.access_token);",
 									"});"
 								],
 								"type": "text/javascript"
 							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "client_secret",
+									"value": "{{adminClientSecret}}",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "{{adminClientId}}",
+									"type": "text"
+								},
+								{
+									"key": "grant_type",
+									"value": "client_credentials",
+									"type": "text"
+								},
+								{
+									"key": "resource",
+									"value": "{{adminResourceId}}",
+									"type": "text"
+								}
+							]
 						},
+						"url": {
+							"raw": "https://login.microsoftonline.com/{{adminId}}/oauth2/token",
+							"protocol": "https",
+							"host": [
+								"login",
+								"microsoftonline",
+								"com"
+							],
+							"path": [
+								"{{adminId}}",
+								"oauth2",
+								"token"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "SeedDatabase",
+			"item": [
+				{
+					"name": "BatchCreateEmployees",
+					"event": [
 						{
-							"listen": "prerequest",
+							"listen": "test",
 							"script": {
-								"id": "f83f6262-b17e-458b-aa22-037213d44b0a",
+								"id": "929a7a0e-b78f-4fdf-ae79-2094882d03c4",
 								"exec": [
-									"var uuid = require('uuid');",
-									"pm.environment.set(\"createCandidateId\", uuid.v4());"
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Has no errors\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.errors).to.eql(undefined);",
+									"});",
+									"",
+									"pm.test(\"Contains correct JSON payload\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data.batchCreateEmployee.length).to.eql(5);",
+									"",
+									"});"
 								],
 								"type": "text/javascript"
 							}
@@ -186,19 +442,23 @@
 						"method": "POST",
 						"header": [
 							{
-								"key": "Authorization",
-								"value": "Bearer {{access_token}}",
-								"type": "text"
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
 							},
 							{
-								"key": "Content-Type",
-								"value": "application/graphql",
-								"type": "text"
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{access_token}}"
 							}
 						],
 						"body": {
-							"mode": "raw",
-							"raw": "mutation {\n  createCandidate(candidate: { \n    id:\"{{createCandidateId}}\"\n    created:\"2016-12-27\"\n    active: true\n    name:\"Jack Box\"\n    type:\"Full-time professional\"\n  }){\n    id\n    name\n    active\n    created\n    type\n  }\n}\n"
+							"mode": "graphql",
+							"graphql": {
+								"query": "# Write your query or mutation here\r\nmutation {\r\n  batchCreateEmployee(employee:[{\r\n    id:\"9FD7E57D-E875-41DD-B926-0F8C87FD401F\"\r\n    firstName:\"James\"\r\n    lastName:\"McDonald\"\r\n    department:\"Dev\"\r\n    email:\"jm@eklee1.com\"\r\n    active: true\r\n    created:\"2019-07-07\"\r\n    type:\"fulltime\"\r\n  },\r\n  {\r\n    id:\"0E2853F4-9A6C-4D7B-9980-18EFDEB51261\"\r\n    firstName:\"Lisa\"\r\n    lastName:\"Cane\"\r\n    department:\"Dev\"\r\n    email:\"lcane@eklee1.com\"\r\n    active: true\r\n    created:\"2019-07-07\"\r\n    type:\"fulltime\"\r\n  },\r\n  {\r\n    id:\"59E8C005-3817-4397-BFB9-EEC8F361CFB3\"\r\n    firstName:\"Becky\"\r\n    lastName:\"Thames\"\r\n    department:\"Dev\"\r\n    email:\"bthames@eklee1.com\"\r\n    active: true\r\n    created:\"2019-07-07\"\r\n    type:\"parttime\"\r\n  },\r\n  {\r\n    id:\"3FE6783D-3C64-4131-ACDC-223EFAD5F3D4\"\r\n    firstName:\"Ken\"\r\n    lastName:\"Fu\"\r\n    department:\"Dev\"\r\n    email:\"kfu@eklee1.com\"\r\n    active: true\r\n    created:\"2019-07-07\"\r\n    type:\"contractor\"\r\n  },\r\n  {\r\n    id:\"7113B1A7-885A-4B10-954A-2CC05EC4ABE6\"\r\n    firstName:\"Mohammad\"\r\n    lastName:\"Ash\"\r\n    department:\"Dev\"\r\n    email:\"mash@eklee1.com\"\r\n    active: true\r\n    created:\"2019-07-07\"\r\n    type:\"intern\"\r\n  }]){\r\n    id\r\n    firstName\r\n    lastName\r\n  }\r\n}",
+								"variables": ""
+							}
 						},
 						"url": {
 							"raw": "{{endpoint}}/api/graph",
@@ -213,6 +473,73 @@
 					},
 					"response": []
 				},
+				{
+					"name": "BatchCreateExams",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "929a7a0e-b78f-4fdf-ae79-2094882d03c4",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Has no errors\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.errors).to.eql(undefined);",
+									"});",
+									"",
+									"pm.test(\"Contains correct JSON payload\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data.batchCreateOrUpdateExam.length).to.eql(3);",
+									"",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation {\r\n  batchCreateOrUpdateExam(exam:[{\r\n    id:\"BCAD7AB0-5D75-49D9-80A2-BB03438147FB\"\r\n    name:\"exam 1 from eklee1\"\r\n    category:\"r1\"\r\n    created: \"2019-07-06\"\r\n    publications: [{\r\n      id:\"BCAD7AB0-5D75-49D9-80A2-BB03438147FB\"\r\n      published:\"2019-01-01\"\r\n      retired: \"2020-12-31\"\r\n      publication: {\r\n        id:\"FF440B11-25C2-4DBD-9E77-35A8B7133719\"\r\n        name:\"test1\"\r\n        testResults: []\r\n        questions:[{\r\n          id:\"632558B4-3271-48F5-9C75-C6F26222E45F\"\r\n          answer:\"F62828CB-ABF0-43C3-AFD9-2B58B7D513CD\"\r\n          text:\"What is the correct choice?\"\r\n          choices:[\r\n            {\r\n              id:\"F62828CB-ABF0-43C3-AFD9-2B58B7D513CD\"\r\n              text:\"Choice A\"\r\n            },\r\n            {\r\n              id:\"72FE70E6-EF2D-445F-BCFD-D6B1735FE7F3\"\r\n              text:\"Choice B\"\r\n            }\r\n          ]\r\n        \r\n        }]\r\n      }\r\n    }]\r\n  },{\r\n    id:\"10CF8832-91A5-439C-A6DE-CC41FE293098\"\r\n    name:\"exam 2 from eklee1\"\r\n    category:\"r2\"\r\n    created: \"2018-12-12\"\r\n  },\r\n  {\r\n    id:\"A7976078-7B4C-46DF-9A26-82410843D96D\"\r\n    name:\"exam 3 from eklee1\"\r\n    category:\"r3\"\r\n    created: \"2019-01-01\"\r\n  }]){\r\n  \tid\r\n    name\r\n    category\r\n  }\r\n}\r\n",
+								"variables": ""
+							}
+						},
+						"url": {
+							"raw": "{{endpoint}}/api/graph",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"api",
+								"graph"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "SimpleCRUD",
+			"item": [
 				{
 					"name": "CreateExam",
 					"event": [
@@ -236,11 +563,10 @@
 									"    var entity = jsonData.data.createExam;",
 									"    pm.expect(entity.id).to.eql(id);",
 									"    pm.expect(entity.name).to.eql(\"MS Azure SQL Database\");",
-									"    pm.expect(entity.version).to.eql(\"1.0\");",
-									"    pm.expect(entity.category).to.eql(\"Cloud\");",
+									"    pm.expect(entity.category).to.eql(\"Azure\");",
 									"    pm.expect(entity.created).to.eql(\"2018-01-01\");",
-									"    pm.expect(entity.effective).to.eql(\"2018-12-01\");",
-									"    pm.expect(entity.expires).to.eql(\"2019-12-31\");",
+									"    pm.expect(entity.publications.length).to.eql(1);",
+									"",
 									"});",
 									""
 								],
@@ -253,7 +579,15 @@
 								"id": "f3d6edef-fd7e-4167-b32d-9aafbbf3a69b",
 								"exec": [
 									"var uuid = require('uuid');",
-									"pm.environment.set(\"createExamId\", uuid.v4());"
+									"pm.environment.set(\"createExamId\", uuid.v4());",
+									"",
+									"pm.environment.set(\"pubId\", uuid.v4());",
+									"pm.environment.set(\"qnsId\", uuid.v4());",
+									"",
+									"pm.environment.set(\"choice1Id\", uuid.v4());",
+									"pm.environment.set(\"choice2Id\", uuid.v4());",
+									"pm.environment.set(\"choice3Id\", uuid.v4());",
+									"pm.environment.set(\"choice4Id\", uuid.v4());"
 								],
 								"type": "text/javascript"
 							}
@@ -275,7 +609,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "mutation {\n  createExam(exam:{\n    id:\"{{createExamId}}\"\n    name:\"MS Azure SQL Database\"\n    version:\"1.0\"\n    category:\"Cloud\"\n    created:\"2018-01-01\"\n    effective:\"2018-12-01\"\n    expires:\"2019-12-31\"\n  }){\n    id\n    name\n    version\n    category\n    created\n    effective\n    expires\n  }\n}"
+							"raw": "mutation {\r\n  createExam(exam:{\r\n    id:\"{{createExamId}}\"\r\n    name:\"MS Azure SQL Database\"\r\n    created:\"2018-01-01\"\r\n    category:\"Azure\"\r\n    publications:[\r\n      {\r\n        id:\"{{createExamId}}\"\r\n        published:\"2019-12-31\"\r\n        retired:\"2020-12-31\"\r\n        publication:{\r\n          id:\"{{pubId}}\"\r\n          name:\"Math test 1 version 1\"\r\n          questions:[\r\n            {\r\n              id:\"{{qnsId}}\"\r\n              answer:\"{{choice2Id}}\"\r\n              text:\"What is 1 + 1\"              \r\n              choices:[\r\n                {\r\n                  id:\"{{choice1Id}}\"\r\n                  text:\"4\"\r\n                },\r\n                {\r\n                  id:\"{{choice2Id}}\"\r\n                  text:\"2\"\r\n                }\r\n                {\r\n                  id:\"{{choice3Id}}\"\r\n                  text:\"3\"\r\n                }\r\n                {\r\n                  id:\"{{choice4Id}}\"\r\n                  text:\"1\"\r\n                }\r\n              ]\r\n            }\r\n          ]\r\n        }\r\n      }\r\n    ]\r\n  }){\r\n    id\r\n    name\r\n    category\r\n    created\r\n    publications {\r\n    \tid\r\n    }\r\n  }\r\n}"
 						},
 						"url": {
 							"raw": "{{endpoint}}/api/graph",
@@ -633,159 +967,10 @@
 			]
 		},
 		{
-			"name": "SeedDatabase",
-			"item": [
-				{
-					"name": "batchCreateCandidate",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "929a7a0e-b78f-4fdf-ae79-2094882d03c4",
-								"exec": [
-									"pm.test(\"Status code is 200\", function () {",
-									"    pm.response.to.have.status(200);",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"name": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							},
-							{
-								"key": "Authorization",
-								"value": "Bearer {{access_token}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\"operationName\":null,\"variables\":{},\"query\":\"mutation {\\n  batchCreateCandidate(candidate: [{id: \\\"12E702ED-9CE0-4377-A622-1822E1E2C313\\\", name: \\\"Mandy Dance\\\", active: true, type: \\\"Student\\\", created: \\\"2018-12-12\\\"}, {id: \\\"A0BE1F44-ECDD-42A6-BC6F-71688331AB8F\\\", name: \\\"Phil Art\\\", active: true, type: \\\"Professional\\\", created: \\\"2019-12-12\\\"}, {id: \\\"04202445-F654-4540-A6A1-F06563A1DC36\\\", name: \\\"James Honda\\\", active: true, type: \\\"Professional\\\", created: \\\"2018-05-11\\\"}, {id: \\\"A1B742CB-A555-4719-9573-7148183961F5\\\", name: \\\"Henery James\\\", active: true, type: \\\"Professional\\\", created: \\\"2018-12-21\\\"}, {id: \\\"BBDC4842-78B6-445D-9935-81F92F5DAA1F\\\", name: \\\"David Port\\\", active: true, type: \\\"Student\\\", created: \\\"2018-01-10\\\"}]) {\\n    id\\n    name\\n    created\\n    active\\n    type\\n  }\\n}\\n\"}"
-						},
-						"url": {
-							"raw": "{{endpoint}}/api/graph",
-							"host": [
-								"{{endpoint}}"
-							],
-							"path": [
-								"api",
-								"graph"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "batchCreateTestResult",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "929a7a0e-b78f-4fdf-ae79-2094882d03c4",
-								"exec": [
-									"pm.test(\"Status code is 200\", function () {",
-									"    pm.response.to.have.status(200);",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"name": "Content-Type",
-								"type": "text",
-								"value": "application/json"
-							},
-							{
-								"key": "Authorization",
-								"type": "text",
-								"value": "Bearer {{access_token}}"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\"operationName\":null,\"variables\":{},\"query\":\"mutation {\\n  batchCreateTestResult(testresult: [{id: \\\"5DE5BB86-1B31-4E31-BF10-B3E1C2967EEC\\\", candidateId: \\\"12E702ED-9CE0-4377-A622-1822E1E2C313\\\", category: \\\"Technology\\\", name: \\\"C# 7.0\\\", taken: \\\"2019-01-01\\\", examTemplateId: \\\"9925E273-D9D2-4399-8A8F-64B4CE531788\\\"}, {id: \\\"4735C40E-0B8C-4DCD-9FAE-8B47DFF234FE\\\", candidateId: \\\"A0BE1F44-ECDD-42A6-BC6F-71688331AB8F\\\", category: \\\"Art\\\", name: \\\"History of Greek Art\\\", taken: \\\"2018-06-09\\\", examTemplateId: \\\"BB977447-00A2-45BE-9045-4A3804E3B011\\\"}, {id: \\\"3DD0643D-FA9C-4F21-B9F2-0C505224F63C\\\", candidateId: \\\"04202445-F654-4540-A6A1-F06563A1DC36\\\", category: \\\"Cars\\\", name: \\\"Fixing Honda CRV 2011\\\", taken: \\\"2019-01-02\\\", examTemplateId: \\\"F1933BA7-6873-4970-8214-83475951E7A6\\\"}, {id: \\\"E6A9150B-FD42-4807-A45D-7101E4C5DFB2\\\", candidateId: \\\"A1B742CB-A555-4719-9573-7148183961F5\\\", category: \\\"Cars\\\", name: \\\"Fixing Ford F150\\\", taken: \\\"2019-01-03\\\", examTemplateId: \\\"AEFE15C5-C67E-4D9F-A556-246B72970080\\\"}, {id: \\\"09777B0B-05BC-4B22-BB13-1EBF7467CD8E\\\", candidateId: \\\"BBDC4842-78B6-445D-9935-81F92F5DAA1F\\\", category: \\\"Cars\\\", name: \\\"Fixing Ford F150\\\", taken: \\\"2019-01-02\\\", examTemplateId: \\\"AEFE15C5-C67E-4D9F-A556-246B72970080\\\"}, {id: \\\"C2758803-1439-4649-A3F1-8CDE072C8820\\\", candidateId: \\\"BBDC4842-78B6-445D-9935-81F92F5DAA1F\\\", category: \\\"Art\\\", name: \\\"Art of Mobile Phone Design\\\", taken: \\\"2019-01-02\\\", examTemplateId: \\\"6B9724F7-33F5-46C9-956F-F972ACFBB95A\\\"}, {id: \\\"B5650E27-A172-4FE5-9D9E-EF6B21FE9E0D\\\", candidateId: \\\"BBDC4842-78B6-445D-9935-81F92F5DAA1F\\\", category: \\\"Cars\\\", name: \\\"Fixing Honda CRV 2011\\\", taken: \\\"2019-01-02\\\", examTemplateId: \\\"F1933BA7-6873-4970-8214-83475951E7A6\\\"}]) {\\n    id\\n    candidateId\\n    category\\n    name\\n    taken\\n    examTemplateId\\n  }\\n}\\n\"}"
-						},
-						"url": {
-							"raw": "{{endpoint}}/api/graph",
-							"host": [
-								"{{endpoint}}"
-							],
-							"path": [
-								"api",
-								"graph"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "batchCreateExam",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "929a7a0e-b78f-4fdf-ae79-2094882d03c4",
-								"exec": [
-									"pm.test(\"Status code is 200\", function () {",
-									"    pm.response.to.have.status(200);",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"name": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							},
-							{
-								"key": "Authorization",
-								"value": "Bearer {{access_token}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\"operationName\":null,\"variables\":{},\"query\":\"mutation {\\n  batchCreateExam(exam: [{id: \\\"9925E273-D9D2-4399-8A8F-64B4CE531788\\\", category: \\\"Technology\\\", name: \\\"C# 7.0\\\", effective: \\\"2010-01-01\\\", expires: \\\"2020-12-31\\\", created: \\\"2016-12-01\\\"}, {id: \\\"BB977447-00A2-45BE-9045-4A3804E3B011\\\", category: \\\"Art\\\", name: \\\"History of Greek Art\\\", effective: \\\"2010-01-01\\\", expires: \\\"2020-12-31\\\", created: \\\"2016-12-01\\\"}, {id: \\\"F1933BA7-6873-4970-8214-83475951E7A6\\\", category: \\\"Cars\\\", name: \\\"Fixing Honda CRV 2011\\\", effective: \\\"2010-01-01\\\", expires: \\\"2020-12-31\\\", created: \\\"2016-12-01\\\"}, {id: \\\"AEFE15C5-C67E-4D9F-A556-246B72970080\\\", category: \\\"Cars\\\", name: \\\"Fixing Ford F150\\\", effective: \\\"2010-01-01\\\", expires: \\\"2018-12-31\\\", created: \\\"2016-12-01\\\"}, {id: \\\"6B9724F7-33F5-46C9-956F-F972ACFBB95A\\\", category: \\\"Art\\\", name: \\\"Art of Mobile Phone Design\\\", effective: \\\"2010-01-01\\\", expires: \\\"2019-12-31\\\", created: \\\"2016-12-01\\\"}]) {\\n    id\\n    category\\n    name\\n    effective\\n    expires\\n    created\\n  }\\n}\\n\"}"
-						},
-						"url": {
-							"raw": "{{endpoint}}/api/graph",
-							"host": [
-								"{{endpoint}}"
-							],
-							"path": [
-								"api",
-								"graph"
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
 			"name": "Cleanup",
 			"item": [
 				{
-					"name": "DeleteAllCandidates",
+					"name": "DeleteAllOrganizations",
 					"event": [
 						{
 							"listen": "test",
@@ -811,22 +996,25 @@
 							},
 							{
 								"key": "Authorization",
-								"value": "Bearer {{access_token}}",
-								"type": "text"
+								"type": "text",
+								"value": "Bearer {{admin_access_token}}"
 							}
 						],
 						"body": {
-							"mode": "raw",
-							"raw": "{\"operationName\":null,\"variables\":{},\"query\":\"mutation {\\n  deleteAllCandidate {\\n    message\\n  }\\n}\\n\"}"
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation {\r\n  deleteAllOrganization{\r\n    message\r\n  }\r\n}",
+								"variables": ""
+							}
 						},
 						"url": {
-							"raw": "{{endpoint}}/api/graph",
+							"raw": "{{endpoint}}/api/appadmin",
 							"host": [
 								"{{endpoint}}"
 							],
 							"path": [
 								"api",
-								"graph"
+								"appadmin"
 							]
 						}
 					},
