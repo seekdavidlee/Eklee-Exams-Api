@@ -85,7 +85,7 @@
 					"response": []
 				},
 				{
-					"name": "BatchCreateOrganizations",
+					"name": "BatchCreateOrUpdateOrganizations",
 					"event": [
 						{
 							"listen": "test",
@@ -436,6 +436,24 @@
 								],
 								"type": "text/javascript"
 							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "6a3bc8f2-1f9a-4823-88aa-49f491c2cedd",
+								"exec": [
+									"var uuid = require('uuid');",
+									"",
+									"for(var i = 0; i < 10; i++) {",
+									"    pm.environment.set(\"employeeId\" + i, uuid.v4());    ",
+									"}",
+									"",
+									" ",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
 						}
 					],
 					"request": {
@@ -456,7 +474,7 @@
 						"body": {
 							"mode": "graphql",
 							"graphql": {
-								"query": "# Write your query or mutation here\r\nmutation {\r\n  batchCreateEmployee(employee:[{\r\n    id:\"9FD7E57D-E875-41DD-B926-0F8C87FD401F\"\r\n    firstName:\"James\"\r\n    lastName:\"McDonald\"\r\n    department:\"Dev\"\r\n    email:\"jm@eklee1.com\"\r\n    active: true\r\n    created:\"2019-07-07\"\r\n    type:\"fulltime\"\r\n  },\r\n  {\r\n    id:\"0E2853F4-9A6C-4D7B-9980-18EFDEB51261\"\r\n    firstName:\"Lisa\"\r\n    lastName:\"Cane\"\r\n    department:\"Dev\"\r\n    email:\"lcane@eklee1.com\"\r\n    active: true\r\n    created:\"2019-07-07\"\r\n    type:\"fulltime\"\r\n  },\r\n  {\r\n    id:\"59E8C005-3817-4397-BFB9-EEC8F361CFB3\"\r\n    firstName:\"Becky\"\r\n    lastName:\"Thames\"\r\n    department:\"Dev\"\r\n    email:\"bthames@eklee1.com\"\r\n    active: true\r\n    created:\"2019-07-07\"\r\n    type:\"parttime\"\r\n  },\r\n  {\r\n    id:\"3FE6783D-3C64-4131-ACDC-223EFAD5F3D4\"\r\n    firstName:\"Ken\"\r\n    lastName:\"Fu\"\r\n    department:\"Dev\"\r\n    email:\"kfu@eklee1.com\"\r\n    active: true\r\n    created:\"2019-07-07\"\r\n    type:\"contractor\"\r\n  },\r\n  {\r\n    id:\"7113B1A7-885A-4B10-954A-2CC05EC4ABE6\"\r\n    firstName:\"Mohammad\"\r\n    lastName:\"Ash\"\r\n    department:\"Dev\"\r\n    email:\"mash@eklee1.com\"\r\n    active: true\r\n    created:\"2019-07-07\"\r\n    type:\"intern\"\r\n  }]){\r\n    id\r\n    firstName\r\n    lastName\r\n  }\r\n}",
+								"query": "# Write your query or mutation here\r\nmutation {\r\n  batchCreateEmployee(employee:[{\r\n    id:\"{{employeeId0}}\"\r\n    firstName:\"James\"\r\n    lastName:\"McDonald\"\r\n    department:\"Dev\"\r\n    email:\"jm@eklee1.com\"\r\n    active: true\r\n    created:\"2019-07-07\"\r\n    type:\"fulltime\"\r\n  },\r\n  {\r\n    id:\"{{employeeId1}}\"\r\n    firstName:\"Lisa\"\r\n    lastName:\"Cane\"\r\n    department:\"Dev\"\r\n    email:\"lcane@eklee1.com\"\r\n    active: true\r\n    created:\"2019-07-07\"\r\n    type:\"fulltime\"\r\n  },\r\n  {\r\n    id:\"{{employeeId2}}\"\r\n    firstName:\"Becky\"\r\n    lastName:\"Thames\"\r\n    department:\"Dev\"\r\n    email:\"bthames@eklee1.com\"\r\n    active: true\r\n    created:\"2019-07-07\"\r\n    type:\"parttime\"\r\n  },\r\n  {\r\n    id:\"{{employeeId3}}\"\r\n    firstName:\"Ken\"\r\n    lastName:\"Fu\"\r\n    department:\"Dev\"\r\n    email:\"kfu@eklee1.com\"\r\n    active: true\r\n    created:\"2019-07-07\"\r\n    type:\"contractor\"\r\n  },\r\n  {\r\n    id:\"{{employeeId4}}\"\r\n    firstName:\"Mohammad\"\r\n    lastName:\"Ash\"\r\n    department:\"Dev\"\r\n    email:\"mash@eklee1.com\"\r\n    active: true\r\n    created:\"2019-07-07\"\r\n    type:\"intern\"\r\n  }]){\r\n    id\r\n    firstName\r\n    lastName\r\n  }\r\n}",
 								"variables": ""
 							}
 						},
@@ -492,9 +510,37 @@
 									"",
 									"pm.test(\"Contains correct JSON payload\", function () {",
 									"    var jsonData = pm.response.json();",
+									"    ",
+									"    var examIdList = [];",
+									"    for(var i = 0; i < 10; i++) {",
+									"        examIdList.push(pm.environment.get(\"examId\" + i));",
+									"    }",
+									"    ",
 									"    pm.expect(jsonData.data.batchCreateOrUpdateExam.length).to.eql(3);",
-									"",
+									"    pm.expect(jsonData.data.batchCreateOrUpdateExam[0].id).to.eql(examIdList[0]);",
+									"    pm.expect(jsonData.data.batchCreateOrUpdateExam[1].id).to.eql(examIdList[1]);",
+									"    pm.expect(jsonData.data.batchCreateOrUpdateExam[2].id).to.eql(examIdList[2]);",
 									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "83e1ee03-afee-4e81-a26b-3a4926d19f33",
+								"exec": [
+									"var uuid = require('uuid');",
+									"for(var i = 0; i < 10; i++) {",
+									"    ",
+									"    var examKey = \"examId\" + i;",
+									"    pm.environment.set(examKey, uuid.v4());",
+									"    ",
+									"    for(var p = 0; p < 10; p++){",
+									"        var pubKey = \"examId\" + i + \"pubId\" + p;",
+									"        pm.environment.set(pubKey, uuid.v4());",
+									"    }",
+									"}"
 								],
 								"type": "text/javascript"
 							}
@@ -518,7 +564,7 @@
 						"body": {
 							"mode": "graphql",
 							"graphql": {
-								"query": "mutation {\r\n  batchCreateOrUpdateExam(exam:[{\r\n    id:\"BCAD7AB0-5D75-49D9-80A2-BB03438147FB\"\r\n    name:\"exam 1 from eklee1\"\r\n    category:\"r1\"\r\n    created: \"2019-07-06\"\r\n    publications: [{\r\n      id:\"BCAD7AB0-5D75-49D9-80A2-BB03438147FB\"\r\n      published:\"2019-01-01\"\r\n      retired: \"2020-12-31\"\r\n      publication: {\r\n        id:\"FF440B11-25C2-4DBD-9E77-35A8B7133719\"\r\n        name:\"test1\"\r\n        testResults: []\r\n        questions:[{\r\n          id:\"632558B4-3271-48F5-9C75-C6F26222E45F\"\r\n          answer:\"F62828CB-ABF0-43C3-AFD9-2B58B7D513CD\"\r\n          text:\"What is the correct choice?\"\r\n          choices:[\r\n            {\r\n              id:\"F62828CB-ABF0-43C3-AFD9-2B58B7D513CD\"\r\n              text:\"Choice A\"\r\n            },\r\n            {\r\n              id:\"72FE70E6-EF2D-445F-BCFD-D6B1735FE7F3\"\r\n              text:\"Choice B\"\r\n            }\r\n          ]\r\n        \r\n        }]\r\n      }\r\n    }]\r\n  },{\r\n    id:\"10CF8832-91A5-439C-A6DE-CC41FE293098\"\r\n    name:\"exam 2 from eklee1\"\r\n    category:\"r2\"\r\n    created: \"2018-12-12\"\r\n  },\r\n  {\r\n    id:\"A7976078-7B4C-46DF-9A26-82410843D96D\"\r\n    name:\"exam 3 from eklee1\"\r\n    category:\"r3\"\r\n    created: \"2019-01-01\"\r\n  }]){\r\n  \tid\r\n    name\r\n    category\r\n  }\r\n}\r\n",
+								"query": "mutation {\r\n  batchCreateOrUpdateExam(exam:[{\r\n    id:\"{{examId0}}\"\r\n    name:\"exam 1 from eklee1\"\r\n    category:\"r1\"\r\n    created: \"2019-07-06\"\r\n    publications: [{\r\n      id:\"{{examId0pubId0}}\"\r\n      published:\"2019-01-01\"\r\n      retired: \"2020-12-31\"\r\n      publication: {\r\n        id:\"FF440B11-25C2-4DBD-9E77-35A8B7133719\"\r\n        year:2019\r\n        questions:[{\r\n          id:\"632558B4-3271-48F5-9C75-C6F26222E45F\"\r\n          answer:\"F62828CB-ABF0-43C3-AFD9-2B58B7D513CD\"\r\n          text:\"What is the correct choice?\"\r\n          choices:[\r\n            {\r\n              id:\"F62828CB-ABF0-43C3-AFD9-2B58B7D513CD\"\r\n              text:\"Choice A\"\r\n            },\r\n            {\r\n              id:\"72FE70E6-EF2D-445F-BCFD-D6B1735FE7F3\"\r\n              text:\"Choice B\"\r\n            }\r\n          ]\r\n        \r\n        }]\r\n      }\r\n    }]\r\n  },{\r\n    id:\"{{examId1}}\"\r\n    name:\"exam 2 from eklee1\"\r\n    category:\"r2\"\r\n    created: \"2018-12-12\"\r\n  },\r\n  {\r\n    id:\"{{examId2}}\"\r\n    name:\"exam 3 from eklee1\"\r\n    category:\"r3\"\r\n    created: \"2019-01-01\"\r\n  }]){\r\n  \tid\r\n    name\r\n    category\r\n  }\r\n}\r\n",
 								"variables": ""
 							}
 						},
@@ -581,7 +627,7 @@
 									"var uuid = require('uuid');",
 									"pm.environment.set(\"createExamId\", uuid.v4());",
 									"",
-									"pm.environment.set(\"pubId\", uuid.v4());",
+									"pm.environment.set(\"pub1Id\", uuid.v4());",
 									"pm.environment.set(\"qnsId\", uuid.v4());",
 									"",
 									"pm.environment.set(\"choice1Id\", uuid.v4());",
@@ -609,7 +655,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "mutation {\r\n  createExam(exam:{\r\n    id:\"{{createExamId}}\"\r\n    name:\"MS Azure SQL Database\"\r\n    created:\"2018-01-01\"\r\n    category:\"Azure\"\r\n    publications:[\r\n      {\r\n        id:\"{{createExamId}}\"\r\n        published:\"2019-12-31\"\r\n        retired:\"2020-12-31\"\r\n        publication:{\r\n          id:\"{{pubId}}\"\r\n          name:\"Math test 1 version 1\"\r\n          questions:[\r\n            {\r\n              id:\"{{qnsId}}\"\r\n              answer:\"{{choice2Id}}\"\r\n              text:\"What is 1 + 1\"              \r\n              choices:[\r\n                {\r\n                  id:\"{{choice1Id}}\"\r\n                  text:\"4\"\r\n                },\r\n                {\r\n                  id:\"{{choice2Id}}\"\r\n                  text:\"2\"\r\n                }\r\n                {\r\n                  id:\"{{choice3Id}}\"\r\n                  text:\"3\"\r\n                }\r\n                {\r\n                  id:\"{{choice4Id}}\"\r\n                  text:\"1\"\r\n                }\r\n              ]\r\n            }\r\n          ]\r\n        }\r\n      }\r\n    ]\r\n  }){\r\n    id\r\n    name\r\n    category\r\n    created\r\n    publications {\r\n    \tid\r\n    }\r\n  }\r\n}"
+							"raw": "mutation {\r\n  createExam(exam:{\r\n    id:\"{{createExamId}}\"\r\n    name:\"MS Azure SQL Database\"\r\n    created:\"2018-01-01\"\r\n    category:\"Azure\"\r\n    publications:[\r\n      {\r\n        id:\"{{createExamId}}\"\r\n        published:\"2019-12-31\"\r\n        retired:\"2020-12-31\"\r\n        publication:{\r\n          id:\"{{pubId}}\"\r\n          year:2019\r\n          questions:[\r\n            {\r\n              id:\"{{qnsId}}\"\r\n              answer:\"{{choice2Id}}\"\r\n              text:\"What is 1 + 1\"              \r\n              choices:[\r\n                {\r\n                  id:\"{{choice1Id}}\"\r\n                  text:\"4\"\r\n                },\r\n                {\r\n                  id:\"{{choice2Id}}\"\r\n                  text:\"2\"\r\n                }\r\n                {\r\n                  id:\"{{choice3Id}}\"\r\n                  text:\"3\"\r\n                }\r\n                {\r\n                  id:\"{{choice4Id}}\"\r\n                  text:\"1\"\r\n                }\r\n              ]\r\n            }\r\n          ]\r\n        }\r\n      }\r\n    ]\r\n  }){\r\n    id\r\n    name\r\n    category\r\n    created\r\n    publications {\r\n    \tid\r\n    }\r\n  }\r\n}"
 						},
 						"url": {
 							"raw": "{{endpoint}}/api/graph",
@@ -644,17 +690,15 @@
 									"pm.test(\"TestResult is created\", function () {",
 									"    var jsonData = pm.response.json();",
 									"    ",
-									"    var id = pm.environment.get(\"createTestResultId\");",
-									"    var createCandidateId = pm.environment.get(\"createCandidateId\");",
-									"    var createExamId = pm.environment.get(\"createExamId\");",
+									"    var id = pm.environment.get(\"testResultId0\");",
+									"",
+									"    var examId = pm.environment.get(\"examId0pubId0\");",
 									"    ",
 									"    var entity = jsonData.data.createTestResult;",
 									"    pm.expect(entity.id).to.eql(id);",
-									"    pm.expect(entity.name).to.eql(\"November Testing\");",
-									"    pm.expect(entity.candidateId).to.eql(createCandidateId);",
-									"    pm.expect(entity.category).to.eql(\"Cloud\");",
-									"    pm.expect(entity.examId).to.eql(createExamId);",
-									"    pm.expect(entity.taken).to.eql(\"2019-01-01\");",
+									"    pm.expect(entity.location).to.eql(\"Dallas, TX\");",
+									"    pm.expect(entity.correctAnswers).to.eql(1);",
+									"    pm.expect(entity.totalQuestions).to.eql(1);",
 									"});",
 									""
 								],
@@ -667,7 +711,8 @@
 								"id": "50d20ab9-c5ba-41d9-9739-f7f81ba8e22d",
 								"exec": [
 									"var uuid = require('uuid');",
-									"pm.environment.set(\"createTestResultId\", uuid.v4());"
+									"pm.environment.set(\"testResultId0\", uuid.v4());",
+									""
 								],
 								"type": "text/javascript"
 							}
@@ -689,7 +734,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "mutation {\n  createTestResult(testresult:{\n    id:\"{{createTestResultId}}\"\n    name:\"November Testing\"\n    candidateId:\"{{createCandidateId}}\"\n    category:\"Cloud\"\n    examId:\"{{createExamId}}\"\n    taken:\"2019-01-01\"\n  }){\n    id\n    name \n    candidateId\n    category\n    examId\n    taken\n  }\n}"
+							"raw": "mutation {\r\n  createTestResult(testresult:{\r\n    id:\"{{testResultId0}}\"\r\n    location:\"Dallas, TX\"\r\n    publication:{\r\n      id:\"{{examId0pubId0}}\"\r\n    }\r\n    correctAnswers: 1\r\n    totalQuestions: 1\r\n    candidate:{\r\n      id:\"{{employeeId0}}\"\r\n      taken:\"2019-07-10\"\r\n    }\r\n  }){\r\n\tid\r\n\tlocation\r\n\tcorrectAnswers\r\n\ttotalQuestions\r\n  }\r\n}"
 						},
 						"url": {
 							"raw": "{{endpoint}}/api/graph",
@@ -724,17 +769,15 @@
 									"pm.test(\"TestResult is found\", function () {",
 									"    var jsonData = pm.response.json();",
 									"    ",
-									"    var id = pm.environment.get(\"createTestResultId\");",
-									"    var createCandidateId = pm.environment.get(\"createCandidateId\");",
-									"    var createExamId = pm.environment.get(\"createExamId\");",
+									"    var id = pm.environment.get(\"testResultId0\");",
+									"",
+									"    var examId = pm.environment.get(\"examId0pubId0\");",
 									"    ",
 									"    var entity = jsonData.data.getTestResultById;",
 									"    pm.expect(entity.id).to.eql(id);",
-									"    pm.expect(entity.name).to.eql(\"November Testing\");",
-									"    pm.expect(entity.candidateId).to.eql(createCandidateId);",
-									"    pm.expect(entity.category).to.eql(\"Cloud\");",
-									"    pm.expect(entity.examId).to.eql(createExamId);",
-									"    pm.expect(entity.taken).to.eql(\"2019-01-01\");",
+									"    pm.expect(entity.location).to.eql(\"Dallas, TX\");",
+									"    pm.expect(entity.correctAnswers).to.eql(1);",
+									"    pm.expect(entity.totalQuestions).to.eql(1);",
 									"});",
 									""
 								],
@@ -758,7 +801,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "query {\n  getTestResultById(id:{equal:\"{{createTestResultId}}\"}){\n    candidateId\n    category\n    examId\n    id\n    examId\n    name\n    taken\n  }\n}"
+							"raw": "query {\n  getTestResultById(id:{equal:\"{{testResultId0}}\"}){\n\tid\n\tlocation\n\tcorrectAnswers\n\ttotalQuestions\n  }\n}"
 						},
 						"url": {
 							"raw": "{{endpoint}}/api/graph",
@@ -774,7 +817,7 @@
 					"response": []
 				},
 				{
-					"name": "QueryTestResultOutput (Name,Taken)",
+					"name": "QueryTestResultByCandidateId",
 					"event": [
 						{
 							"listen": "test",
@@ -788,6 +831,23 @@
 									"pm.test(\"No errors are returned\", function () {",
 									"    var jsonData = pm.response.json();",
 									"    pm.expect(jsonData.errors).to.eql(undefined);",
+									"});",
+									"",
+									"pm.test(\"TestResult is found\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    ",
+									"    var id = pm.environment.get(\"testResultId0\");",
+									"    var employeeId0 = pm.environment.get(\"employeeId0\");",
+									"    var examId0pubId0 = pm.environment.get(\"examId0pubId0\");",
+									"    var examId = pm.environment.get(\"examId0pubId0\");",
+									"    ",
+									"    var entity = jsonData.data.getTestResultByCandidateById;",
+									"    pm.expect(entity.id).to.eql(id);",
+									"    pm.expect(entity.location).to.eql(\"Dallas, TX\");",
+									"    pm.expect(entity.correctAnswers).to.eql(1);",
+									"    pm.expect(entity.totalQuestions).to.eql(1);",
+									"    pm.expect(entity.candidate.id).to.eql(employeeId0);",
+									"    pm.expect(entity.publication.id).to.eql(examId0pubId0);",
 									"});",
 									""
 								],
@@ -805,13 +865,13 @@
 							},
 							{
 								"key": "Content-Type",
-								"value": "application/graphql",
-								"type": "text"
+								"type": "text",
+								"value": "application/graphql"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "query {\r\n  getTestResultsByNameAndTaken(\r\n    name:{contains:\"November\"}\r\n    taken:{greaterThan:\"2018-01-01\"}\r\n  ){\r\n    candidateId\r\n    category\r\n    examId\r\n    id\r\n    examId\r\n    name\r\n    taken\r\n  }\r\n}"
+							"raw": "query {\n  getTestResultByCandidateById(destinationid:{equal:\"{{employeeId0}}\"}){\n    id\n    correctAnswers\n    location\n    publication {\n      id\n    }\n    totalQuestions\n    candidate {\n      id\n    }\n  }\n}"
 						},
 						"url": {
 							"raw": "{{endpoint}}/api/graph",
@@ -846,17 +906,13 @@
 									"pm.test(\"TestResult is updated\", function () {",
 									"    var jsonData = pm.response.json();",
 									"    ",
-									"    var id = pm.environment.get(\"createTestResultId\");",
-									"    var createCandidateId = pm.environment.get(\"createCandidateId\");",
-									"    var createExamId = pm.environment.get(\"createExamId\");",
+									"    var id = pm.environment.get(\"testResultId0\");",
 									"    ",
 									"    var entity = jsonData.data.updateTestResult;",
 									"    pm.expect(entity.id).to.eql(id);",
-									"    pm.expect(entity.name).to.eql(\"December Testing\");",
-									"    pm.expect(entity.candidateId).to.eql(createCandidateId);",
-									"    pm.expect(entity.category).to.eql(\"Cloud\");",
-									"    pm.expect(entity.examId).to.eql(createExamId);",
-									"    pm.expect(entity.taken).to.eql(\"2019-02-01\");",
+									"    pm.expect(entity.location).to.eql(\"Dallas, TX\");",
+									"    pm.expect(entity.correctAnswers).to.eql(2);",
+									"    pm.expect(entity.totalQuestions).to.eql(3);",
 									"});",
 									""
 								],
@@ -880,7 +936,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "mutation{\r\n  updateTestResult(testresult: {\r\n    id:\"{{createTestResultId}}\"\r\n    name:\"December Testing\"\r\n    candidateId:\"{{createCandidateId}}\"\r\n    category:\"Cloud\"\r\n    examId:\"{{createExamId}}\"\r\n    taken:\"2019-02-01\"\r\n  }){\r\n    id\r\n    name \r\n    candidateId\r\n    category\r\n    examId\r\n    taken\r\n  }\r\n}"
+							"raw": "mutation {\r\n  updateTestResult(testresult:{\r\n    id:\"{{testResultId0}}\"\r\n    correctAnswers:2\r\n    totalQuestions:3\r\n    location:\"Dallas, TX\"\r\n  }){\r\n    id\r\n    correctAnswers\r\n    totalQuestions\r\n    location\r\n  }\r\n}"
 						},
 						"url": {
 							"raw": "{{endpoint}}/api/graph",
@@ -915,17 +971,13 @@
 									"pm.test(\"TestResult is updated\", function () {",
 									"    var jsonData = pm.response.json();",
 									"    ",
-									"    var id = pm.environment.get(\"createTestResultId\");",
-									"    var createCandidateId = pm.environment.get(\"createCandidateId\");",
-									"    var createExamId = pm.environment.get(\"createExamId\");",
+									"    var id = pm.environment.get(\"testResultId0\");",
 									"    ",
 									"    var entity = jsonData.data.getTestResultById;",
 									"    pm.expect(entity.id).to.eql(id);",
-									"    pm.expect(entity.name).to.eql(\"December Testing\");",
-									"    pm.expect(entity.candidateId).to.eql(createCandidateId);",
-									"    pm.expect(entity.category).to.eql(\"Cloud\");",
-									"    pm.expect(entity.examId).to.eql(createExamId);",
-									"    pm.expect(entity.taken).to.eql(\"2019-02-01\");",
+									"    pm.expect(entity.location).to.eql(\"Dallas, TX\");",
+									"    pm.expect(entity.correctAnswers).to.eql(2);",
+									"    pm.expect(entity.totalQuestions).to.eql(3);",
 									"});",
 									""
 								],
@@ -949,7 +1001,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "query {\n  getTestResultById(id:{equal:\"{{createTestResultId}}\"}){\n    candidateId\n    category\n    examId\n    id\n    examId\n    name\n    taken\n  }\n}"
+							"raw": "query {\n  getTestResultById(id:{equal:\"{{testResultId0}}\"}){\n    id\n    correctAnswers\n    totalQuestions\n    location\n  }\n}"
 						},
 						"url": {
 							"raw": "{{endpoint}}/api/graph",
@@ -969,57 +1021,6 @@
 		{
 			"name": "Cleanup",
 			"item": [
-				{
-					"name": "DeleteAllOrganizations",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "c04fa6d4-f9cc-422b-8f76-541cff3bcb7d",
-								"exec": [
-									"pm.test(\"Status code is 200\", function () {",
-									"    pm.response.to.have.status(200);",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"name": "Content-Type",
-								"type": "text",
-								"value": "application/json"
-							},
-							{
-								"key": "Authorization",
-								"type": "text",
-								"value": "Bearer {{admin_access_token}}"
-							}
-						],
-						"body": {
-							"mode": "graphql",
-							"graphql": {
-								"query": "mutation {\r\n  deleteAllOrganization{\r\n    message\r\n  }\r\n}",
-								"variables": ""
-							}
-						},
-						"url": {
-							"raw": "{{endpoint}}/api/appadmin",
-							"host": [
-								"{{endpoint}}"
-							],
-							"path": [
-								"api",
-								"appadmin"
-							]
-						}
-					},
-					"response": []
-				},
 				{
 					"name": "DeleteAllExams",
 					"event": [
@@ -1069,7 +1070,7 @@
 					"response": []
 				},
 				{
-					"name": "DeleteAllCandidateSearches",
+					"name": "DeleteAllEmployees",
 					"event": [
 						{
 							"listen": "test",
@@ -1095,13 +1096,13 @@
 							},
 							{
 								"key": "Authorization",
-								"value": "Bearer {{access_token}}",
-								"type": "text"
+								"type": "text",
+								"value": "Bearer {{access_token}}"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\"operationName\":null,\"variables\":{},\"query\":\"mutation {\\n  deleteAllCandidateSearch {\\n    message\\n  }\\n}\\n\"}"
+							"raw": "{\"operationName\":null,\"variables\":{},\"query\":\"mutation {\\n  deleteAllEmployee {\\n    message\\n  }\\n}\\n\"}"
 						},
 						"url": {
 							"raw": "{{endpoint}}/api/graph",
@@ -1159,6 +1160,105 @@
 							"path": [
 								"api",
 								"graph"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DeleteAllPublications",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "c04fa6d4-f9cc-422b-8f76-541cff3bcb7d",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"operationName\":null,\"variables\":{},\"query\":\"mutation {\\n  deleteAllPublication {\\n    message\\n  }\\n}\\n\"}"
+						},
+						"url": {
+							"raw": "{{endpoint}}/api/graph",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"api",
+								"graph"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DeleteAllOrganizations",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "c04fa6d4-f9cc-422b-8f76-541cff3bcb7d",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{admin_access_token}}"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation {\r\n  deleteAllOrganization{\r\n    message\r\n  }\r\n}",
+								"variables": ""
+							}
+						},
+						"url": {
+							"raw": "{{endpoint}}/api/appadmin",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"api",
+								"appadmin"
 							]
 						}
 					},

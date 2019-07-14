@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using Eklee.Azure.Functions.GraphQl;
+using Eklee.Azure.Functions.GraphQl.Connections;
 using Eklee.Azure.Functions.GraphQl.Repository.Search;
 using Eklee.Exams.Api.Schema.Models;
 using GraphQL.Types;
@@ -14,7 +15,7 @@ namespace Eklee.Exams.Api.Schema
 	{
 		private bool DefaultAssertion(ClaimsPrincipal claimsPrincipal)
 		{
-			return claimsPrincipal.IsInRole("Eklee.User.Read");
+			return claimsPrincipal.IsInRole("Eklee.User.Reader");
 		}
 
 		public MyQuery(QueryBuilderFactory queryBuilderFactory, ILogger logger)
@@ -30,7 +31,6 @@ namespace Eklee.Exams.Api.Schema
 				.BuildQuery()
 				.BuildWithSingleResult();
 
-			/*
 			queryBuilderFactory.Create<TestResult>(this, "GetTestResultById")
 				.AssertWithClaimsPrincipal(DefaultAssertion)
 				.WithParameterBuilder()
@@ -38,15 +38,15 @@ namespace Eklee.Exams.Api.Schema
 				.BuildQuery()
 				.BuildWithSingleResult();
 
-
-
-			queryBuilderFactory.Create<Candidate>(this, "GetCandidateById")
+			queryBuilderFactory.Create<TestResult>(this, "GetTestResultByCandidateById")
 				.AssertWithClaimsPrincipal(DefaultAssertion)
 				.WithParameterBuilder()
-				.WithKeys()
+				.WithConnectionEdgeBuilder<Candidate>()
+					.WithDestinationId()
+					.BuildConnectionEdgeParameters()
 				.BuildQuery()
 				.BuildWithSingleResult();
-
+			/*
 			queryBuilderFactory.Create<TestResultOutput>(this, "GetTestResultsByNameAndTaken")
 				.AssertWithClaimsPrincipal(DefaultAssertion)
 				.WithCache(TimeSpan.FromSeconds(30))

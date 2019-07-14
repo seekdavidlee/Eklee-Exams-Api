@@ -7,7 +7,7 @@ namespace Eklee.Exams.Api.Schema.Models
 	public class ExamPublication : IEntityWithGuidId
 	{
 		[ConnectionEdgeDestinationKey]
-		[Description("Id of the exam.")]
+		[Description("Id of the Publication.")]
 		public Guid Id { get; set; }
 
 		[Description("Date in which exam is published for use.")]
