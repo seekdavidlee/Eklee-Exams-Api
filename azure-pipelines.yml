@@ -22,12 +22,6 @@ steps:
       dotnet publish --configuration $env:BuildConfiguration --output $env:Build_ArtifactStagingDirectory
       $zipLocation = "$env:Build_ArtifactStagingDirectory\$env:Build_BuildNumber.zip"
       Compress-Archive -Path $env:Build_ArtifactStagingDirectory\* -DestinationPath $zipLocation
-      Write-Host "##vso[task.setvariable variable=zipLocation;]$zipLocation"
-      Write-Host "GraphQl_EnableMetrics $env:Deploy_GraphQl_EnableMetrics" 
-      Write-Host "GraphQl_ExposeExceptions $env:Deploy_GraphQl_ExposeExceptions"
-      Write-Host "ServiceAccounts_0_AppId $env:Deploy_ServiceAccounts_0_AppId" 
-      Write-Host "ServiceAccounts_0_Issuer $env:Deploy_ServiceAccounts_0_Issuer"
-      Write-Host "Admin_Audience $env:Deploy_Admin_Audience"
 
 - task: AzureResourceGroupDeployment@2
   displayName: 'Deploy stack resources'
