@@ -1,480 +1,507 @@
 ﻿{
-    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-    "contentVersion": "1.0.0.0",
-    "parameters": {
-        "stackName": {
-            "defaultValue": "",
-            "type": "String"
-        },
-        "config_web_name": {
-            "defaultValue": "web",
-            "type": "String"
-        },
-        "GraphQl_EnableMetrics": {
-            "defaultValue": "",
-            "type": "String"
-        },
-        "GraphQl_ExposeExceptions": {
-            "defaultValue": "",
-            "type": "String"
-        },
-        "ServiceAccounts_0_AppId": {
-            "defaultValue": "",
-            "type": "String"
-        },
-        "ServiceAccounts_0_Issuer": {
-            "defaultValue": "",
-            "type": "String"
-        },
-        "Admin_Audience": {
-            "defaultValue": "",
-            "type": "String"
-        },
-        "Admin_Issuer": {
-            "defaultValue": "",
-            "type": "String"
-        },
-        "Security_Audience": {
-            "defaultValue": "",
-            "type": "String"
-        },
-        "Security_Issuers": {
-            "defaultValue": "",
-            "type": "String"
-        },
-        "AdminApi_Endpoint": {
-            "defaultValue": "",
-            "type": "String"
-        },
-        "AdminClient_ClientId": {
-            "defaultValue": "",
-            "type": "String"
-        },
-        "AdminClient_ClientSecret": {
-            "defaultValue": "",
-            "type": "String"
-        },
-        "AdminClient_Resource": {
-            "defaultValue": "",
-            "type": "String"
-        },
-        "AdminClient_TenantId": {
-            "defaultValue": "",
-            "type": "String"
-        }
-    },
-    "variables": {
-        "location": "[resourceGroup().location]",
-        "planName": "[variables('stackName')]",
-        "stackName": "[replace(parameters('stackName'),'-','')]",
-        "appSettings": {
-            "GraphQl:EnableMetrics": "[parameters('GraphQl_EnableMetrics')]",
-            "GraphQl:ExposeExceptions": "[parameters('GraphQl_ExposeExceptions')]",
-            "ServiceAccounts:0:AppId": "[parameters('ServiceAccounts_0_AppId')]",
-            "ServiceAccounts:0:Issuer": "[parameters('ServiceAccounts_0_Issuer')]",
-            "DocumentDb:Key": "[listKeys(resourceId('Microsoft.DocumentDB/databaseAccounts', variables('stackName')), providers('Microsoft.DocumentDB', 'databaseAccounts').apiVersions[0]).primaryMasterKey]",
-            "DocumentDb:Url": "[reference(resourceId('Microsoft.DocumentDB/databaseAccounts',variables('stackName')),'2015-04-08').documentEndpoint]",
-            "DocumentDb:RequestUnits": "400",
-            "Search:ServiceName": "[variables('stackName')]",
-            "Search:ApiKey": "[listAdminKeys(resourceId('Microsoft.Search/searchServices',variables('stackName')), '2015-08-19').PrimaryKey]",
-            "Admin:Audience": "[parameters('Admin_Audience')]",
-            "Admin:Issuer": "[parameters('Admin_Issuer')]",
-            "Admin:DocumentDb:Key": "[listKeys(resourceId('Microsoft.DocumentDB/databaseAccounts', variables('stackName')), providers('Microsoft.DocumentDB', 'databaseAccounts').apiVersions[0]).primaryMasterKey]",
-            "Admin:DocumentDb:Url": "[reference(resourceId('Microsoft.DocumentDB/databaseAccounts',variables('stackName')),'2015-04-08').documentEndpoint]",
-            "Admin:DocumentDb:RequestUnits": "400",
-            "Admin:Search:ServiceName": "[variables('stackName')]",
-            "Admin:Search:ApiKey": "[listAdminKeys(resourceId('Microsoft.Search/searchServices',variables('stackName')), '2015-08-19').PrimaryKey]",
-            "Security:Audience": "[parameters('Security_Audience')]",
-            "Security:Issuers": "[parameters('Security_Issuers')]",
-            "AdminApi:Endpoint": "[parameters('AdminApi_Endpoint')]",
-            "AdminClient:ClientId": "[parameters('AdminClient_ClientId')]",
-            "AdminClient:ClientSecret": "[parameters('AdminClient_ClientSecret')]",
-            "AdminClient:Resource": "[parameters('AdminClient_Resource')]",
-            "AdminClient:TenantId": "[parameters('AdminClient_TenantId')]"
-        }
-    },
-    "resources": [
-        {
-            "type": "Microsoft.DocumentDB/databaseAccounts",
-            "kind": "GlobalDocumentDB",
-            "name": "[variables('stackName')]",
-            "apiVersion": "2015-04-08",
-            "location": "[variables('location')]",
-            "tags": {
-                "defaultExperience": "Core (SQL)"
-            },
-            "scale": null,
-            "properties": {
-                "ipRangeFilter": "",
-                "enableAutomaticFailover": false,
-                "enableMultipleWriteLocations": false,
-                "isVirtualNetworkFilterEnabled": false,
-                "virtualNetworkRules": [],
-                "databaseAccountOfferType": "Standard",
-                "consistencyPolicy": {
-                    "defaultConsistencyLevel": "Session",
-                    "maxIntervalInSeconds": 5,
-                    "maxStalenessPrefix": 100
-                },
-                "locations": [
-                    {
-                        "locationName": "[variables('location')]",
-                        "provisioningState": "Succeeded",
-                        "failoverPriority": 0
-                    }
-                ],
-                "capabilities": []
-            },
-            "dependsOn": []
-        },
-        {
-            "type": "microsoft.insights/components",
-            "kind": "web",
-            "name": "[variables('stackName')]",
-            "apiVersion": "2015-05-01",
-            "location": "[variables('location')]",
-            "tags": {},
-            "scale": null,
-            "properties": {
-                "Application_Type": "web",
-                "Flow_Type": null,
-                "Request_Source": "IbizaWebAppExtensionCreate",
-                "HockeyAppId": null,
-                "SamplingPercentage": null
-            },
-            "dependsOn": []
-        },
-        {
-            "type": "Microsoft.Search/searchServices",
-            "sku": {
-                "name": "basic"
-            },
-            "name": "[variables('stackName')]",
-            "apiVersion": "2015-08-19",
-            "location": "[variables('location')]",
-            "scale": null,
-            "properties": {
-                "replicaCount": 1,
-                "partitionCount": 1,
-                "hostingMode": "Default"
-            },
-            "dependsOn": []
-        },
-        {
-            "type": "Microsoft.Storage/storageAccounts",
-            "sku": {
-                "name": "Standard_LRS",
-                "tier": "Standard"
-            },
-            "kind": "Storage",
-            "name": "[variables('stackName')]",
-            "apiVersion": "2018-07-01",
-            "location": "[variables('location')]",
-            "tags": {},
-            "scale": null,
-            "properties": {
-                "networkAcls": {
-                    "bypass": "AzureServices",
-                    "virtualNetworkRules": [],
-                    "ipRules": [],
-                    "defaultAction": "Allow"
-                },
-                "supportsHttpsTrafficOnly": false,
-                "encryption": {
-                    "services": {
-                        "file": {
-                            "enabled": true
-                        },
-                        "blob": {
-                            "enabled": true
-                        }
-                    },
-                    "keySource": "Microsoft.Storage"
-                }
-            },
-            "dependsOn": []
-        },
-        {
-            "type": "Microsoft.Web/serverfarms",
-            "sku": {
-                "name": "Y1",
-                "tier": "Dynamic",
-                "size": "Y1",
-                "family": "Y",
-                "capacity": 0
-            },
-            "kind": "functionapp",
-            "name": "[variables('planName')]",
-            "apiVersion": "2016-09-01",
-            "location": "[variables('location')]",
-            "scale": null,
-            "properties": {
-                "name": "[variables('planName')]",
-                "workerTierName": null,
-                "adminSiteName": null,
-                "hostingEnvironmentProfile": null,
-                "perSiteScaling": false,
-                "reserved": false,
-                "targetWorkerCount": 0,
-                "targetWorkerSizeId": 0
-            },
-            "dependsOn": []
-        },
-        {
-            "type": "Microsoft.Web/sites",
-            "kind": "functionapp",
-            "name": "[variables('stackName')]",
-            "apiVersion": "2016-08-01",
-            "location": "[variables('location')]",
-            "scale": null,
-            "properties": {
-                "enabled": true,
-                "hostNameSslStates": [
-                    {
-                        "name": "[concat(variables('stackName'),'.azurewebsites.net')]",
-                        "sslState": "Disabled",
-                        "virtualIP": null,
-                        "thumbprint": null,
-                        "toUpdate": null,
-                        "hostType": "Standard"
-                    },
-                    {
-                        "name": "[concat(variables('stackName'),'.scm.azurewebsites.net')]",
-                        "sslState": "Disabled",
-                        "virtualIP": null,
-                        "thumbprint": null,
-                        "toUpdate": null,
-                        "hostType": "Repository"
-                    }
-                ],
-                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('planName'))]",
-                "reserved": false,
-                "siteConfig": null,
-                "scmSiteAlsoStopped": false,
-                "hostingEnvironmentProfile": null,
-                "clientAffinityEnabled": false,
-                "clientCertEnabled": false,
-                "hostNamesDisabled": false,
-                "containerSize": 1536,
-                "dailyMemoryTimeQuota": 0,
-                "cloningInfo": null,
-                "httpsOnly": false
-            },
-            "dependsOn": [
-                "[resourceId('Microsoft.Web/serverfarms', variables('planName'))]"
-            ]
-        },
-        {
-            "type": "Microsoft.Web/sites/slots",
-            "kind": "functionapp",
-            "name": "[concat(variables('stackName'),'/','Staging')]",
-            "apiVersion": "2016-08-01",
-            "location": "[variables('location')]",
-            "scale": null,
-            "properties": {
-                "enabled": true,
-                "hostNameSslStates": [
-                    {
-                        "name": "[concat(variables('stackName'),'-staging.azurewebsites.net')]",
-                        "sslState": "Disabled",
-                        "virtualIP": null,
-                        "thumbprint": null,
-                        "toUpdate": null,
-                        "hostType": "Standard"
-                    },
-                    {
-                        "name": "[concat(variables('stackName'),'-staging.scm.azurewebsites.net')]",
-                        "sslState": "Disabled",
-                        "virtualIP": null,
-                        "thumbprint": null,
-                        "toUpdate": null,
-                        "hostType": "Repository"
-                    }
-                ],
-                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('planName'))]",
-                "reserved": false,
-                "siteConfig": null,
-                "scmSiteAlsoStopped": false,
-                "hostingEnvironmentProfile": null,
-                "clientAffinityEnabled": false,
-                "clientCertEnabled": false,
-                "hostNamesDisabled": false,
-                "containerSize": 1536,
-                "dailyMemoryTimeQuota": 0,
-                "cloningInfo": null,
-                "httpsOnly": false
-            },
-            "dependsOn": [
-                "[resourceId('Microsoft.Web/sites', variables('stackName'))]",
-                "[resourceId('Microsoft.Web/serverfarms', variables('planName'))]"
-            ]
-        },
-        {
-            "type": "Microsoft.Web/sites/config",
-            "name": "[concat(variables('stackName'), '/', parameters('config_web_name'))]",
-            "apiVersion": "2016-08-01",
-            "location": "[variables('location')]",
-            "scale": null,
-            "properties": {
-                "numberOfWorkers": 1,
-                "defaultDocuments": [
-                    "Default.htm",
-                    "Default.html",
-                    "Default.asp",
-                    "index.htm",
-                    "index.html",
-                    "iisstart.htm",
-                    "default.aspx",
-                    "index.php"
-                ],
-                "netFrameworkVersion": "v4.0",
-                "phpVersion": "5.6",
-                "pythonVersion": "",
-                "nodeVersion": "",
-                "linuxFxVersion": "",
-                "windowsFxVersion": null,
-                "requestTracingEnabled": false,
-                "remoteDebuggingEnabled": false,
-                "remoteDebuggingVersion": null,
-                "httpLoggingEnabled": false,
-                "logsDirectorySizeLimit": 35,
-                "detailedErrorLoggingEnabled": false,
-                "publishingUsername": "[concat('$',variables('stackName'))]",
-                "publishingPassword": null,
-                "appSettings": null,
-                "azureStorageAccounts": {},
-                "metadata": null,
-                "connectionStrings": null,
-                "machineKey": null,
-                "handlerMappings": null,
-                "documentRoot": null,
-                "scmType": "None",
-                "use32BitWorkerProcess": true,
-                "webSocketsEnabled": false,
-                "alwaysOn": false,
-                "javaVersion": null,
-                "javaContainer": null,
-                "javaContainerVersion": null,
-                "appCommandLine": "",
-                "managedPipelineMode": "Integrated",
-                "virtualApplications": [
-                    {
-                        "virtualPath": "/",
-                        "physicalPath": "site\\wwwroot",
-                        "preloadEnabled": false,
-                        "virtualDirectories": null
-                    }
-                ],
-                "winAuthAdminState": 0,
-                "winAuthTenantState": 0,
-                "customAppPoolIdentityAdminState": false,
-                "customAppPoolIdentityTenantState": false,
-                "runtimeADUser": null,
-                "runtimeADUserPassword": null,
-                "loadBalancing": "LeastRequests",
-                "routingRules": [],
-                "experiments": {
-                    "rampUpRules": []
-                },
-                "limits": null,
-                "autoHealEnabled": false,
-                "autoHealRules": null,
-                "tracingOptions": null,
-                "vnetName": "",
-                "siteAuthEnabled": false,
-                "siteAuthSettings": {
-                    "enabled": null,
-                    "runtimeVersion": "1.0.0",
-                    "unauthenticatedClientAction": null,
-                    "tokenStoreEnabled": true,
-                    "allowedExternalRedirectUrls": null,
-                    "defaultProvider": null,
-                    "clientId": null,
-                    "clientSecret": null,
-                    "clientSecretCertificateThumbprint": null,
-                    "issuer": null,
-                    "allowedAudiences": null,
-                    "additionalLoginParams": null,
-                    "isAadAutoProvisioned": false,
-                    "googleClientId": null,
-                    "googleClientSecret": null,
-                    "googleOAuthScopes": null,
-                    "facebookAppId": null,
-                    "facebookAppSecret": null,
-                    "facebookOAuthScopes": null,
-                    "twitterConsumerKey": null,
-                    "twitterConsumerSecret": null,
-                    "microsoftAccountClientId": null,
-                    "microsoftAccountClientSecret": null,
-                    "microsoftAccountOAuthScopes": null
-                },
-                "cors": {
-                    "allowedOrigins": [
-                        "https://functions.azure.com",
-                        "https://functions-staging.azure.com",
-                        "https://functions-next.azure.com"
-                    ],
-                    "supportCredentials": false
-                },
-                "push": null,
-                "apiDefinition": null,
-                "autoSwapSlotName": null,
-                "localMySqlEnabled": false,
-                "managedServiceIdentityId": null,
-                "xManagedServiceIdentityId": null,
-                "ipSecurityRestrictions": null,
-                "http20Enabled": false,
-                "minTlsVersion": "1.2",
-                "ftpsState": "AllAllowed",
-                "reservedInstanceCount": 0
-            },
-            "dependsOn": [
-                "[resourceId('Microsoft.Web/sites', variables('stackName'))]"
-            ]
-        },
-        {
-            "type": "Microsoft.Web/sites/hostNameBindings",
-            "name": "[concat(variables('stackName'), '/', variables('stackName'), '.azurewebsites.net')]",
-            "apiVersion": "2016-08-01",
-            "location": "[variables('location')]",
-            "scale": null,
-            "properties": {
-                "siteName": "[variables('stackName')]",
-                "domainId": null,
-                "hostNameType": "Verified"
-            },
-            "dependsOn": [
-                "[resourceId('Microsoft.Web/sites', variables('stackName'))]"
-            ]
-        },
-        {
-            "name": "[concat(variables('stackName'),'/appsettings')]",
-            "apiVersion": "2016-08-01",
-            "type": "Microsoft.Web/sites/config",
-            "location": "[variables('location')]",
-            "properties": "[variables('appSettings')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Web/sites', variables('stackName'))]",
-                "[resourceId('Microsoft.Storage/storageAccounts', variables('stackName'))]",
-                "[resourceId('Microsoft.Search/searchServices', variables('stackName'))]",
-                "[resourceId('microsoft.insights/components', variables('stackName'))]",
-                "[resourceId('Microsoft.DocumentDB/databaseAccounts', variables('stackName'))]"
-            ]
-        },
-        {
-            "name": "[concat(variables('stackName'),'/Staging/appsettings')]",
-            "apiVersion": "2016-08-01",
-            "type": "Microsoft.Web/sites/slots/config",
-            "location": "[variables('location')]",
-            "properties": "[variables('appSettings')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Web/sites', variables('stackName'))]",
-                "[resourceId('Microsoft.Web/sites/slots', variables('stackName'),'Staging')]",
-                "[resourceId('Microsoft.Storage/storageAccounts', variables('stackName'))]",
-                "[resourceId('Microsoft.Search/searchServices', variables('stackName'))]",
-                "[resourceId('microsoft.insights/components', variables('stackName'))]",
-                "[resourceId('Microsoft.DocumentDB/databaseAccounts', variables('stackName'))]"
-            ]
-        }
-    ]
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"stackName": {
+			"defaultValue": "",
+			"type": "String"
+		},
+		"config_web_name": {
+			"defaultValue": "web",
+			"type": "String"
+		},
+		"GraphQl_EnableMetrics": {
+			"defaultValue": "",
+			"type": "String"
+		},
+		"GraphQl_ExposeExceptions": {
+			"defaultValue": "",
+			"type": "String"
+		},
+		"ServiceAccounts_0_AppId": {
+			"defaultValue": "",
+			"type": "String"
+		},
+		"ServiceAccounts_0_Issuer": {
+			"defaultValue": "",
+			"type": "String"
+		},
+		"Admin_Audience": {
+			"defaultValue": "",
+			"type": "String"
+		},
+		"Admin_Issuer": {
+			"defaultValue": "",
+			"type": "String"
+		},
+		"Security_Audience": {
+			"defaultValue": "",
+			"type": "String"
+		},
+		"Security_Issuers": {
+			"defaultValue": "",
+			"type": "String"
+		},
+		"AdminApi_Endpoint": {
+			"defaultValue": "",
+			"type": "String"
+		},
+		"AdminClient_ClientId": {
+			"defaultValue": "",
+			"type": "String"
+		},
+		"AdminClient_ClientSecret": {
+			"defaultValue": "",
+			"type": "String"
+		},
+		"AdminClient_Resource": {
+			"defaultValue": "",
+			"type": "String"
+		},
+		"AdminClient_TenantId": {
+			"defaultValue": "",
+			"type": "String"
+		}
+	},
+	"variables": {
+		"location": "southcentralus",
+		"planName": "[variables('stackName')]",
+		"stackName": "[replace(parameters('stackName'),'-','')]"
+	},
+	"resources": [
+		{
+			"type": "Microsoft.DocumentDB/databaseAccounts",
+			"kind": "GlobalDocumentDB",
+			"name": "[variables('stackName')]",
+			"apiVersion": "2015-04-08",
+			"location": "[variables('location')]",
+			"tags": {
+				"defaultExperience": "Core (SQL)"
+			},
+			"scale": null,
+			"properties": {
+				"ipRangeFilter": "",
+				"enableAutomaticFailover": false,
+				"enableMultipleWriteLocations": false,
+				"isVirtualNetworkFilterEnabled": false,
+				"virtualNetworkRules": [],
+				"databaseAccountOfferType": "Standard",
+				"consistencyPolicy": {
+					"defaultConsistencyLevel": "Session",
+					"maxIntervalInSeconds": 5,
+					"maxStalenessPrefix": 100
+				},
+				"locations": [
+					{
+						"locationName": "[variables('location')]",
+						"provisioningState": "Succeeded",
+						"failoverPriority": 0
+					}
+				],
+				"capabilities": []
+			},
+			"dependsOn": []
+		},
+		{
+			"type": "microsoft.insights/components",
+			"kind": "web",
+			"name": "[variables('stackName')]",
+			"apiVersion": "2015-05-01",
+			"location": "[variables('location')]",
+			"tags": {},
+			"scale": null,
+			"properties": {
+				"Application_Type": "web",
+				"Flow_Type": null,
+				"Request_Source": "IbizaWebAppExtensionCreate",
+				"HockeyAppId": null,
+				"SamplingPercentage": null
+			},
+			"dependsOn": []
+		},
+		{
+			"type": "Microsoft.Search/searchServices",
+			"sku": {
+				"name": "basic"
+			},
+			"name": "[variables('stackName')]",
+			"apiVersion": "2015-08-19",
+			"location": "[variables('location')]",
+			"scale": null,
+			"properties": {
+				"replicaCount": 1,
+				"partitionCount": 1,
+				"hostingMode": "Default"
+			},
+			"dependsOn": []
+		},
+		{
+			"type": "Microsoft.Storage/storageAccounts",
+			"sku": {
+				"name": "Standard_LRS",
+				"tier": "Standard"
+			},
+			"kind": "Storage",
+			"name": "[variables('stackName')]",
+			"apiVersion": "2018-07-01",
+			"location": "[variables('location')]",
+			"tags": {},
+			"scale": null,
+			"properties": {
+				"networkAcls": {
+					"bypass": "AzureServices",
+					"virtualNetworkRules": [],
+					"ipRules": [],
+					"defaultAction": "Allow"
+				},
+				"supportsHttpsTrafficOnly": false,
+				"encryption": {
+					"services": {
+						"file": {
+							"enabled": true
+						},
+						"blob": {
+							"enabled": true
+						}
+					},
+					"keySource": "Microsoft.Storage"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"type": "Microsoft.Web/serverfarms",
+			"sku": {
+				"name": "Y1",
+				"tier": "Dynamic",
+				"size": "Y1",
+				"family": "Y",
+				"capacity": 0
+			},
+			"kind": "functionapp",
+			"name": "[variables('planName')]",
+			"apiVersion": "2016-09-01",
+			"location": "[variables('location')]",
+			"scale": null,
+			"properties": {
+				"name": "[variables('planName')]",
+				"workerTierName": null,
+				"adminSiteName": null,
+				"hostingEnvironmentProfile": null,
+				"perSiteScaling": false,
+				"reserved": false,
+				"targetWorkerCount": 0,
+				"targetWorkerSizeId": 0
+			},
+			"dependsOn": []
+		},
+		{
+			"type": "Microsoft.Web/sites",
+			"kind": "functionapp",
+			"name": "[variables('stackName')]",
+			"apiVersion": "2016-08-01",
+			"location": "[variables('location')]",
+			"scale": null,
+			"properties": {
+				"enabled": true,
+				"hostNameSslStates": [
+					{
+						"name": "[concat(variables('stackName'),'.azurewebsites.net')]",
+						"sslState": "Disabled",
+						"virtualIP": null,
+						"thumbprint": null,
+						"toUpdate": null,
+						"hostType": "Standard"
+					},
+					{
+						"name": "[concat(variables('stackName'),'.scm.azurewebsites.net')]",
+						"sslState": "Disabled",
+						"virtualIP": null,
+						"thumbprint": null,
+						"toUpdate": null,
+						"hostType": "Repository"
+					}
+				],
+				"serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('planName'))]",
+				"reserved": false,
+				"siteConfig": null,
+				"scmSiteAlsoStopped": false,
+				"hostingEnvironmentProfile": null,
+				"clientAffinityEnabled": false,
+				"clientCertEnabled": false,
+				"hostNamesDisabled": false,
+				"containerSize": 1536,
+				"dailyMemoryTimeQuota": 0,
+				"cloningInfo": null,
+				"httpsOnly": false
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Web/serverfarms', variables('planName'))]"
+			]
+		},
+		{
+			"type": "Microsoft.Web/sites/slots",
+			"kind": "functionapp",
+			"name": "[concat(variables('stackName'),'/','Staging')]",
+			"apiVersion": "2016-08-01",
+			"location": "[variables('location')]",
+			"scale": null,
+			"properties": {
+				"enabled": true,
+				"hostNameSslStates": [
+					{
+						"name": "[concat(variables('stackName'),'-staging.azurewebsites.net')]",
+						"sslState": "Disabled",
+						"virtualIP": null,
+						"thumbprint": null,
+						"toUpdate": null,
+						"hostType": "Standard"
+					},
+					{
+						"name": "[concat(variables('stackName'),'-staging.scm.azurewebsites.net')]",
+						"sslState": "Disabled",
+						"virtualIP": null,
+						"thumbprint": null,
+						"toUpdate": null,
+						"hostType": "Repository"
+					}
+				],
+				"serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('planName'))]",
+				"reserved": false,
+				"siteConfig": null,
+				"scmSiteAlsoStopped": false,
+				"hostingEnvironmentProfile": null,
+				"clientAffinityEnabled": false,
+				"clientCertEnabled": false,
+				"hostNamesDisabled": false,
+				"containerSize": 1536,
+				"dailyMemoryTimeQuota": 0,
+				"cloningInfo": null,
+				"httpsOnly": false
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Web/sites', variables('stackName'))]",
+				"[resourceId('Microsoft.Web/serverfarms', variables('planName'))]"
+			]
+		},
+		{
+			"type": "Microsoft.Web/sites/config",
+			"name": "[concat(variables('stackName'), '/', parameters('config_web_name'))]",
+			"apiVersion": "2016-08-01",
+			"location": "[variables('location')]",
+			"scale": null,
+			"properties": {
+				"numberOfWorkers": 1,
+				"defaultDocuments": [
+					"Default.htm",
+					"Default.html",
+					"Default.asp",
+					"index.htm",
+					"index.html",
+					"iisstart.htm",
+					"default.aspx",
+					"index.php"
+				],
+				"netFrameworkVersion": "v4.0",
+				"phpVersion": "5.6",
+				"pythonVersion": "",
+				"nodeVersion": "",
+				"linuxFxVersion": "",
+				"windowsFxVersion": null,
+				"requestTracingEnabled": false,
+				"remoteDebuggingEnabled": false,
+				"remoteDebuggingVersion": null,
+				"httpLoggingEnabled": false,
+				"logsDirectorySizeLimit": 35,
+				"detailedErrorLoggingEnabled": false,
+				"publishingUsername": "[concat('$',variables('stackName'))]",
+				"publishingPassword": null,
+				"appSettings": null,
+				"azureStorageAccounts": {},
+				"metadata": null,
+				"connectionStrings": null,
+				"machineKey": null,
+				"handlerMappings": null,
+				"documentRoot": null,
+				"scmType": "None",
+				"use32BitWorkerProcess": true,
+				"webSocketsEnabled": false,
+				"alwaysOn": false,
+				"javaVersion": null,
+				"javaContainer": null,
+				"javaContainerVersion": null,
+				"appCommandLine": "",
+				"managedPipelineMode": "Integrated",
+				"virtualApplications": [
+					{
+						"virtualPath": "/",
+						"physicalPath": "site\\wwwroot",
+						"preloadEnabled": false,
+						"virtualDirectories": null
+					}
+				],
+				"winAuthAdminState": 0,
+				"winAuthTenantState": 0,
+				"customAppPoolIdentityAdminState": false,
+				"customAppPoolIdentityTenantState": false,
+				"runtimeADUser": null,
+				"runtimeADUserPassword": null,
+				"loadBalancing": "LeastRequests",
+				"routingRules": [],
+				"experiments": {
+					"rampUpRules": []
+				},
+				"limits": null,
+				"autoHealEnabled": false,
+				"autoHealRules": null,
+				"tracingOptions": null,
+				"vnetName": "",
+				"siteAuthEnabled": false,
+				"siteAuthSettings": {
+					"enabled": null,
+					"runtimeVersion": "1.0.0",
+					"unauthenticatedClientAction": null,
+					"tokenStoreEnabled": true,
+					"allowedExternalRedirectUrls": null,
+					"defaultProvider": null,
+					"clientId": null,
+					"clientSecret": null,
+					"clientSecretCertificateThumbprint": null,
+					"issuer": null,
+					"allowedAudiences": null,
+					"additionalLoginParams": null,
+					"isAadAutoProvisioned": false,
+					"googleClientId": null,
+					"googleClientSecret": null,
+					"googleOAuthScopes": null,
+					"facebookAppId": null,
+					"facebookAppSecret": null,
+					"facebookOAuthScopes": null,
+					"twitterConsumerKey": null,
+					"twitterConsumerSecret": null,
+					"microsoftAccountClientId": null,
+					"microsoftAccountClientSecret": null,
+					"microsoftAccountOAuthScopes": null
+				},
+				"cors": {
+					"allowedOrigins": [
+						"https://functions.azure.com",
+						"https://functions-staging.azure.com",
+						"https://functions-next.azure.com"
+					],
+					"supportCredentials": false
+				},
+				"push": null,
+				"apiDefinition": null,
+				"autoSwapSlotName": null,
+				"localMySqlEnabled": false,
+				"managedServiceIdentityId": null,
+				"xManagedServiceIdentityId": null,
+				"ipSecurityRestrictions": null,
+				"http20Enabled": false,
+				"minTlsVersion": "1.2",
+				"ftpsState": "AllAllowed",
+				"reservedInstanceCount": 0
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Web/sites', variables('stackName'))]"
+			]
+		},
+		{
+			"type": "Microsoft.Web/sites/hostNameBindings",
+			"name": "[concat(variables('stackName'), '/', variables('stackName'), '.azurewebsites.net')]",
+			"apiVersion": "2016-08-01",
+			"location": "[variables('location')]",
+			"scale": null,
+			"properties": {
+				"siteName": "[variables('stackName')]",
+				"domainId": null,
+				"hostNameType": "Verified"
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Web/sites', variables('stackName'))]"
+			]
+		},
+		{
+			"name": "[concat(variables('stackName'),'/appsettings')]",
+			"apiVersion": "2016-08-01",
+			"type": "Microsoft.Web/sites/config",
+			"location": "[variables('location')]",
+			"properties": {
+				"appSettings": {
+					"GraphQl:EnableMetrics": "[parameters('GraphQl_EnableMetrics')]",
+					"GraphQl:ExposeExceptions": "[parameters('GraphQl_ExposeExceptions')]",
+					"ServiceAccounts:0:AppId": "[parameters('ServiceAccounts_0_AppId')]",
+					"ServiceAccounts:0:Issuer": "[parameters('ServiceAccounts_0_Issuer')]",
+					"DocumentDb:Key": "[listKeys(resourceId('Microsoft.DocumentDB/databaseAccounts', variables('stackName')), providers('Microsoft.DocumentDB', 'databaseAccounts').apiVersions[0]).primaryMasterKey]",
+					"DocumentDb:Url": "[reference(resourceId('Microsoft.DocumentDB/databaseAccounts',variables('stackName')),'2015-04-08').documentEndpoint]",
+					"DocumentDb:RequestUnits": "400",
+					"Search:ServiceName": "[variables('stackName')]",
+					"Search:ApiKey": "[listAdminKeys(resourceId('Microsoft.Search/searchServices',variables('stackName')), '2015-08-19').PrimaryKey]",
+					"Admin:Audience": "[parameters('Admin_Audience')]",
+					"Admin:Issuer": "[parameters('Admin_Issuer')]",
+					"Admin:DocumentDb:Key": "[listKeys(resourceId('Microsoft.DocumentDB/databaseAccounts', variables('stackName')), providers('Microsoft.DocumentDB', 'databaseAccounts').apiVersions[0]).primaryMasterKey]",
+					"Admin:DocumentDb:Url": "[reference(resourceId('Microsoft.DocumentDB/databaseAccounts',variables('stackName')),'2015-04-08').documentEndpoint]",
+					"Admin:DocumentDb:RequestUnits": "400",
+					"Admin:Search:ServiceName": "[variables('stackName')]",
+					"Admin:Search:ApiKey": "[listAdminKeys(resourceId('Microsoft.Search/searchServices',variables('stackName')), '2015-08-19').PrimaryKey]",
+					"Security:Audience": "[parameters('Security_Audience')]",
+					"Security:Issuers": "[parameters('Security_Issuers')]",
+					"AdminApi:Endpoint": "[parameters('AdminApi_Endpoint')]",
+					"AdminClient:ClientId": "[parameters('AdminClient_ClientId')]",
+					"AdminClient:ClientSecret": "[parameters('AdminClient_ClientSecret')]",
+					"AdminClient:Resource": "[parameters('AdminClient_Resource')]",
+					"AdminClient:TenantId": "[parameters('AdminClient_TenantId')]"
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Web/sites', variables('stackName'))]",
+				"[resourceId('Microsoft.Storage/storageAccounts', variables('stackName'))]",
+				"[resourceId('Microsoft.Search/searchServices', variables('stackName'))]",
+				"[resourceId('microsoft.insights/components', variables('stackName'))]",
+				"[resourceId('Microsoft.DocumentDB/databaseAccounts', variables('stackName'))]"
+			]
+		},
+		{
+			"name": "[concat(variables('stackName'),'/Staging/appsettings')]",
+			"apiVersion": "2016-08-01",
+			"type": "Microsoft.Web/sites/slots/config",
+			"location": "[variables('location')]",
+			"properties": {
+				"appSettings": {
+					"GraphQl:EnableMetrics": "[parameters('GraphQl_EnableMetrics')]",
+					"GraphQl:ExposeExceptions": "[parameters('GraphQl_ExposeExceptions')]",
+					"ServiceAccounts:0:AppId": "[parameters('ServiceAccounts_0_AppId')]",
+					"ServiceAccounts:0:Issuer": "[parameters('ServiceAccounts_0_Issuer')]",
+					"DocumentDb:Key": "[listKeys(resourceId('Microsoft.DocumentDB/databaseAccounts', variables('stackName')), providers('Microsoft.DocumentDB', 'databaseAccounts').apiVersions[0]).primaryMasterKey]",
+					"DocumentDb:Url": "[reference(resourceId('Microsoft.DocumentDB/databaseAccounts',variables('stackName')),'2015-04-08').documentEndpoint]",
+					"DocumentDb:RequestUnits": "400",
+					"Search:ServiceName": "[variables('stackName')]",
+					"Search:ApiKey": "[listAdminKeys(resourceId('Microsoft.Search/searchServices',variables('stackName')), '2015-08-19').PrimaryKey]",
+					"Admin:Audience": "[parameters('Admin_Audience')]",
+					"Admin:Issuer": "[parameters('Admin_Issuer')]",
+					"Admin:DocumentDb:Key": "[listKeys(resourceId('Microsoft.DocumentDB/databaseAccounts', variables('stackName')), providers('Microsoft.DocumentDB', 'databaseAccounts').apiVersions[0]).primaryMasterKey]",
+					"Admin:DocumentDb:Url": "[reference(resourceId('Microsoft.DocumentDB/databaseAccounts',variables('stackName')),'2015-04-08').documentEndpoint]",
+					"Admin:DocumentDb:RequestUnits": "400",
+					"Admin:Search:ServiceName": "[variables('stackName')]",
+					"Admin:Search:ApiKey": "[listAdminKeys(resourceId('Microsoft.Search/searchServices',variables('stackName')), '2015-08-19').PrimaryKey]",
+					"Security:Audience": "[parameters('Security_Audience')]",
+					"Security:Issuers": "[parameters('Security_Issuers')]",
+					"AdminApi:Endpoint": "[parameters('AdminApi_Endpoint')]",
+					"AdminClient:ClientId": "[parameters('AdminClient_ClientId')]",
+					"AdminClient:ClientSecret": "[parameters('AdminClient_ClientSecret')]",
+					"AdminClient:Resource": "[parameters('AdminClient_Resource')]",
+					"AdminClient:TenantId": "[parameters('AdminClient_TenantId')]"
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Web/sites', variables('stackName'))]",
+				"[resourceId('Microsoft.Web/sites/slots', variables('stackName'),'Staging')]",
+				"[resourceId('Microsoft.Storage/storageAccounts', variables('stackName'))]",
+				"[resourceId('Microsoft.Search/searchServices', variables('stackName'))]",
+				"[resourceId('microsoft.insights/components', variables('stackName'))]",
+				"[resourceId('Microsoft.DocumentDB/databaseAccounts', variables('stackName'))]"
+			]
+		}
+	]
 }
