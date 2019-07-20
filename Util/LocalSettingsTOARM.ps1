@@ -133,7 +133,7 @@ else {
 $yamlOut = ""
 $global:pl | ForEach-Object {
     $content.parameters | Add-Member -MemberType NoteProperty -Name $_ -Value @{"defaultValue" = ""; "type" = "String" } -Force
-    $yamlOut += "-${_} `$(Deploy.${_}) "
+    $yamlOut += "-${_} ""`$(Deploy.${_})"" "
 }
 
 $content.resources | ForEach-Object {
