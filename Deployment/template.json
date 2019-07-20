@@ -6,24 +6,8 @@
             "defaultValue": "",
             "type": "String"
         },
-        "clientId": {
-            "defaultValue": "",
-            "type": "String"
-        },
         "config_web_name": {
             "defaultValue": "web",
-            "type": "String"
-        },
-        "securityAudience": {
-            "defaultValue": "",
-            "type": "String"
-        },
-        "securityIssuers": {
-            "defaultValue": "",
-            "type": "String"
-        },
-        "tenant1Issuer": {
-            "defaultValue": "",
             "type": "String"
         },
         "GraphQl_EnableMetrics": {
