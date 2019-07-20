@@ -37,7 +37,7 @@ steps:
     location: '$(Location)'
     templateLocation: 'Linked artifact'
     csmFile: 'deployment\template.json'
-    overrideParameters: '-stackName $(stackName) -GraphQl_EnableMetrics $(Deploy.GraphQl_EnableMetrics) -GraphQl_ExposeExceptions $(Deploy.GraphQl_ExposeExceptions) -ServiceAccounts_0_AppId $(Deploy.ServiceAccounts_0_AppId) -ServiceAccounts_0_Issuer $(Deploy.ServiceAccounts_0_Issuer) -Admin_Audience $(Deploy.Admin_Audience) -Admin_Issuer $(Deploy.Admin_Issuer) -Security_Audience $(Deploy.Security_Audience) -Security_Issuers $(Deploy.Security_Issuers) -AdminApi_Endpoint $(Deploy.AdminApi_Endpoint) -AdminClient_ClientId $(Deploy.AdminClient_ClientId) -AdminClient_ClientSecret $(Deploy.AdminClient_ClientSecret) -AdminClient_Resource $(Deploy.AdminClient_Resource) -AdminClient_TenantId $(Deploy.AdminClient_TenantId)' 
+    overrideParameters: '-stackName "$(stackName)" -GraphQl_EnableMetrics "$(Deploy.GraphQl_EnableMetrics)" -GraphQl_ExposeExceptions "$(Deploy.GraphQl_ExposeExceptions)" -ServiceAccounts_0_AppId "$(Deploy.ServiceAccounts_0_AppId)" -ServiceAccounts_0_Issuer "$(Deploy.ServiceAccounts_0_Issuer)" -Admin_Audience $(Deploy.Admin_Audience) -Admin_Issuer $(Deploy.Admin_Issuer) -Security_Audience "$(Deploy.Security_Audience)" -Security_Issuers "$(Deploy.Security_Issuers)" -AdminApi_Endpoint "$(Deploy.AdminApi_Endpoint)" -AdminClient_ClientId "$(Deploy.AdminClient_ClientId)" -AdminClient_ClientSecret "$(Deploy.AdminClient_ClientSecret)" -AdminClient_Resource "$(Deploy.AdminClient_Resource)" -AdminClient_TenantId "$(Deploy.AdminClient_TenantId)"' 
 
 - task: AzureRmWebAppDeployment@4
   displayName: 'Deploy app to stack slot'
