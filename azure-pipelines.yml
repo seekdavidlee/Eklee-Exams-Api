@@ -1,9 +1,10 @@
 pool:
-  vmImage: 'vs2017-win2016'
+  vmImage: 'windows-2019'
   
 variables:
 - group: Deploy
 - group: Postman
+- group: Azure
 
 steps:
 
@@ -26,7 +27,7 @@ steps:
 - task: AzureResourceGroupDeployment@2
   displayName: 'Deploy stack resources'
   inputs:
-    azureSubscription: '$(ServiceConnectionName)'
+    azureSubscription: '$(Azure.Connection)'
     resourceGroupName: '$(stackName)'
     location: '$(Location)'
     templateLocation: 'Linked artifact'
@@ -37,7 +38,7 @@ steps:
   displayName: 'Deploy app to stack slot'
   inputs:
     connectionType: 'AzureRM'
-    azureSubscription: '$(ServiceConnectionName)'
+    azureSubscription: '$(Azure.Connection)'
     webAppName: '$(stackName)'
     deployToSlotOrASE: true
     resourceGroupName: '$(stackName)'
@@ -64,7 +65,7 @@ steps:
 - task: AzureAppServiceManage@0
   displayName: 'Swap Staging with Production'
   inputs:
-    azureSubscription: '$(ServiceConnectionName)'
+    azureSubscription: '$(Azure.Connection)'
     action: 'Swap Slots'
     sourceSlot: 'staging' 
     webAppName: '$(stackName)'
