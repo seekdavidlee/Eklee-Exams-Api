@@ -2,6 +2,7 @@
 using GraphQL.Client;
 using GraphQL.Common.Request;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using System.Linq;
 using System.Net.Http.Headers;
@@ -20,13 +21,18 @@ namespace Eklee.Exams.Api
 
 		private readonly GraphQLClient _client;
 		private readonly IAdminBearerTokenClient _adminBearerTokenClient;
+		private readonly ILogger _logger;
 
 		public OrganizationsRepository(
 			IConfiguration configuration,
-			IAdminBearerTokenClient adminBearerTokenClient)
+			IAdminBearerTokenClient adminBearerTokenClient,
+			ILogger logger)
 		{
-			_client = new GraphQLClient(configuration["AdminApi:Endpoint"]);
+			string endpoint = $"{configuration["AdminApi:Endpoint"]}/api/appadmin";
+			logger.LogInformation($"Admin endpoint: {endpoint}");
+			_client = new GraphQLClient(endpoint);
 			_adminBearerTokenClient = adminBearerTokenClient;
+			_logger = logger;
 		}
 
 		public async Task<string[]> GetIssuers()
