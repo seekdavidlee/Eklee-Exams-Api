@@ -22,7 +22,7 @@ steps:
       dotnet publish --configuration $env:BuildConfiguration --output $env:Build_ArtifactStagingDirectory
       $zipLocation = "$env:Build_ArtifactStagingDirectory\$env:Build_BuildNumber.zip"
       Compress-Archive -Path $env:Build_ArtifactStagingDirectory\* -DestinationPath $zipLocation
-      Write-Host "zipLocation: $zipLocation"
+      Write-Host "##vso[task.setvariable variable=zipLocation;]$zipLocation"      
 
 - task: AzureResourceGroupDeployment@2
   displayName: 'Deploy stack resources'
