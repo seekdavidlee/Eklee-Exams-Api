@@ -4,6 +4,9 @@ The purpose of this project is to demonstrate the capabilities of [Eklee-Azure-F
 
 * [https://dev.azure.com/eklee/Eklee.Exams.Api/](https://dev.azure.com/eklee/Eklee.Exams.Api/)
 
+## Topics
+- [Local Development](Documentation/LocalDevelopment.md)
+
 ## Nuget
 
 You can get the latest version of Eklee-Azure-Functions-GraphQl at [https://www.nuget.org/packages/Eklee.Azure.Functions.GraphQl](https://www.nuget.org/packages/Eklee.Azure.Functions.GraphQl)
@@ -32,3 +35,4 @@ The following entities are created.
 * Employee
 
 ** More documentation/topics are coming. **
+
