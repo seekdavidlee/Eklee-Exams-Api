@@ -20,7 +20,7 @@ $url = "https://" + $StackName + "-staging.azurewebsites.net"
         @{ key = "adminResourceId"; value = "$env:Postman_adminResourceId"; },
         @{ key = "adminId"; value = "$env:Postman_adminId"; },
         @{ key = "adminClientId"; value = "$env:Postman_adminClientId"; },
-        @{ key = "adminClientSecret"; value = "$env:Postman_adminClientSecret"; },
+        @{ key = "adminClientSecret"; value = "$env:Postman_adminClientSecret"; }
     )
 } | ConvertTo-Json -depth 100 | Out-File -encoding ASCII postman_environment.json
 npm install
