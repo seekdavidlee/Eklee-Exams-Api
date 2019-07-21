@@ -60,6 +60,7 @@ steps:
 
 - task: PublishTestResults@2
   displayName: 'Publish integration tests results'
+  condition: 'succeededOrFailed()'
   inputs:
     testResultsFormat: 'JUnit'
     testResultsFiles: '**/*.xml' 
