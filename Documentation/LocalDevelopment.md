@@ -2,13 +2,13 @@
 
 This document will help you get started with running Eklee exams API locally.
 
-Before we begin, let's recall that this is a multi-tenant SaaS application. We will be able to federate with one or more Azure Active Directory (AAD) tenants. Our application is also hosting an Admin API which will allow our internal users to access. Hence, we have our own AAD instance. If we have 2 customers, i.e. tenants, then we should have 3 AAD instances where we get our configuration settings from.
+Before we begin, let's recall that this is a multi-tenant SaaS application. We will be able to federate with one or more Azure Active Directory (AAD) tenants. Our application is also hosting an Admin API which will allow our internal users manage new tenants which we call organizations. If we have 2 customers, i.e. tenants, then we should have 3 AAD instances in which the third AAD represents our own AAD Admin tenant.
 
 ## Pre-requsites
 
 Let's make sure you have the following already running.
-* Local instance of Storage Emulator
-* Local instance of CosmosDB Emulator
+* Local instance of [Storage Emulator](https://docs.microsoft.com/en-us/azure/storage/common/storage-use-emulator)
+* Local instance of [CosmosDB Emulator](https://docs.microsoft.com/en-us/azure/cosmos-db/local-emulator)
 
 ## Getting Started
 
@@ -72,4 +72,16 @@ To begin, we should go ahead and take the following local.settings.json file as 
 
 ## ServiceAccounts
 
-There are 2 settings here. AppId refers to the application Id of the hosted Admin API. Issuer refers to our Admin AAD tenant issuer Url.
+AppId refers to the application Id of the hosted Admin API. Issuer refers to our Admin AAD tenant issuer Url.
+
+## DocumentDb
+
+The DocumentDb Key and Url represents the CosmosDb database instance where our tenant's collections will be created.
+
+## Search
+
+The Search ServiceName and ApiKey is the Azure Search instance where our tenant's search indexes will be created.
+
+## Admin
+
+The Audience represents the Application Id of the Admin API.
