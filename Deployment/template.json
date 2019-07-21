@@ -63,8 +63,8 @@
 		"location": "southcentralus",
 		"planName": "[variables('stackName')]",
 		"stackName": "[replace(parameters('stackName'),'-','')]",
-		"AdminApi_Endpoint": "[concat(variables('stackName'),'.azurewebsites.net')]",
-		"AdminApi_Endpoint_Staging": "[concat(variables('stackName'),'-staging.azurewebsites.net')]"
+		"AdminApi_Endpoint": "[concat('https://',variables('stackName'),'.azurewebsites.net')]",
+		"AdminApi_Endpoint_Staging": "[concat('https://',variables('stackName'),'-staging.azurewebsites.net')]"
 	},
 	"resources": [
 		{
