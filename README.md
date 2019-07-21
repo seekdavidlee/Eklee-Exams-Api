@@ -4,6 +4,9 @@ The purpose of this project is to demonstrate the capabilities of [Eklee-Azure-F
 
 * [https://dev.azure.com/eklee/Eklee.Exams.Api/](https://dev.azure.com/eklee/Eklee.Exams.Api/)
 
+## Topics
+- [Local Development](Documentation/LocalDevelopment.md)
+
 ## Nuget
 
 You can get the latest version of Eklee-Azure-Functions-GraphQl at [https://www.nuget.org/packages/Eklee.Azure.Functions.GraphQl](https://www.nuget.org/packages/Eklee.Azure.Functions.GraphQl)
@@ -18,17 +21,21 @@ An additional word about security. Each tenant already leverage existing identit
 
 Eklee will leverage Role-based security and will have the following roles.
 
-* System Administrator (Eklee Exam employees who are identified as Administrators who can perform read/write on Organization entity only)
-* Organization Administrator (Tenant employees who are identity as Administrators and can perform read/write)
-* Organization Read-only User (Tenant employees who can review the test results of the candidates)
-* Candidate
+* Eklee.User.Reader
+* Eklee.User.Writer
+* Eklee.Admin.Writer
+* Eklee.Admin.Reader
 
 ### Core Concepts
 
-The following entities are created.
+The following Models are created.
 
-* Organization  > Publication > Exam, Candidate > Employee
-* Exam (which includes the questions, choices), TestResult > Employee
-* Employee
+* Organization (Represents the customer)
+* Exam (Represent the exam managed by the customer)
+** Publication (Represents the exam itself, there's a connection from Exam to Publication via ExamPublication)
+* TestResult (Represent the actual results from the exam)
+** Candidate (Represent the employee who took the exam)
+** TestResultPublication (Represents the connection from the TestResult to actual Exam)
+* Employee (Represent the employee of the tenant company)
 
 ** More documentation/topics are coming. **
