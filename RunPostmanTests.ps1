@@ -3,7 +3,7 @@ $StackName = $env:stackName
 $url = "https://" + $StackName + "-staging.azurewebsites.net"
 @{
     values = @(
-        @{ key = "endpoint"; value = "$env:Postman_endpoint"; },
+        @{ key = "endpoint"; value = "$url"; },
         @{ key = "client_secret"; value = "$env:Postman_client_secret"; },
         @{ key = "client_id"; value = "$env:Postman_client_id"; },
         @{ key = "resource_id"; value = "$env:Postman_resource_id"; },
