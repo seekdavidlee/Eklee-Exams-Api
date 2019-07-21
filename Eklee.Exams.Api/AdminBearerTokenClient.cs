@@ -11,7 +11,9 @@ namespace Eklee.Exams.Api
 	public class AdminBearerTokenClient : IAdminBearerTokenClient
 	{
 		private readonly IConfiguration _configuration;
-		private readonly HttpClient _httpClient = new HttpClient();
+
+		// See: https://docs.microsoft.com/en-us/azure/azure-functions/manage-connections
+		private static HttpClient _httpClient = new HttpClient();
 
 		public AdminBearerTokenClient(IConfiguration configuration)
 		{
