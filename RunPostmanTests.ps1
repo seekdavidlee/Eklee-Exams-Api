@@ -24,5 +24,6 @@ $url = "https://" + $StackName + "-staging.azurewebsites.net"
     )
 } | ConvertTo-Json -depth 100 | Out-File -encoding ASCII postman_environment.json
 npm install
+node_modules\.bin\newman -v
 Write-Host "Running postman tests."
 node_modules\.bin\newman run tests\Eklee.Exam.Api.postman_collection.json -e postman_environment.json --reporters junit --reporter-junit-export $env:Common_TestResultsDirectory\report.xml
