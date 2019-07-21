@@ -1,9 +1,10 @@
 pool:
-  vmImage: 'vs2017-win2016'
+  vmImage: 'windows-2019'
   
 variables:
 - group: Deploy
 - group: Postman
+- group: Azure
 
 steps:
 
@@ -21,23 +22,23 @@ steps:
       dotnet publish --configuration $env:BuildConfiguration --output $env:Build_ArtifactStagingDirectory
       $zipLocation = "$env:Build_ArtifactStagingDirectory\$env:Build_BuildNumber.zip"
       Compress-Archive -Path $env:Build_ArtifactStagingDirectory\* -DestinationPath $zipLocation
-      Write-Host "##vso[task.setvariable variable=zipLocation;]$zipLocation"
+      Write-Host "##vso[task.setvariable variable=zipLocation;]$zipLocation"      
 
 - task: AzureResourceGroupDeployment@2
   displayName: 'Deploy stack resources'
   inputs:
-    azureSubscription: '$(ServiceConnectionName)'
+    azureSubscription: '$(Azure.Connection)'
     resourceGroupName: '$(stackName)'
     location: '$(Location)'
     templateLocation: 'Linked artifact'
     csmFile: 'deployment\template.json'
-    overrideParameters: '-stackName $(stackName) -clientId $(ClientId) -securityAudience $(Deploy.Security.Audience) -securityIssuers "$(Deploy.Security.Issuers)" -tenant1Issuer $(Deploy.Issuer)'
+    overrideParameters: '-stackName "$(stackName)" -GraphQl_EnableMetrics "$(Deploy.GraphQl_EnableMetrics)" -GraphQl_ExposeExceptions "$(Deploy.GraphQl_ExposeExceptions)" -ServiceAccounts_0_AppId "$(Deploy.ServiceAccounts_0_AppId)" -ServiceAccounts_0_Issuer "$(Deploy.ServiceAccounts_0_Issuer)" -Admin_Audience "$(Deploy.Admin_Audience)" -Admin_Issuer "$(Deploy.Admin_Issuer)" -Security_Audience "$(Deploy.Security_Audience)" -Security_Issuers "$(Deploy.Security_Issuers)" -AdminClient_ClientId "$(Deploy.AdminClient_ClientId)" -AdminClient_ClientSecret "$(Deploy.AdminClient_ClientSecret)" -AdminClient_Resource "$(Deploy.AdminClient_Resource)" -AdminClient_TenantId "$(Deploy.AdminClient_TenantId)"' 
 
 - task: AzureRmWebAppDeployment@4
   displayName: 'Deploy app to stack slot'
   inputs:
     connectionType: 'AzureRM'
-    azureSubscription: '$(ServiceConnectionName)'
+    azureSubscription: '$(Azure.Connection)'
     webAppName: '$(stackName)'
     deployToSlotOrASE: true
     resourceGroupName: '$(stackName)'
@@ -51,11 +52,15 @@ steps:
     targetType: 'filePath'
     filePath: RunPostmanTests.ps1
   env:
-     tenant1user1password: $(tenant1user1password)
-     clientSecret: $(clientSecret)
+    Postman_client_secret: $(Postman.client_secret)
+    Postman_tenant1user1password: $(Postman.tenant1user1password)
+    Postman_clientSecret: $(Postman.clientSecret)
+    Postman_adminUser1password: $(Postman.adminUser1password)
+    Postman_adminClientSecret: $(Postman.adminClientSecret)
 
 - task: PublishTestResults@2
   displayName: 'Publish integration tests results'
+  condition: 'succeededOrFailed()'
   inputs:
     testResultsFormat: 'JUnit'
     testResultsFiles: '**/*.xml' 
@@ -64,7 +69,7 @@ steps:
 - task: AzureAppServiceManage@0
   displayName: 'Swap Staging with Production'
   inputs:
-    azureSubscription: '$(ServiceConnectionName)'
+    azureSubscription: '$(Azure.Connection)'
     action: 'Swap Slots'
     sourceSlot: 'staging' 
     webAppName: '$(stackName)'

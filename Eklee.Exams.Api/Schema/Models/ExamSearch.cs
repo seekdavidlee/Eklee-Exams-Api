@@ -1,12 +1,11 @@
-﻿using Eklee.Azure.Functions.GraphQl.Connections;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace Eklee.Exams.Api.Schema.Models
 {
-	public class Exam : IEntityWithGuidId
+	[Description("Search result for the exam.")]
+	public class ExamSearch
 	{
 		[Key]
 		[Description("Id of the exam.")]
@@ -17,12 +16,5 @@ namespace Eklee.Exams.Api.Schema.Models
 
 		[Description("Category of the exam")]
 		public string Category { get; set; }
-
-		[Description("Date in which exam was created.")]
-		public DateTime Created { get; set; }
-
-		[Connection]
-		[Description("Publications")]
-		public List<ExamPublication> Publications { get; set; }
 	}
 }

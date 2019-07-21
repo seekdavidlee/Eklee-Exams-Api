@@ -1,4 +1,4 @@
-{
+﻿{
 	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
 	"contentVersion": "1.0.0.0",
 	"parameters": {
@@ -6,31 +6,69 @@
 			"defaultValue": "",
 			"type": "String"
 		},
-		"clientId": {
-			"defaultValue": "",
-			"type": "String"
-		},
 		"config_web_name": {
 			"defaultValue": "web",
 			"type": "String"
 		},
-		"securityAudience": {
+		"GraphQl_EnableMetrics": {
 			"defaultValue": "",
 			"type": "String"
 		},
-		"securityIssuers": {
+		"GraphQl_ExposeExceptions": {
 			"defaultValue": "",
 			"type": "String"
 		},
-		"tenant1Issuer": {
+		"ServiceAccounts_0_AppId": {
+			"defaultValue": "",
+			"type": "String"
+		},
+		"ServiceAccounts_0_Issuer": {
+			"defaultValue": "",
+			"type": "String"
+		},
+		"Admin_Audience": {
+			"defaultValue": "",
+			"type": "String"
+		},
+		"Admin_Issuer": {
+			"defaultValue": "",
+			"type": "String"
+		},
+		"Security_Audience": {
+			"defaultValue": "",
+			"type": "String"
+		},
+		"Security_Issuers": {
+			"defaultValue": "",
+			"type": "String"
+		},
+		"AdminClient_ClientId": {
+			"defaultValue": "",
+			"type": "String"
+		},
+		"AdminClient_ClientSecret": {
+			"defaultValue": "",
+			"type": "String"
+		},
+		"AdminClient_Resource": {
+			"defaultValue": "",
+			"type": "String"
+		},
+		"AdminClient_TenantId": {
 			"defaultValue": "",
 			"type": "String"
 		}
 	},
 	"variables": {
-		"location": "[resourceGroup().location]",
+		"location": "southcentralus",
 		"planName": "[variables('stackName')]",
-		"stackName": "[replace(parameters('stackName'),'-','')]"
+		"stackName": "[replace(parameters('stackName'),'-','')]",
+		"AdminApi_Endpoint": "[concat('https://',variables('stackName'),'.azurewebsites.net')]",
+		"AdminApi_Endpoint_Staging": "[concat('https://',variables('stackName'),'-staging.azurewebsites.net')]",
+		"EnableDeleteAll_Staging": "true",
+		"EnableDeleteAll": "false",
+		"Admin_DatabaseName": "admindb",
+		"Admin_DatabaseName_Staging": "admindbstg"
 	},
 	"resources": [
 		{
@@ -394,20 +432,34 @@
 			"properties": {
 				"APPINSIGHTS_INSTRUMENTATIONKEY": "[reference(resourceId('microsoft.insights/components',variables('stackName')),'2015-05-01').InstrumentationKey]",
 				"AzureWebJobsStorage": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('stackName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('stackName')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value)]",
-				"Tenants:0:DocumentDb:Database": "exams",
-				"Tenants:0:DocumentDb:Key": "[listKeys(resourceId('Microsoft.DocumentDB/databaseAccounts', variables('stackName')), providers('Microsoft.DocumentDB', 'databaseAccounts').apiVersions[0]).primaryMasterKey]",
-				"Tenants:0:DocumentDb:RequestUnits": "400",
-				"Tenants:0:DocumentDb:Url": "[reference(resourceId('Microsoft.DocumentDB/databaseAccounts',variables('stackName')),'2015-04-08').documentEndpoint]",
-				"Tenants:0:Search:ServiceName": "[variables('stackName')]",
-				"Tenants:0:Search:ApiKey": "[listAdminKeys(resourceId('Microsoft.Search/searchServices',variables('stackName')), '2015-08-19').PrimaryKey]",
-				"Tenants:0:Issuer": "[parameters('tenant1Issuer')]",
 				"FUNCTIONS_EXTENSION_VERSION": "~2",
 				"FUNCTIONS_WORKER_RUNTIME": "dotnet",
 				"WEBSITE_NODE_DEFAULT_VERSION": "8.11.1",
-				"GraphQl:EnableMetrics": "true",
-				"EnableDeleteAll": "false",
-				"Security:Audience": "[parameters('securityAudience')]",
-				"Security:Issuers": "[parameters('securityIssuers')]"
+				"GraphQl:EnableMetrics": "[parameters('GraphQl_EnableMetrics')]",
+				"GraphQl:ExposeExceptions": "[parameters('GraphQl_ExposeExceptions')]",
+				"ServiceAccounts:0:AppId": "[parameters('ServiceAccounts_0_AppId')]",
+				"ServiceAccounts:0:Issuer": "[parameters('ServiceAccounts_0_Issuer')]",
+				"DocumentDb:Key": "[listKeys(resourceId('Microsoft.DocumentDB/databaseAccounts', variables('stackName')), providers('Microsoft.DocumentDB', 'databaseAccounts').apiVersions[0]).primaryMasterKey]",
+				"DocumentDb:Url": "[reference(resourceId('Microsoft.DocumentDB/databaseAccounts',variables('stackName')),'2015-04-08').documentEndpoint]",
+				"DocumentDb:RequestUnits": "400",
+				"Search:ServiceName": "[variables('stackName')]",
+				"Search:ApiKey": "[listAdminKeys(resourceId('Microsoft.Search/searchServices',variables('stackName')), '2015-08-19').PrimaryKey]",
+				"Admin:DatabaseName": "[variables('Admin_DatabaseName')]",
+				"Admin:Audience": "[parameters('Admin_Audience')]",
+				"Admin:Issuer": "[parameters('Admin_Issuer')]",
+				"Admin:DocumentDb:Key": "[listKeys(resourceId('Microsoft.DocumentDB/databaseAccounts', variables('stackName')), providers('Microsoft.DocumentDB', 'databaseAccounts').apiVersions[0]).primaryMasterKey]",
+				"Admin:DocumentDb:Url": "[reference(resourceId('Microsoft.DocumentDB/databaseAccounts',variables('stackName')),'2015-04-08').documentEndpoint]",
+				"Admin:DocumentDb:RequestUnits": "400",
+				"Admin:Search:ServiceName": "[variables('stackName')]",
+				"Admin:Search:ApiKey": "[listAdminKeys(resourceId('Microsoft.Search/searchServices',variables('stackName')), '2015-08-19').PrimaryKey]",
+				"Security:Audience": "[parameters('Security_Audience')]",
+				"Security:Issuers": "[parameters('Security_Issuers')]",
+				"AdminApi:Endpoint": "[variables('AdminApi_Endpoint')]",
+				"AdminClient:ClientId": "[parameters('AdminClient_ClientId')]",
+				"AdminClient:ClientSecret": "[parameters('AdminClient_ClientSecret')]",
+				"AdminClient:Resource": "[parameters('AdminClient_Resource')]",
+				"AdminClient:TenantId": "[parameters('AdminClient_TenantId')]",
+				"EnableDeleteAll": "[variables('EnableDeleteAll')]"
 			},
 			"dependsOn": [
 				"[resourceId('Microsoft.Web/sites', variables('stackName'))]",
@@ -425,20 +477,34 @@
 			"properties": {
 				"APPINSIGHTS_INSTRUMENTATIONKEY": "[reference(resourceId('microsoft.insights/components',variables('stackName')),'2015-05-01').InstrumentationKey]",
 				"AzureWebJobsStorage": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('stackName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('stackName')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value)]",
-				"Tenants:0:DocumentDb:Database": "exams",
-				"Tenants:0:DocumentDb:Key": "[listKeys(resourceId('Microsoft.DocumentDB/databaseAccounts', variables('stackName')), providers('Microsoft.DocumentDB', 'databaseAccounts').apiVersions[0]).primaryMasterKey]",
-				"Tenants:0:DocumentDb:RequestUnits": "400",
-				"Tenants:0:DocumentDb:Url": "[reference(resourceId('Microsoft.DocumentDB/databaseAccounts',variables('stackName')),'2015-04-08').documentEndpoint]",
-				"Tenants:0:Search:ServiceName": "[variables('stackName')]",
-				"Tenants:0:Search:ApiKey": "[listAdminKeys(resourceId('Microsoft.Search/searchServices',variables('stackName')), '2015-08-19').PrimaryKey]",
-				"Tenants:0:Issuer": "[parameters('tenant1Issuer')]",
 				"FUNCTIONS_EXTENSION_VERSION": "~2",
 				"FUNCTIONS_WORKER_RUNTIME": "dotnet",
 				"WEBSITE_NODE_DEFAULT_VERSION": "8.11.1",
-				"GraphQl:EnableMetrics": "true",
-				"EnableDeleteAll": "true",
-				"Security:Audience": "[parameters('securityAudience')]",
-				"Security:Issuers": "[parameters('securityIssuers')]"
+				"GraphQl:EnableMetrics": "[parameters('GraphQl_EnableMetrics')]",
+				"GraphQl:ExposeExceptions": "[parameters('GraphQl_ExposeExceptions')]",
+				"ServiceAccounts:0:AppId": "[parameters('ServiceAccounts_0_AppId')]",
+				"ServiceAccounts:0:Issuer": "[parameters('ServiceAccounts_0_Issuer')]",
+				"DocumentDb:Key": "[listKeys(resourceId('Microsoft.DocumentDB/databaseAccounts', variables('stackName')), providers('Microsoft.DocumentDB', 'databaseAccounts').apiVersions[0]).primaryMasterKey]",
+				"DocumentDb:Url": "[reference(resourceId('Microsoft.DocumentDB/databaseAccounts',variables('stackName')),'2015-04-08').documentEndpoint]",
+				"DocumentDb:RequestUnits": "400",
+				"Search:ServiceName": "[variables('stackName')]",
+				"Search:ApiKey": "[listAdminKeys(resourceId('Microsoft.Search/searchServices',variables('stackName')), '2015-08-19').PrimaryKey]",
+				"Admin:DatabaseName": "[variables('Admin_DatabaseName_Staging')]",
+				"Admin:Audience": "[parameters('Admin_Audience')]",
+				"Admin:Issuer": "[parameters('Admin_Issuer')]",
+				"Admin:DocumentDb:Key": "[listKeys(resourceId('Microsoft.DocumentDB/databaseAccounts', variables('stackName')), providers('Microsoft.DocumentDB', 'databaseAccounts').apiVersions[0]).primaryMasterKey]",
+				"Admin:DocumentDb:Url": "[reference(resourceId('Microsoft.DocumentDB/databaseAccounts',variables('stackName')),'2015-04-08').documentEndpoint]",
+				"Admin:DocumentDb:RequestUnits": "400",
+				"Admin:Search:ServiceName": "[variables('stackName')]",
+				"Admin:Search:ApiKey": "[listAdminKeys(resourceId('Microsoft.Search/searchServices',variables('stackName')), '2015-08-19').PrimaryKey]",
+				"Security:Audience": "[parameters('Security_Audience')]",
+				"Security:Issuers": "[parameters('Security_Issuers')]",
+				"AdminApi:Endpoint": "[variables('AdminApi_Endpoint_Staging')]",
+				"AdminClient:ClientId": "[parameters('AdminClient_ClientId')]",
+				"AdminClient:ClientSecret": "[parameters('AdminClient_ClientSecret')]",
+				"AdminClient:Resource": "[parameters('AdminClient_Resource')]",
+				"AdminClient:TenantId": "[parameters('AdminClient_TenantId')]",
+				"EnableDeleteAll": "[variables('EnableDeleteAll_Staging')]"
 			},
 			"dependsOn": [
 				"[resourceId('Microsoft.Web/sites', variables('stackName'))]",

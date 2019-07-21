@@ -6,17 +6,16 @@ using Microsoft.Extensions.Caching.Distributed;
 
 namespace Eklee.Exams.Api
 {
-	public class MyModule : Module
+	public class AdminModule : Module
 	{
 		protected override void Load(ContainerBuilder builder)
 		{
 			builder.UseDistributedCache<MemoryDistributedCache>();
-			builder.UseJwtAuthorization<MyJwtConfig>();
-			builder.RegisterGraphQl<MySchema>();
-			builder.RegisterType<MyQuery>();
-			builder.RegisterType<MyMutation>();
+			builder.UseJwtAuthorization<AdminJwtConfig>();
+			builder.RegisterGraphQl<AdminSchema>();
+			builder.RegisterType<AdminQuery>();
+			builder.RegisterType<AdminMutation>();
 			builder.RegisterType<OrganizationsRepository>().As<IOrganizationsRepository>();
-			builder.RegisterType<AdminBearerTokenClient>().As<IAdminBearerTokenClient>();
 		}
 	}
 }
