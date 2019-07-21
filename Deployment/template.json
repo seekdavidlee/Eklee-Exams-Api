@@ -42,10 +42,6 @@
 			"defaultValue": "",
 			"type": "String"
 		},
-		"AdminApi_Endpoint": {
-			"defaultValue": "",
-			"type": "String"
-		},
 		"AdminClient_ClientId": {
 			"defaultValue": "",
 			"type": "String"
@@ -66,7 +62,9 @@
 	"variables": {
 		"location": "southcentralus",
 		"planName": "[variables('stackName')]",
-		"stackName": "[replace(parameters('stackName'),'-','')]"
+		"stackName": "[replace(parameters('stackName'),'-','')]",
+		"AdminApi_Endpoint": "[concat(variables('stackName'),'.azurewebsites.net')]",
+		"AdminApi_Endpoint_Staging": "[concat(variables('stackName'),'-staging.azurewebsites.net')]"
 	},
 	"resources": [
 		{
@@ -451,7 +449,7 @@
 				"Admin:Search:ApiKey": "[listAdminKeys(resourceId('Microsoft.Search/searchServices',variables('stackName')), '2015-08-19').PrimaryKey]",
 				"Security:Audience": "[parameters('Security_Audience')]",
 				"Security:Issuers": "[parameters('Security_Issuers')]",
-				"AdminApi:Endpoint": "[parameters('AdminApi_Endpoint')]",
+				"AdminApi:Endpoint": "[variables('AdminApi_Endpoint')]",
 				"AdminClient:ClientId": "[parameters('AdminClient_ClientId')]",
 				"AdminClient:ClientSecret": "[parameters('AdminClient_ClientSecret')]",
 				"AdminClient:Resource": "[parameters('AdminClient_Resource')]",
@@ -494,7 +492,7 @@
 				"Admin:Search:ApiKey": "[listAdminKeys(resourceId('Microsoft.Search/searchServices',variables('stackName')), '2015-08-19').PrimaryKey]",
 				"Security:Audience": "[parameters('Security_Audience')]",
 				"Security:Issuers": "[parameters('Security_Issuers')]",
-				"AdminApi:Endpoint": "[parameters('AdminApi_Endpoint')]",
+				"AdminApi:Endpoint": "[variables('AdminApi_Endpoint_Staging')]",
 				"AdminClient:ClientId": "[parameters('AdminClient_ClientId')]",
 				"AdminClient:ClientSecret": "[parameters('AdminClient_ClientSecret')]",
 				"AdminClient:Resource": "[parameters('AdminClient_Resource')]",
