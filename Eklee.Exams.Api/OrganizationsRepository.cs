@@ -50,6 +50,12 @@ namespace Eklee.Exams.Api
 			AssertError(response);
 
 			JArray items = response.Data.getAllOrganizations as JArray;
+
+			if (items.Count == 0)
+			{
+				throw new ApplicationException("No issuers found!");
+			}
+
 			return items.ToObject<Organization[]>().ToList().Select(x => $"https://sts.windows.net/{x.TenantId}/").ToArray();
 		}
 
