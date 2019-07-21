@@ -42,7 +42,10 @@ namespace Eklee.Exams.Api.Schema
 			string adminDocumentDbUrl = configuration["DocumentDb:Url"];
 			int adminRequestUnits = Convert.ToInt32(configuration["DocumentDb:RequestUnits"]);
 
-			string databaseName = "admindb";
+			string databaseName = configuration["DatabaseName"];
+
+			databaseName = _configuration.IsLocalEnvironment() ? $"lcl{databaseName}" :
+				(_configuration["EnableDeleteAll"] == "true" ? $"stg{databaseName}" : databaseName);
 
 			var builder = inputBuilderFactory.Create<TEntity>(this)
 				.AssertWithClaimsPrincipal(DefaultAssertion)
