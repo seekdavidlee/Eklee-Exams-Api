@@ -1,11 +1,11 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <AzureFunctionsVersion>v2</AzureFunctionsVersion>
     <RootNamespace>Eklee.Exams.Api</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Eklee.Azure.Functions.GraphQl" Version="0.15.3" />
+    <PackageReference Include="Eklee.Azure.Functions.GraphQl" Version="0.15.7" />
     <PackageReference Include="GraphQL.Client" Version="1.0.3" />
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="2.2.0" />
     <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="1.0.29" />
