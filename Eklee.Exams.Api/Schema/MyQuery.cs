@@ -46,44 +46,28 @@ namespace Eklee.Exams.Api.Schema
 					.BuildConnectionEdgeParameters()
 				.BuildQuery()
 				.BuildWithSingleResult();
-			/*
-			queryBuilderFactory.Create<TestResultOutput>(this, "GetTestResultsByNameAndTaken")
+
+			queryBuilderFactory.Create<TestResult>(this, "GetTestResultsByCandidateFirstNameAndTaken")
 				.AssertWithClaimsPrincipal(DefaultAssertion)
 				.WithCache(TimeSpan.FromSeconds(30))
 				.WithParameterBuilder()
-				.BeginQuery<TestResult>()
-					.WithProperty(x => x.Name)
+				.BeginQuery<Employee>()
+					.WithProperty(x => x.FirstName)
+					.BuildQueryResult(ctx => ctx.Items["employeeIdList"] = ctx.GetQueryResults<Employee>().Select(x => (object)x.Id).ToList())
+				.WithConnectionEdgeBuilder<Candidate>()
+					.WithDestinationIdFromSource(ctx => (List<object>)ctx.Items["employeeIdList"])
 					.WithProperty(x => x.Taken)
-					.BuildQueryResult(ctx => ctx.Items["exams"] = ctx.GetQueryResults<TestResult>())
-				.ThenWithQuery<Exam>()
-					.WithPropertyFromSource(x => x.Id,
-						x => ((List<TestResult>)x.Items["exams"]).Select(y => (object)y.ExamId).Distinct().ToList())
-					.BuildQueryResult(ctx =>
+					.BuildConnectionEdgeParameters(ctx =>
 					{
-						List<TestResult> exams = (List<TestResult>)ctx.Items["exams"];
-						var exampleTemplates = ctx.GetQueryResults<Exam>();
-						ctx.SetResults(exams.Select(exam => new TestResultOutput
-						{
-							Id = exam.Id,
-							CandidateId = exam.CandidateId,
-							Category = exam.Category,
-							ExamId = exam.ExamId,
-							Name = exam.Name,
-							Taken = exam.Taken,
-							Exam = exampleTemplates.Single(x => x.Id == exam.ExamId)
-						}).ToList());
+						ctx.Items["testResultIdList"] = ctx.GetQueryResults<Candidate>().Select(x => (object)x.Id).ToList();
 					})
-				.ThenWithQuery<Candidate>()
-				.WithPropertyFromSource(x => x.Id,
-					ctx => (ctx.GetResults<TestResultOutput>()).Select(y => (object)y.CandidateId).ToList())
-					.BuildQueryResult(ctx =>
-				{
-					var candidates = ctx.GetQueryResults<Candidate>();
-					ctx.GetResults<TestResultOutput>().ForEach(x => x.Candidate = candidates.Single(c => c.Id == x.CandidateId));
-				})
+					.ThenWithQuery<TestResult>()
+					.WithPropertyFromSource(x => x.Id, ctx => (List<object>)ctx.Items["testResultIdList"])
+				.BuildQueryResult(ctx => { })
 				.BuildQuery()
 				.BuildWithListResult();
 
+			/*
 			queryBuilderFactory.Create<TestResultOutput>(this, "SearchExams")
 				.AssertWithClaimsPrincipal(DefaultAssertion)
 				.WithCache(TimeSpan.FromSeconds(30))
