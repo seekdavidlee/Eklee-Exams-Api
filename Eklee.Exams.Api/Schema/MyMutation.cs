@@ -40,7 +40,9 @@ namespace Eklee.Exams.Api.Schema
 			Add<Exam, ItemWithGuidId>(issuers, inputBuilderFactory, builder => builder.AddPartition(x => x.Category));
 			Add<Publication, ItemWithGuidId>(issuers, inputBuilderFactory, builder => builder.AddPartition(x => x.Year));
 			Add<TestResult, ItemWithGuidId>(issuers, inputBuilderFactory, builder => builder.AddPartition(x => x.Location));
+
 			AddSearch<ExamSearch, Exam>(issuers, inputBuilderFactory, "Exam search template index has been removed.");
+			AddSearch<EmployeeSearch, Employee>(issuers, inputBuilderFactory, "Employee search template index has been removed.");
 
 			string key = _configuration["DocumentDb:Key"];
 			string url = _configuration["DocumentDb:Url"];

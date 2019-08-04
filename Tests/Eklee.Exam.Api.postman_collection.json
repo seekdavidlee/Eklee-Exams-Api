@@ -812,7 +812,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "query {\n  getTestResultById(id:{equal:\"{{testResultId0}}\"}){\n\tid\n\tlocation\n\tcorrectAnswers\n\ttotalQuestions\n  }\n}"
+							"raw": "query {\n  getTestResultById(id:{equal:\"{{testResultId0}}\"}){\n\tid\n\tlocation\n\tcorrectAnswers\n\ttotalQuestions\n\tcandidate {\n\t\tid\n\t\ttaken\n\t\temployee {\n        \tfirstName\n      }\t\t\n\t}\n  }\n}"
 						},
 						"url": {
 							"raw": "{{endpoint}}/api/graph",
@@ -883,6 +883,86 @@
 						"body": {
 							"mode": "raw",
 							"raw": "query {\n  getTestResultByCandidateById(destinationid:{equal:\"{{employeeId0}}\"}){\n    id\n    correctAnswers\n    location\n    publication {\n      id\n    }\n    totalQuestions\n    candidate {\n      id\n    }\n  }\n}"
+						},
+						"url": {
+							"raw": "{{endpoint}}/api/graph",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"api",
+								"graph"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetTestResultsByCandidateFirstNameAndTaken",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "35c8c12c-5cfe-42d0-8de3-66862da96f49",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"No errors are returned\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.errors).to.eql(undefined);",
+									"});",
+									"",
+									"pm.test(\"TestResult is found\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    ",
+									"    var id = pm.environment.get(\"testResultId0\");",
+									"    var employeeId0 = pm.environment.get(\"employeeId0\");",
+									"    var examId0pubId0 = pm.environment.get(\"examId0pubId0\");",
+									"    var examId = pm.environment.get(\"examId0pubId0\");",
+									"    ",
+									"    var entities = jsonData.data.getTestResultsByCandidateFirstNameAndTaken;",
+									"    pm.expect(entities.length).to.eql(1);",
+									"    var entity = entities[0];",
+									"    ",
+									"    pm.expect(entity.id).to.eql(id);",
+									"    pm.expect(entity.location).to.eql(\"Dallas, TX\");",
+									"    pm.expect(entity.correctAnswers).to.eql(1);",
+									"    pm.expect(entity.totalQuestions).to.eql(1);",
+									"    pm.expect(entity.candidate.id).to.eql(employeeId0);",
+									"    pm.expect(entity.candidate.employee.id).to.eql(employeeId0);",
+									"    ",
+									"    var employee = entity.candidate.employee;",
+									"    pm.expect(employee.firstName).to.eql(\"James\");",
+									"    pm.expect(employee.lastName).to.eql(\"McDonald\");",
+									"    pm.expect(employee.email).to.eql(\"jm@eklee1.com\");",
+									"    pm.expect(employee.department).to.eql(\"Dev\");",
+									"    pm.expect(employee.type).to.eql(\"fulltime\");",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{access_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/graphql"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "query {\r\n  getTestResultsByCandidateFirstNameAndTaken(firstname:\r\n    {\r\n      equal:\"James\"\r\n    }, taken:\r\n    {\r\n      greaterThan:\"2019-07-01\"\r\n    }){\r\n    id\r\n    correctAnswers\r\n    totalQuestions\r\n    location\r\n    candidate {\r\n      employee {\r\n        firstName\r\n        lastName\r\n        email\r\n        department\r\n        id\r\n        type\r\n      }\r\n      taken\r\n      id\r\n    }\r\n  }\r\n}"
 						},
 						"url": {
 							"raw": "{{endpoint}}/api/graph",
@@ -1013,6 +1093,73 @@
 						"body": {
 							"mode": "raw",
 							"raw": "query {\n  getTestResultById(id:{equal:\"{{testResultId0}}\"}){\n    id\n    correctAnswers\n    totalQuestions\n    location\n  }\n}"
+						},
+						"url": {
+							"raw": "{{endpoint}}/api/graph",
+							"host": [
+								"{{endpoint}}"
+							],
+							"path": [
+								"api",
+								"graph"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "SearchExams",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "35c8c12c-5cfe-42d0-8de3-66862da96f49",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"No errors are returned\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.errors).to.eql(undefined);",
+									"});",
+									"",
+									"pm.test(\"TestResult is updated\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    ",
+									"    pm.expect(jsonData.data.searchExams.length).to.eql(1);",
+									"    ",
+									"    var id = pm.environment.get(\"testResultId0\");",
+									"    ",
+									"    var entity = jsonData.data.searchExams[0];",
+									"    pm.expect(entity.id).to.eql(id);",
+									"    pm.expect(entity.candidate.employee.firstName).to.eql(\"James\");",
+									"    pm.expect(entity.candidate.employee.lastName).to.eql(\"McDonald\");",
+									"    pm.expect(entity.candidate.employee.email).to.eql(\"jm@eklee1.com\");",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{access_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/graphql"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "query {\r\n  searchExams(searchtext:{equal:\"eklee1\"}){\r\n    id\r\n    candidate {\r\n      employee {\r\n        firstName\r\n        lastName\r\n        email\r\n      }\r\n    }\r\n  }\r\n}"
 						},
 						"url": {
 							"raw": "{{endpoint}}/api/graph",
