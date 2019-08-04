@@ -67,50 +67,47 @@ namespace Eklee.Exams.Api.Schema
 				.BuildQuery()
 				.BuildWithListResult();
 
-			/*
-			queryBuilderFactory.Create<TestResultOutput>(this, "SearchExams")
+			queryBuilderFactory.Create<TestResult>(this, "SearchExams")
 				.AssertWithClaimsPrincipal(DefaultAssertion)
 				.WithCache(TimeSpan.FromSeconds(30))
 				.WithParameterBuilder()
-				.BeginSearch(typeof(CandidateSearch), typeof(ExamSearch))
+				.BeginSearch(typeof(EmployeeSearch), typeof(ExamSearch))
 					.BuildQueryResult(ctx =>
 					{
 						var searches = ctx.GetQueryResults<SearchResultModel>();
-						ctx.Items["examSearchesIdList"] = searches.GetTypeList<ExamSearch>().Select(x => (object)x.Id).ToList();
-						ctx.Items["candidateSearchesIdList"] = searches.GetTypeList<CandidateSearch>().Select(x => (object)x.Id).ToList();
+						ctx.Items["examIdList"] = searches.GetTypeList<ExamSearch>().Select(x => (object)x.Id).ToList();
+						ctx.Items["employeeIdList"] = searches.GetTypeList<EmployeeSearch>().Select(x => (object)x.Id).ToList();
 					})
-				.ThenWithQuery<TestResult>()
-					.WithPropertyFromSource(x => x.CandidateId, ctx => (List<object>)ctx.Items["candidateSearchesIdList"])
-					.BuildQueryResult(ctx => ctx.Items["examsOfCandidates"] = ctx.GetQueryResults<TestResult>())
-				.ThenWithQuery<TestResult>()
-					.WithPropertyFromSource(x => x.ExamId, ctx => (List<object>)ctx.Items["examSearchesIdList"])
-					.BuildQueryResult(ctx =>
+				.WithConnectionEdgeBuilder<Candidate>()
+					.WithDestinationIdFromSource(ctx => (List<object>)ctx.Items["employeeIdList"])
+					.BuildConnectionEdgeParameters(ctx =>
 					{
-						var exams = ctx.GetQueryResults<TestResult>();
-						exams.AddRange((List<TestResult>)ctx.Items["examsOfCandidates"]);
-						var results = exams.Distinct().Select(x => new TestResultOutput
-						{
-							Id = x.Id,
-							CandidateId = x.CandidateId,
-							Category = x.Category,
-							Name = x.Name,
-							ExamId = x.ExamId,
-							Taken = x.Taken
-						}).ToList();
-
-						ctx.Items["candidateIdList"] = results.Select(x => (object)x.CandidateId).Distinct().ToList();
-						ctx.Items["examIdList"] = results.Select(x => (object)x.ExamId).Distinct().ToList();
-
-						ctx.SetResults(results);
+						// Source Id refers to the TestResult.
+						ctx.Items["testResultIdList"] = ctx.GetResults<ConnectionEdge>()
+							.Select(x => (object)x.SourceId).ToList();
 					})
-				.ThenWithQuery<Candidate>()
-					.WithPropertyFromSource(x => x.Id, ctx => (List<object>)ctx.Items["candidateIdList"])
-					.BuildQueryResult(ctx => ctx.GetResults<TestResultOutput>().ForEach(x => x.Candidate = ctx.GetQueryResults<Candidate>().Single(c => c.Id == x.CandidateId)))
-				.ThenWithQuery<Exam>()
-					.WithPropertyFromSource(x => x.Id, ctx => (List<object>)ctx.Items["examIdList"])
-					.BuildQueryResult(ctx => ctx.GetResults<TestResultOutput>().ForEach(x => x.Exam = ctx.GetQueryResults<Exam>().Single(e => e.Id == x.ExamId)))
+				.WithConnectionEdgeBuilder<ExamPublication>()
+					.WithSourceIdFromSource<Exam>(ctx => (List<object>)ctx.Items["examIdList"])
+					.BuildConnectionEdgeParameters(ctx =>
+					{
+						// Use Publication Id to find TestResult
+						ctx.Items["publicationIdList"] = ctx.GetResults<ConnectionEdge>()
+							.Select(x => (object)x.DestinationId).ToList();
+					})
+				.WithConnectionEdgeBuilder<TestResultPublication>()
+					.WithDestinationIdFromSource(ctx => (List<object>)ctx.Items["publicationIdList"])
+					.BuildConnectionEdgeParameters(ctx =>
+					{
+						var list = ((List<object>)ctx.Items["testResultIdList"]).Select(x => (string)x).ToList();
+						list.AddRange(ctx.GetResults<ConnectionEdge>().Select(x => x.SourceId));
+						ctx.Items["testResultIdList"] = list.Distinct().Select(x => (object)x).ToList();
+					})
+				// WithConnectionEdgeBuilder allows us to search back to TestResult using the WithSourceIdFromSource.
+				// Don't use WithPropertyFromSource as it doesn't allow us to query correctly on connections.
+				.WithConnectionEdgeBuilder<TestResultPublication>()
+					.WithSourceIdFromSource<TestResult>(ctx => (List<object>)ctx.Items["testResultIdList"])
+					.BuildConnectionEdgeParameters(ctx => { })
 				.BuildQuery().BuildWithListResult();
-			*/
 		}
 	}
 }

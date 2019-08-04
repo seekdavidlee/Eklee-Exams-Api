@@ -5,7 +5,7 @@
     <RootNamespace>Eklee.Exams.Api</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Eklee.Azure.Functions.GraphQl" Version="0.16.0" />
+    <PackageReference Include="Eklee.Azure.Functions.GraphQl" Version="0.16.2" />
     <PackageReference Include="GraphQL.Client" Version="1.0.3" />
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="2.2.0" />
     <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="1.0.29" />
