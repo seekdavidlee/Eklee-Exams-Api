@@ -71,7 +71,8 @@ namespace Eklee.Exams.Api.Schema
 				.AssertWithClaimsPrincipal(DefaultAssertion)
 				.WithCache(TimeSpan.FromSeconds(30))
 				.WithParameterBuilder()
-				.BeginSearch(typeof(EmployeeSearch), typeof(ExamSearch))
+				.BeginSearch()
+				.Add<EmployeeSearch>().Add<ExamSearch>().Build()
 					.BuildQueryResult(ctx =>
 					{
 						var searches = ctx.GetQueryResults<SearchResultModel>();
