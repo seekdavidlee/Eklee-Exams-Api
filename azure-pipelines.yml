@@ -28,7 +28,7 @@ steps:
   displayName: 'Deploy stack resources'
   inputs:
     azureSubscription: '$(Azure.Connection)'
-    resourceGroupName: '$(stackName)'
+    resourceGroupName: '$(Azure.ResourceGroupName)'
     location: '$(Location)'
     templateLocation: 'Linked artifact'
     csmFile: 'deployment\template.json'
@@ -41,7 +41,7 @@ steps:
     azureSubscription: '$(Azure.Connection)'
     webAppName: '$(stackName)'
     deployToSlotOrASE: true
-    resourceGroupName: '$(stackName)'
+    resourceGroupName: '$(Azure.ResourceGroupName)'
     slotName: 'staging'
     appType: 'functionApp'
     packageForLinux: '$(zipLocation)'
@@ -73,5 +73,5 @@ steps:
     action: 'Swap Slots'
     sourceSlot: 'staging' 
     webAppName: '$(stackName)'
-    resourceGroupName: '$(stackName)'
+    resourceGroupName: '$(Azure.ResourceGroupName)'
     swapWithProduction: true
