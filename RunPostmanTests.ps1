@@ -23,7 +23,9 @@ $url = "https://" + $StackName + "-staging.azurewebsites.net"
         @{ key = "adminClientSecret"; value = "$env:Postman_adminClientSecret"; }
     )
 } | ConvertTo-Json -depth 100 | Out-File -encoding ASCII postman_environment.json
-npm install
-node_modules\.bin\newman -v
-Write-Host "Running postman tests."
+
+npm install --save-dev newman
+
+Write-Host "Running postman"
+
 node_modules\.bin\newman run tests\Eklee.Exam.Api.postman_collection.json -e postman_environment.json --reporters cli,junit --reporter-junit-export $env:Common_TestResultsDirectory\report.xml
