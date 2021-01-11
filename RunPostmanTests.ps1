@@ -28,4 +28,4 @@ npm install --save-dev newman
 
 Write-Host "Running postman"
 
-node_modules\.bin\newman run tests\Eklee.Exam.Api.postman_collection.json -e postman_environment.json --reporters cli,junit --reporter-junit-export $env:Common_TestResultsDirectory\report.xml
+node_modules\.bin\newman run tests\Eklee.Exam.Api.postman_collection.json -e postman_environment.json --reporters 'cli,junit' --reporter-junit-export $env:Common_TestResultsDirectory\report.xml
