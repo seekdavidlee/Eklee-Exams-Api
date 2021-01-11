@@ -4,8 +4,6 @@ $url = "https://" + $StackName + "-staging.azurewebsites.net"
 @{
     values = @(
         @{ key = "endpoint"; value = "$url"; },
-        @{ key = "client_secret"; value = "$env:Postman_client_secret"; },
-        @{ key = "client_id"; value = "$env:Postman_client_id"; },
         @{ key = "resource_id"; value = "$env:Postman_resource_id"; },
         @{ key = "tenant_id"; value = "$env:Postman_tenant_id"; },
         @{ key = "isRemote"; value = "$env:Postman_isRemote"; },
