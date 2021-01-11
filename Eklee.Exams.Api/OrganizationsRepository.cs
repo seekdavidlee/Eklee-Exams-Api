@@ -1,14 +1,13 @@
 ﻿using Eklee.Exams.Api.Schema.Models;
 using GraphQL;
 using GraphQL.Client.Http;
+using GraphQL.Client.Serializer.Newtonsoft;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
 namespace Eklee.Exams.Api
@@ -33,7 +32,7 @@ namespace Eklee.Exams.Api
 		{
 			string endpoint = $"{configuration["AdminApi:Endpoint"]}/api/appadmin";
 			logger.LogInformation($"Admin endpoint: {endpoint}");
-			_client = new GraphQLHttpClient(endpoint, null);
+			_client = new GraphQLHttpClient(endpoint, new NewtonsoftJsonSerializer());
 			_adminBearerTokenClient = adminBearerTokenClient;
 			_logger = logger;
 		}

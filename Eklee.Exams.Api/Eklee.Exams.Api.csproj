@@ -7,6 +7,7 @@
   <ItemGroup>
     <PackageReference Include="Eklee.Azure.Functions.GraphQl" Version="0.32.4" />
     <PackageReference Include="GraphQL.Client" Version="3.2.1" />
+    <PackageReference Include="GraphQL.Client.Serializer.Newtonsoft" Version="3.2.1" />
     <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.Http" Version="3.0.2" />
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="3.1.10" />
   </ItemGroup>
