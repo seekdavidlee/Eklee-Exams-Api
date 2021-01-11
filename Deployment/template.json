@@ -477,7 +477,7 @@
 			"properties": {
 				"APPINSIGHTS_INSTRUMENTATIONKEY": "[reference(resourceId('microsoft.insights/components',variables('stackName')),'2015-05-01').InstrumentationKey]",
 				"AzureWebJobsStorage": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('stackName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('stackName')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value)]",
-				"FUNCTIONS_EXTENSION_VERSION": "~2",
+				"FUNCTIONS_EXTENSION_VERSION": "~3",
 				"FUNCTIONS_WORKER_RUNTIME": "dotnet",
 				"WEBSITE_NODE_DEFAULT_VERSION": "8.11.1",
 				"GraphQl:EnableMetrics": "[parameters('GraphQl_EnableMetrics')]",
