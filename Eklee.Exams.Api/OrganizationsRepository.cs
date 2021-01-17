@@ -12,6 +12,10 @@ using System.Threading.Tasks;
 
 namespace Eklee.Exams.Api
 {
+	public class AllOrganizations
+	{
+		public List<Organization> getAllOrganizations { get; set; }
+	}
 	public class OrganizationsRepository : IOrganizationsRepository
 	{
 		private const string QueryAllTenants = @"query {
@@ -38,25 +42,25 @@ namespace Eklee.Exams.Api
 		}
 
 		public async Task<string[]> GetIssuers()
-		{			
+		{
 			_client.HttpClient.DefaultRequestHeaders.Authorization = await _adminBearerTokenClient.GetAuthenticationHeaderValue();
 			_client.Options.MediaType = "application/json";
-			
+
 			var request = new GraphQLRequest { Query = QueryAllTenants };
 
-			var response = await _client.SendQueryAsync<List<Organization>>(request);
-			
+			var response = await _client.SendQueryAsync<AllOrganizations>(request);
+
 			AssertError(response);
 
-			if (response.Data.Count == 0)
+			if (response.Data.getAllOrganizations.Count == 0)
 			{
 				throw new ApplicationException("No issuers found!");
 			}
 
-			return response.Data.Select(x => $"https://sts.windows.net/{x.TenantId}/").ToArray();
+			return response.Data.getAllOrganizations.Select(x => $"https://sts.windows.net/{x.TenantId}/").ToArray();
 		}
 
-		private void AssertError(GraphQLResponse<List<Organization>> response)
+		private void AssertError(GraphQLResponse<AllOrganizations> response)
 		{
 			if (response.Errors != null && response.Errors.Length > 0)
 			{
