@@ -57,10 +57,14 @@
 		"AdminClient_TenantId": {
 			"defaultValue": "",
 			"type": "String"
+		},
+		"Location": {
+			"defaultValue": "[resourceGroup().location]",
+			"type": "string"
 		}
 	},
 	"variables": {
-		"location": "southcentralus",
+		"location": "[parameters('Location')]",
 		"planName": "[variables('stackName')]",
 		"stackName": "[replace(parameters('stackName'),'-','')]",
 		"AdminApi_Endpoint": "[concat('https://',variables('stackName'),'.azurewebsites.net')]",
@@ -78,11 +82,10 @@
 			"apiVersion": "2015-04-08",
 			"location": "[variables('location')]",
 			"tags": {
-				"defaultExperience": "Core (SQL)"
+				"defaultExperience": "Core (SQL)",
+				"stackName": "[parameters('stackName')]"
 			},
-			"scale": null,
 			"properties": {
-				"ipRangeFilter": "",
 				"enableAutomaticFailover": false,
 				"enableMultipleWriteLocations": false,
 				"isVirtualNetworkFilterEnabled": false,
@@ -110,7 +113,9 @@
 			"name": "[variables('stackName')]",
 			"apiVersion": "2015-05-01",
 			"location": "[variables('location')]",
-			"tags": {},
+			"tags": {
+				"stackName": "[parameters('stackName')]"
+			},
 			"scale": null,
 			"properties": {
 				"Application_Type": "web",
@@ -125,6 +130,9 @@
 			"type": "Microsoft.Search/searchServices",
 			"sku": {
 				"name": "basic"
+			},
+			"tags": {
+				"stackName": "[parameters('stackName')]"
 			},
 			"name": "[variables('stackName')]",
 			"apiVersion": "2015-08-19",
@@ -147,7 +155,9 @@
 			"name": "[variables('stackName')]",
 			"apiVersion": "2018-07-01",
 			"location": "[variables('location')]",
-			"tags": {},
+			"tags": {
+				"stackName": "[parameters('stackName')]"
+			},
 			"scale": null,
 			"properties": {
 				"networkAcls": {
@@ -180,6 +190,9 @@
 				"family": "Y",
 				"capacity": 0
 			},
+			"tags": {
+				"stackName": "[parameters('stackName')]"
+			},
 			"kind": "functionapp",
 			"name": "[variables('planName')]",
 			"apiVersion": "2016-09-01",
@@ -203,6 +216,9 @@
 			"name": "[variables('stackName')]",
 			"apiVersion": "2016-08-01",
 			"location": "[variables('location')]",
+			"tags": {
+				"stackName": "[parameters('stackName')]"
+			},
 			"scale": null,
 			"properties": {
 				"enabled": true,
@@ -247,6 +263,9 @@
 			"name": "[concat(variables('stackName'),'/','Staging')]",
 			"apiVersion": "2016-08-01",
 			"location": "[variables('location')]",
+			"tags": {
+				"stackName": "[parameters('stackName')]"
+			},
 			"scale": null,
 			"properties": {
 				"enabled": true,
@@ -291,7 +310,9 @@
 			"name": "[concat(variables('stackName'), '/', parameters('config_web_name'))]",
 			"apiVersion": "2016-08-01",
 			"location": "[variables('location')]",
-			"scale": null,
+			"tags": {
+				"stackName": "[parameters('stackName')]"
+			},
 			"properties": {
 				"numberOfWorkers": 1,
 				"defaultDocuments": [
@@ -414,10 +435,11 @@
 			"name": "[concat(variables('stackName'), '/', variables('stackName'), '.azurewebsites.net')]",
 			"apiVersion": "2016-08-01",
 			"location": "[variables('location')]",
-			"scale": null,
+			"tags": {
+				"stackName": "[parameters('stackName')]"
+			},
 			"properties": {
 				"siteName": "[variables('stackName')]",
-				"domainId": null,
 				"hostNameType": "Verified"
 			},
 			"dependsOn": [
