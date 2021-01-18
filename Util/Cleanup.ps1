@@ -1,9 +1,7 @@
 param(
 	[Parameter(Mandatory = $True)][string]$Name)
 
-$StackName = ($Name + $env:Build_BuildNumber).Replace(".", "")
-
-$resources = az resource list --tag stackName=$StackName | ConvertFrom-Json
+$resources = az resource list --tag stackName=$Name| ConvertFrom-Json
 
 $funcId = ($resources | Where-Object { $_.type -eq "Microsoft.Web/sites" }).id
 
