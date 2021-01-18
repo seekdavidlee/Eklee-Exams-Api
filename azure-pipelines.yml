@@ -63,12 +63,12 @@ steps:
     testResultsFiles: '**/*.xml' 
     searchFolder: '$(Common.TestResultsDirectory)'
 
-- task: AzureAppServiceManage@0
-  displayName: 'Swap Staging with Production'
+- task: AzureCLI@2
+  displayName: 'Cleanup stack if integration tests passed'
+  condition: succeeded()
   inputs:
-    azureSubscription: '$(Azure.Connection)'
-    action: 'Swap Slots'
-    sourceSlot: 'staging' 
-    webAppName: '$(stackName)'
-    resourceGroupName: '$(Azure.ResourceGroupName)'
-    swapWithProduction: true
+    azureSubscription: $(Azure.Connection)
+    scriptType: ps
+    scriptLocation: scriptPath
+    scriptPath: 'Util/Cleanup.ps1'
+    arguments: -Name $(stackName)

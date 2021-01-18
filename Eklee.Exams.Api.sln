@@ -19,6 +19,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Deployment", "Deployment", 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Util", "Util", "{6D97C2A7-3604-4ACD-A870-1D3C9FE5134E}"
 	ProjectSection(SolutionItems) = preProject
+		Util\Cleanup.ps1 = Util\Cleanup.ps1
 		Util\LocalSettingsTOARM.ps1 = Util\LocalSettingsTOARM.ps1
 	EndProjectSection
 EndProject
