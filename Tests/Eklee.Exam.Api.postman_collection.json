@@ -14,7 +14,6 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "ecafb857-fc97-4b64-80a1-6ffa2c75d986",
 								"exec": [
 									"pm.test(\"Status code is 200\", function () {",
 									"    pm.response.to.have.status(200);",
@@ -90,7 +89,6 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "929a7a0e-b78f-4fdf-ae79-2094882d03c4",
 								"exec": [
 									"var testName = pm.info.requestName + \": \";",
 									"",
@@ -100,7 +98,7 @@
 									"",
 									"pm.test(testName + \"Has no errors\", function () {",
 									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData.errors).to.eql(undefined);",
+									"    pm.expect(jsonData.errors).to.eql(null);",
 									"});",
 									"",
 									"pm.test(testName + \"Contains correct JSON payload\", function () {",
@@ -154,7 +152,6 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "929a7a0e-b78f-4fdf-ae79-2094882d03c4",
 								"exec": [
 									"var testName = pm.info.requestName + \": \";",
 									"",
@@ -164,7 +161,7 @@
 									"",
 									"pm.test(testName + \"Has no errors\", function () {",
 									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData.errors).to.eql(undefined);",
+									"    pm.expect(jsonData.errors).to.eql(null);",
 									"});",
 									"",
 									"pm.test(testName + \"Contains correct JSON payload\", function () {",
@@ -223,7 +220,6 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "ecafb857-fc97-4b64-80a1-6ffa2c75d986",
 								"exec": [
 									"pm.test(\"Status code is 200\", function () {",
 									"    pm.response.to.have.status(200);",
@@ -299,7 +295,6 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "5dab6571-3ead-40f8-9049-95fafe47e5a2",
 								"exec": [
 									"pm.test(\"Status code is 200\", function () {",
 									"    pm.response.to.have.status(200);",
@@ -350,7 +345,6 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "ecafb857-fc97-4b64-80a1-6ffa2c75d986",
 								"exec": [
 									"pm.test(\"Status code is 200\", function () {",
 									"    pm.response.to.have.status(200);",
@@ -421,7 +415,6 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "929a7a0e-b78f-4fdf-ae79-2094882d03c4",
 								"exec": [
 									"var testName = pm.info.requestName + \": \";",
 									"",
@@ -431,7 +424,7 @@
 									"",
 									"pm.test(testName + \"Has no errors\", function () {",
 									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData.errors).to.eql(undefined);",
+									"    pm.expect(jsonData.errors).to.eql(null);",
 									"});",
 									"",
 									"pm.test(testName + \"Contains correct JSON payload\", function () {",
@@ -446,7 +439,6 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "6a3bc8f2-1f9a-4823-88aa-49f491c2cedd",
 								"exec": [
 									"var uuid = require('uuid');",
 									"",
@@ -503,7 +495,6 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "929a7a0e-b78f-4fdf-ae79-2094882d03c4",
 								"exec": [
 									"pm.test(\"Status code is 200\", function () {",
 									"    pm.response.to.have.status(200);",
@@ -511,7 +502,7 @@
 									"",
 									"pm.test(\"Has no errors\", function () {",
 									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData.errors).to.eql(undefined);",
+									"    pm.expect(jsonData.errors).to.eql(null);",
 									"});",
 									"",
 									"pm.test(\"Contains correct JSON payload\", function () {",
@@ -534,7 +525,6 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "83e1ee03-afee-4e81-a26b-3a4926d19f33",
 								"exec": [
 									"var uuid = require('uuid');",
 									"for(var i = 0; i < 10; i++) {",
@@ -598,7 +588,6 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "35c8c12c-5cfe-42d0-8de3-66862da96f49",
 								"exec": [
 									"var testName = pm.info.requestName + \": \";",
 									"",
@@ -611,7 +600,7 @@
 									"    ",
 									"    console.log(jsonData);",
 									"    ",
-									"    pm.expect(jsonData.errors).to.eql(undefined);",
+									"    pm.expect(jsonData.errors).to.eql(null);",
 									"});",
 									"",
 									"pm.test(testName + \"Exam is created\", function () {",
@@ -633,7 +622,6 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "f3d6edef-fd7e-4167-b32d-9aafbbf3a69b",
 								"exec": [
 									"var uuid = require('uuid');",
 									"pm.environment.set(\"createExamId\", uuid.v4());",
@@ -687,7 +675,6 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "35c8c12c-5cfe-42d0-8de3-66862da96f49",
 								"exec": [
 									"pm.test(\"Status code is 200\", function () {",
 									"    pm.response.to.have.status(200);",
@@ -695,7 +682,7 @@
 									"",
 									"pm.test(\"No errors are returned\", function () {",
 									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData.errors).to.eql(undefined);",
+									"    pm.expect(jsonData.errors).to.eql(null);",
 									"});",
 									"",
 									"pm.test(\"TestResult is created\", function () {",
@@ -719,7 +706,6 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "50d20ab9-c5ba-41d9-9739-f7f81ba8e22d",
 								"exec": [
 									"var uuid = require('uuid');",
 									"pm.environment.set(\"testResultId0\", uuid.v4());",
@@ -766,7 +752,6 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "35c8c12c-5cfe-42d0-8de3-66862da96f49",
 								"exec": [
 									"pm.test(\"Status code is 200\", function () {",
 									"    pm.response.to.have.status(200);",
@@ -774,7 +759,7 @@
 									"",
 									"pm.test(\"No errors are returned\", function () {",
 									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData.errors).to.eql(undefined);",
+									"    pm.expect(jsonData.errors).to.eql(null);",
 									"});",
 									"",
 									"pm.test(\"TestResult is found\", function () {",
@@ -833,7 +818,6 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "35c8c12c-5cfe-42d0-8de3-66862da96f49",
 								"exec": [
 									"pm.test(\"Status code is 200\", function () {",
 									"    pm.response.to.have.status(200);",
@@ -841,7 +825,7 @@
 									"",
 									"pm.test(\"No errors are returned\", function () {",
 									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData.errors).to.eql(undefined);",
+									"    pm.expect(jsonData.errors).to.eql(null);",
 									"});",
 									"",
 									"pm.test(\"TestResult is found\", function () {",
@@ -903,7 +887,6 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "35c8c12c-5cfe-42d0-8de3-66862da96f49",
 								"exec": [
 									"pm.test(\"Status code is 200\", function () {",
 									"    pm.response.to.have.status(200);",
@@ -911,7 +894,7 @@
 									"",
 									"pm.test(\"No errors are returned\", function () {",
 									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData.errors).to.eql(undefined);",
+									"    pm.expect(jsonData.errors).to.eql(null);",
 									"});",
 									"",
 									"pm.test(\"TestResult is found\", function () {",
@@ -983,7 +966,6 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "35c8c12c-5cfe-42d0-8de3-66862da96f49",
 								"exec": [
 									"pm.test(\"Status code is 200\", function () {",
 									"    pm.response.to.have.status(200);",
@@ -991,7 +973,7 @@
 									"",
 									"pm.test(\"No errors are returned\", function () {",
 									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData.errors).to.eql(undefined);",
+									"    pm.expect(jsonData.errors).to.eql(null);",
 									"});",
 									"",
 									"pm.test(\"TestResult is updated\", function () {",
@@ -1048,7 +1030,6 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "35c8c12c-5cfe-42d0-8de3-66862da96f49",
 								"exec": [
 									"pm.test(\"Status code is 200\", function () {",
 									"    pm.response.to.have.status(200);",
@@ -1056,7 +1037,7 @@
 									"",
 									"pm.test(\"No errors are returned\", function () {",
 									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData.errors).to.eql(undefined);",
+									"    pm.expect(jsonData.errors).to.eql(null);",
 									"});",
 									"",
 									"pm.test(\"TestResult is updated\", function () {",
@@ -1113,7 +1094,6 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "35c8c12c-5cfe-42d0-8de3-66862da96f49",
 								"exec": [
 									"pm.test(\"Status code is 200\", function () {",
 									"    pm.response.to.have.status(200);",
@@ -1121,7 +1101,7 @@
 									"",
 									"pm.test(\"No errors are returned\", function () {",
 									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData.errors).to.eql(undefined);",
+									"    pm.expect(jsonData.errors).to.eql(null);",
 									"});",
 									"",
 									"pm.test(\"TestResult is updated\", function () {",
@@ -1185,7 +1165,6 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "c04fa6d4-f9cc-422b-8f76-541cff3bcb7d",
 								"exec": [
 									"pm.test(\"Status code is 200\", function () {",
 									"    pm.response.to.have.status(200);",
@@ -1233,7 +1212,6 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "c04fa6d4-f9cc-422b-8f76-541cff3bcb7d",
 								"exec": [
 									"pm.test(\"Status code is 200\", function () {",
 									"    pm.response.to.have.status(200);",
@@ -1281,7 +1259,6 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "c04fa6d4-f9cc-422b-8f76-541cff3bcb7d",
 								"exec": [
 									"pm.test(\"Status code is 200\", function () {",
 									"    pm.response.to.have.status(200);",
@@ -1329,7 +1306,6 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "c04fa6d4-f9cc-422b-8f76-541cff3bcb7d",
 								"exec": [
 									"pm.test(\"Status code is 200\", function () {",
 									"    pm.response.to.have.status(200);",
@@ -1377,7 +1353,6 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "c04fa6d4-f9cc-422b-8f76-541cff3bcb7d",
 								"exec": [
 									"pm.test(\"Status code is 200\", function () {",
 									"    pm.response.to.have.status(200);",
@@ -1429,7 +1404,6 @@
 		{
 			"listen": "prerequest",
 			"script": {
-				"id": "a460ca94-64e8-4811-84f5-89f3cc83bc4e",
 				"type": "text/javascript",
 				"exec": [
 					"var isRemote = pm.environment.get(\"endpoint\").indexOf(\"http://localhost\") < 0;",
@@ -1440,7 +1414,6 @@
 		{
 			"listen": "test",
 			"script": {
-				"id": "31e3d054-66f6-431d-bfdc-56256d40ec00",
 				"type": "text/javascript",
 				"exec": [
 					""
