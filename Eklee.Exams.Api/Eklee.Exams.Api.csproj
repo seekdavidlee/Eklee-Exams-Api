@@ -1,13 +1,15 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <AzureFunctionsVersion>v3</AzureFunctionsVersion>
     <RootNamespace>Eklee.Exams.Api</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Eklee.Azure.Functions.GraphQl" Version="0.27.2" />
-    <PackageReference Include="GraphQL.Client" Version="1.0.3" />
-    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="2.2.0" />
+    <PackageReference Include="Eklee.Azure.Functions.GraphQl" Version="0.32.4" />
+    <PackageReference Include="GraphQL.Client" Version="3.2.1" />
+    <PackageReference Include="GraphQL.Client.Serializer.Newtonsoft" Version="3.2.1" />
+    <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.Http" Version="3.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="3.1.10" />
   </ItemGroup>
   <ItemGroup>
     <None Update="host.json">

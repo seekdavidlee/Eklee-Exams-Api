@@ -1,18 +1,21 @@
 ﻿using Eklee.Exams.Api.Schema.Models;
-using GraphQL.Client;
-using GraphQL.Common.Request;
-using GraphQL.Common.Response;
+using GraphQL;
+using GraphQL.Client.Http;
+using GraphQL.Client.Serializer.Newtonsoft;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System;
+using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
 namespace Eklee.Exams.Api
 {
+	public class AllOrganizations
+	{
+		public List<Organization> getAllOrganizations { get; set; }
+	}
 	public class OrganizationsRepository : IOrganizationsRepository
 	{
 		private const string QueryAllTenants = @"query {
@@ -22,7 +25,7 @@ namespace Eklee.Exams.Api
 		  }
 		}";
 
-		private readonly GraphQLClient _client;
+		private readonly GraphQLHttpClient _client;
 		private readonly IAdminBearerTokenClient _adminBearerTokenClient;
 		private readonly ILogger _logger;
 
@@ -33,33 +36,31 @@ namespace Eklee.Exams.Api
 		{
 			string endpoint = $"{configuration["AdminApi:Endpoint"]}/api/appadmin";
 			logger.LogInformation($"Admin endpoint: {endpoint}");
-			_client = new GraphQLClient(endpoint);
+			_client = new GraphQLHttpClient(endpoint, new NewtonsoftJsonSerializer());
 			_adminBearerTokenClient = adminBearerTokenClient;
 			_logger = logger;
 		}
 
 		public async Task<string[]> GetIssuers()
 		{
-			_client.DefaultRequestHeaders.Authorization = await _adminBearerTokenClient.GetAuthenticationHeaderValue();
-			_client.Options.MediaType = new MediaTypeHeaderValue("application/json");
+			_client.HttpClient.DefaultRequestHeaders.Authorization = await _adminBearerTokenClient.GetAuthenticationHeaderValue();
+			_client.Options.MediaType = "application/json";
 
 			var request = new GraphQLRequest { Query = QueryAllTenants };
 
-			var response = await _client.PostAsync(request);
+			var response = await _client.SendQueryAsync<AllOrganizations>(request);
 
 			AssertError(response);
 
-			JArray items = response.Data.getAllOrganizations as JArray;
-
-			if (items.Count == 0)
+			if (response.Data.getAllOrganizations.Count == 0)
 			{
 				throw new ApplicationException("No issuers found!");
 			}
 
-			return items.ToObject<Organization[]>().ToList().Select(x => $"https://sts.windows.net/{x.TenantId}/").ToArray();
+			return response.Data.getAllOrganizations.Select(x => $"https://sts.windows.net/{x.TenantId}/").ToArray();
 		}
 
-		private void AssertError(GraphQLResponse response)
+		private void AssertError(GraphQLResponse<AllOrganizations> response)
 		{
 			if (response.Errors != null && response.Errors.Length > 0)
 			{
