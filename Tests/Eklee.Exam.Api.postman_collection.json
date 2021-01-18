@@ -610,7 +610,7 @@
 									"    pm.expect(entity.id).to.eql(id);",
 									"    pm.expect(entity.name).to.eql(\"MS Azure SQL Database\");",
 									"    pm.expect(entity.category).to.eql(\"Azure\");",
-									"    pm.expect(entity.created).to.eql(\"2018-01-01\");",
+									"    pm.expect(entity.created).to.eql(\"2018-01-01T00:00:00Z\");",
 									"    pm.expect(entity.publications.length).to.eql(1);",
 									"",
 									"});",
