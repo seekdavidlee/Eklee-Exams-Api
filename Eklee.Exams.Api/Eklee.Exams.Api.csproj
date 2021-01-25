@@ -5,7 +5,7 @@
     <RootNamespace>Eklee.Exams.Api</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Eklee.Azure.Functions.GraphQl" Version="0.32.4" />
+    <PackageReference Include="Eklee.Azure.Functions.GraphQl" Version="0.35.10" />
     <PackageReference Include="GraphQL.Client" Version="3.2.1" />
     <PackageReference Include="GraphQL.Client.Serializer.Newtonsoft" Version="3.2.1" />
     <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.Http" Version="3.0.2" />
